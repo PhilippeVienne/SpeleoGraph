@@ -78,6 +78,14 @@
             <version>1.2.16</version>
         </dependency>
 
+        <!-- CSV file read -->
+
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>
