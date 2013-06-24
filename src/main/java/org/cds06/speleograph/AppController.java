@@ -1,24 +1,25 @@
 package org.cds06.speleograph;
 
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MarkerFactory;
 
 import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AppController implements Initializable{
@@ -26,7 +27,21 @@ public class AppController implements Initializable{
 
     public ListView<String> openedList;
 
-    public ObservableList<DataSetReader> data;
+    public ObservableMap<String,List<Data>> dataSets=FXCollections.observableHashMap();
+    {
+        dataSets.addListener(new MapChangeListener<String, List<Data>>() {
+            @Override
+            public void onChanged(Change<? extends String, ? extends List<Data>> change) {
+                log.info("DataSets changed :");
+                for(String m:change.getMap().keySet())
+                    log.info("- "+m);
+            }
+        });
+    }
+
+    private void process(DataSetReader dataSetReader) {
+
+    }
 
     @FXML
     private TextField firstNameField;
@@ -64,6 +79,30 @@ public class AppController implements Initializable{
     }
 
     public void open() {
+        FileChooser fileChooser = new FileChooser();
+
+        //Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV files (*.csv,*.txt)", "*.csv", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        //Show open file dialog
+        File file = fileChooser.showOpenDialog(null);
+        if(file==null) return;
+
+        try {
+            DataSetReader reader = new DataSetReader(file);
+            //dataLoaded.add(reader.getWater());
+            if(reader.getWater().size()>0){
+                String dataSetName = reader.getDataOriginFile().getName() + " - Water Amount";
+                dataSets.put(dataSetName,reader.getWater());
+            }
+        } catch (Exception e) {
+            log.error("Can not open file "+file.toString(),e);
+        }
+
+    }
+
+    private void update() {
 
     }
 
@@ -73,16 +112,6 @@ public class AppController implements Initializable{
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        DataSetReader test=new DataSetReader();
-        test.setDataOriginFile(new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Pluvio Villebruc\\2315774_9-pluvio.txt"));
-        ObservableList<String> files = FXCollections.observableArrayList("Single", "Double", "Suite", "Family App");
-        openedList.setItems(files);
-        openedList.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>(){
 
-            @Override
-            public ObservableValue<Boolean> call(String s) {
-                return new SimpleBooleanProperty(false);  //To change body of implemented methods use File | Settings | File Templates.
-            }
-        }));
     }
 }

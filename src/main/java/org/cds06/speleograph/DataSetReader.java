@@ -26,7 +26,14 @@ public class DataSetReader {
 
     private String title=null;
     private File dataOriginFile=null;
-    private ArrayList<Data> readData=new ArrayList<>();
+    private ArrayList<Data> water=new ArrayList<>();
+    private ArrayList<Data> pressure=new ArrayList<>();
+    private ArrayList<Data> temperature=new ArrayList<>();
+
+    public DataSetReader(File file) throws IOException {
+        setDataOriginFile(file);
+        read();
+    }
 
     public String getTitle() {
         return title;
@@ -64,13 +71,25 @@ public class DataSetReader {
                     data.setDataType(Data.Type.WATER);
                     data.setDate(date,format);
                     data.setValue(Double.valueOf(line[headers.pluvioColumnId()].replace(',', '.')));
-                    readData.add(data);
+                    water.add(data);
                 } else {
                     log.error("Unable to read line "+id,line);
                 }
                 id++;
             }
         }
+    }
+
+    public ArrayList<Data> getWater() {
+        return water;
+    }
+
+    public ArrayList<Data> getPressure() {
+        return pressure;
+    }
+
+    public ArrayList<Data> getTemperature() {
+        return temperature;
     }
 
     private class HeadersList extends ArrayList<String> {
@@ -107,9 +126,8 @@ public class DataSetReader {
     }
 
     static public void main(String[] args){
-        DataSetReader reader=new DataSetReader();
-        reader.setDataOriginFile(new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Pluvio Villebruc\\2315774_9-pluvio.txt"));
         try {
+            DataSetReader reader=new DataSetReader(new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Pluvio Villebruc\\2315774_9-pluvio.txt"));
             reader.read();
         } catch (IOException e) {
             System.err.println(e.toString());
