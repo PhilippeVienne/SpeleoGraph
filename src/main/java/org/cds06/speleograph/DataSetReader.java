@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * Design a DataSet model.
  * A Data set contains information about something. The data is stored as date belongs to one data.
- * An DataSet come from a CSV file
+ * An DataSet come from a CSV file formatted for SpeleoGraph.
  */
 public class DataSetReader {
 
@@ -113,10 +113,10 @@ public class DataSetReader {
 
     private class HeadersList extends ArrayList<String> {
 
-        private final HashMap<Type, String[]> headerConditions = new HashMap<>();
+        private HashMap<Type, String[]> headerConditions = new HashMap<>();
 
         {
-            headerConditions.put(Type.PRESSURE, new String[]{});
+            headerConditions.put(Type.PRESSURE, new String[]{"Pression"});
             headerConditions.put(Type.TEMPERATURE, new String[]{"Moy. : Température, °C"});
             headerConditions.put(Type.TEMPERATURE_MIN_MAX, new String[]{null,"Min. : Température, °C","Max. : Température, °C"});
             headerConditions.put(Type.WATER, new String[]{"Pluvio"});
