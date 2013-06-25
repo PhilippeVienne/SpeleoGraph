@@ -38,6 +38,28 @@ public class ReefnetFileConverter {
     private static Logger logger= LoggerFactory.getLogger(ReefnetFileConverter.class);
 
     /**
+     * Detect if a file is a ReefNet CSV format.
+     * <p>Open the file as a csv, read the first line, we check that :
+     * <ul>
+     *     <li>has got 13 elements</li>
+     *     <li>the second column contains a ReefNet Device ID starting with "RU-"</li>
+     * </ul></p>
+     * @param file
+     * @return
+     */
+    public static boolean isReefnetFile(File file){
+        try {
+            ReefnetFileConverter converter=new ReefnetFileConverter(file);
+            CSVReader csvReader=converter.getReader();
+            String[] line=csvReader.readNext();
+            return line.length==13 && line[1].startsWith("SU-");
+        } catch (IOException e) {
+            logger.error("Can not test if it's a ReefFile, continuing as if it's not one",e);
+        }
+        return false;
+    }
+
+    /**
      * The reefnetFile.
      */
     private File reefnetFile;

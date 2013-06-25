@@ -32,6 +32,7 @@ public class DataSetReader {
         for (Type type : Type.values()) {
             dataSets.put(type, new DataSet());
             dataSets.get(type).setReader(this);
+            dataSets.get(type).setType(type);
         }
     }
 
@@ -57,7 +58,7 @@ public class DataSetReader {
 
     }
 
-    protected void read() throws IOException {
+    private void read() throws IOException {
         CSVReader csvReader = new CSVReader(new FileReader(getDataOriginFile()), ';');
         String[] line;
         HeadersList headers = null;
@@ -105,10 +106,24 @@ public class DataSetReader {
                 id++;
             }
         }
+        orderDataSetsByDate();
     }
 
     public DataSet getDataFor(Type type){
         return dataSets.get(type);
+    }
+
+    public HashMap<Type, DataSet> getDataSets() {
+        HashMap<Type,DataSet> returned=new HashMap<>(dataSets.size());
+        for(Type t:dataSets.keySet())
+            if(dataSets.get(t).size()>0) returned.put(t,dataSets.get(t));
+        return returned;
+    }
+
+    private void orderDataSetsByDate(){
+        for(Type type:dataSets.keySet()){
+            dataSets.get(type).orderByDate();
+        }
     }
 
     private class HeadersList extends ArrayList<String> {

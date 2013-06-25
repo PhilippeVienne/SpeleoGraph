@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * This file is created by PhilippeGeek.
@@ -11,13 +12,15 @@ import java.util.ArrayList;
  */
 public class DataSet extends ArrayList<Data> {
 
+    public boolean observed=false;
     private File source;
     private Data.Type type;
     private DataSetReader reader;
     private SimpleBooleanProperty shown=new SimpleBooleanProperty(this,"shown",false);
 
     public String getName(){
-        String name=getSource().getName();
+        if(getReader().getDataOriginFile()==null) return this.toString();
+        String name=getReader().getDataOriginFile().getName();
         name=name.substring(0,name.indexOf(".",name.length()-5));
         if(getType()!=null) switch (getType()) {
             case PRESSURE:
@@ -58,16 +61,27 @@ public class DataSet extends ArrayList<Data> {
         this.reader = reader;
     }
 
-    public boolean isShown() {
-        return shownProperty().getValue();
-    }
-
-    public void setShown(boolean shown) {
-        shownProperty().setValue(shown);
-    }
-
     public SimpleBooleanProperty shownProperty(){
         return shown;
+    }
+
+    public void orderByDate(){
+        for(int i=0;i<size()-1;i++){
+            if(get(i).getDate().after(get(i+1).getDate())){
+                Data d=get(i+1);
+                set(i+1,get(i));
+                set(i,d);
+            }
+        }
+    }
+
+    public DateRange getDateRange(){
+        Date older= get(0).getDate(), newer= get(size()-1).getDate();
+        for(Data d:this){
+            if(d.getDate().before(older)) older=d.getDate();
+            if(d.getDate().after(newer)) newer=d.getDate();
+        }
+        return new DateRange(older,newer);
     }
 
 }
