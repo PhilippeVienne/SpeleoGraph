@@ -2,8 +2,8 @@ package org.cds06.speleograph;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -66,6 +66,20 @@ class DateRange {
             return Length.MINUTE;
         else
             return Length.SECOND;
+    }
+
+    /**
+     * Give a set of Date to divide the Range in parts.
+     * @param parts the number of parts
+     * @return The set of Date values to divide this Range
+     */
+    public ArrayList<Date> divideInParts(int parts){
+        ArrayList<Date> plots=new ArrayList<>(parts+1);
+        int partLength = Math.round(length()/parts);
+        for(int i=0;i<parts;i++)
+            plots.add(new Date(startProperty().getValue().getTime()+partLength*i));
+        plots.add(end.getValue());
+        return plots;
     }
 
 }
