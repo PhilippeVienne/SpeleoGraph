@@ -68,10 +68,12 @@ public class Data {
 
     private Type dataType = Type.TEMPERATURE;
     private Date date = Calendar.getInstance().getTime();
-    private Double value = 0.0;
+    private Double value = Double.MIN_VALUE;
+    private Double minValue = Double.MIN_VALUE;
+    private Double maxValue = Double.MIN_VALUE;
 
     @Override
     public String toString() {
-        return dataType.toString()+" Information, taken on "+SimpleDateFormat.getDateInstance().format(date)+", value : "+value;
+        return getDataType().toString()+" Information, taken on "+SimpleDateFormat.getDateInstance().format(getDate())+", value : "+getValue();
     }
 }

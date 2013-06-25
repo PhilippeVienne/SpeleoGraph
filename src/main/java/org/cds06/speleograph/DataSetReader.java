@@ -6,14 +6,14 @@ package org.cds06.speleograph;
  */
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.cds06.speleograph.Data.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Design a DataSet model.
@@ -24,11 +24,16 @@ public class DataSetReader {
 
     private static final Logger log = LoggerFactory.getLogger(DataSetReader.class);
 
-    private String title=null;
-    private File dataOriginFile=null;
-    private ArrayList<Data> water=new ArrayList<>();
-    private ArrayList<Data> pressure=new ArrayList<>();
-    private ArrayList<Data> temperature=new ArrayList<>();
+    private String title = null;
+    private File dataOriginFile = null;
+    private HashMap<Type, DataSet> dataSets = new HashMap<>(3);
+
+    {
+        for (Type type : Type.values()) {
+            dataSets.put(type, new DataSet());
+            dataSets.get(type).setReader(this);
+        }
+    }
 
     public DataSetReader(File file) throws IOException {
         setDataOriginFile(file);
@@ -49,86 +54,120 @@ public class DataSetReader {
 
     public void setDataOriginFile(File dataOriginFile) {
         this.dataOriginFile = dataOriginFile;
+
     }
 
     protected void read() throws IOException {
-        CSVReader csvReader=new CSVReader(new FileReader(getDataOriginFile()),';');
+        CSVReader csvReader = new CSVReader(new FileReader(getDataOriginFile()), ';');
         String[] line;
-        HeadersList headers=null;
-        int id=0;
-        while((line=csvReader.readNext())!=null){
-            if(line.length<=1) {                            // Title Line
-                if(line.length!=0) setTitle(line[0]);
-            }
-            else if(headers==null){                         // The first line is headers
-                headers=new HeadersList(line.length);
+        HeadersList headers = null;
+        ArrayList<Type> availableTypes = new ArrayList<>();
+        int id = 0;
+        while ((line = csvReader.readNext()) != null) {
+            if (line.length <= 1) {                            // Title Line
+                if (line.length != 0) setTitle(line[0]);
+            } else if (headers == null) {                         // The first line is headers
+                headers = new HeadersList(line.length);
                 Collections.addAll(headers, line);
+                availableTypes = headers.getAvailableTypes();
             } else {                                        // An data line
-                String date = line[headers.dateColumnId()] + " " + line[headers.hourColumnId()],
-                        format = "dd/MM/yyyy HH:mm:ss";
-                if(headers.containsPluvio()){
-                    Data data=new Data();
-                    data.setDataType(Data.Type.WATER);
-                    data.setDate(date,format);
-                    data.setValue(Double.valueOf(line[headers.pluvioColumnId()].replace(',', '.')));
-                    water.add(data);
-                } else {
-                    log.error("Unable to read line "+id,line);
+                String date = line[headers.getDateColumnId()] + " " + line[headers.getTimeColumnId()];
+                String format = "dd/MM/yyyy HH:mm:ss";
+                Data data = null;
+                for (Type t : availableTypes) {
+                    data = new Data();
+                    data.setDataType(t);
+                    data.setDate(date, format);
+                    if(line[headers.getValueColumnIdForType(t)].length()>0){
+                        data.setValue(Double.valueOf(line[headers.getValueColumnIdForType(t)].replace(',', '.')));
+                        dataSets.get(t).add(data);
+                    }
+                }
+                if (data == null) {
+                    log.error("Unable to read line " + id, line);
                 }
                 id++;
             }
         }
     }
 
-    public ArrayList<Data> getWater() {
-        return water;
+    @Deprecated
+    public DataSet getWater() {
+        return dataSets.get(Type.WATER);
     }
 
-    public ArrayList<Data> getPressure() {
-        return pressure;
+    @Deprecated
+    public DataSet getPressure() {
+        return dataSets.get(Type.PRESSURE);
     }
 
-    public ArrayList<Data> getTemperature() {
-        return temperature;
+    @Deprecated
+    public DataSet getTemperature() {
+        return dataSets.get(Type.TEMPERATURE);
     }
 
     private class HeadersList extends ArrayList<String> {
 
-        public boolean containsPluvio(){
-            for(String s:this)
-                if(s.contains("Pluvio")) return true;
+        private final HashMap<Type, String[]> headerConditions = new HashMap<>();
+
+        {
+            headerConditions.put(Type.PRESSURE, new String[]{});
+            headerConditions.put(Type.TEMPERATURE, new String[]{"Moy. : Température, °C","Max. : Température, °C","Min. : Température, °C"});
+            headerConditions.put(Type.WATER, new String[]{"Pluvio"});
+        }
+
+        private final String dateColumn = "Date";
+        private final String timeColumn = "Heure";
+
+        public ArrayList<Type> getAvailableTypes() {
+            ArrayList<Type> list = new ArrayList<>(headerConditions.size());
+            for (Type type : headerConditions.keySet())
+                if (hasType(type)) list.add(type);
+            return list;
+        }
+
+        public boolean hasType(Type t) {
+            if (!headerConditions.keySet().contains(t)) return false;
+            if (headerConditions.get(t).length > 0)
+                for (String c : this)
+                    if (c.contains(headerConditions.get(t)[0])) return true;
             return false;
         }
 
-        public int pluvioColumnId(){
-            if(!containsPluvio()) return -1;
-            for(int i=0;i<this.size();i++)
-                if(this.get(i).contains("Pluvio")) return i;
+        public int getValueColumnIdForType(Type t) {
+            if (!hasType(t)) return -1;
+            for (int i = 0; i < this.size(); i++)
+                if (this.get(i).contains(headerConditions.get(t)[0])) return i;
             return -1;
         }
 
-        public int dateColumnId(){
-            for(int i=0;i<this.size();i++)
-                if(this.get(i).contains("Date")) return i;
+        public int getDateColumnId() {
+            for (int i = 0; i < this.size(); i++)
+                if (this.get(i).contains(dateColumn)) return i;
             return -1;
         }
 
-        public int hourColumnId(){
-            for(int i=0;i<this.size();i++)
-                if(this.get(i).contains("Heure")) return i;
+        public int getTimeColumnId() {
+            for (int i = 0; i < this.size(); i++)
+                if (this.get(i).contains(timeColumn)) return i;
             return -1;
         }
 
-        public HeadersList(int i){
+        public HeadersList(int i) {
             super(i);
         }
 
     }
 
-    static public void main(String[] args){
+    static public void main(String[] args) {
         try {
-            DataSetReader reader=new DataSetReader(new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Pluvio Villebruc\\2315774_9-pluvio.txt"));
+            DataSetReader reader = new DataSetReader(new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Pluvio Villebruc\\2315774_9-tous.txt"));
+            long before= System.currentTimeMillis();
             reader.read();
+            long after= System.currentTimeMillis();
+            for(Data d:reader.getTemperature())
+                System.out.println(d);
+            System.out.println("\n\n In "+Long.toString(after-before));
         } catch (IOException e) {
             System.err.println(e.toString());
         }
