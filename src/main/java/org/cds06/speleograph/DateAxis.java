@@ -1,6 +1,8 @@
 package org.cds06.speleograph;
 
 import javafx.scene.chart.Axis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ValueAxis;
 
 import java.util.Date;
 import java.util.List;
@@ -9,60 +11,31 @@ import java.util.List;
 * This file is created by PhilippeGeek.
 * Distributed on licence GNU GPL V3.
 */
-class DateAxis extends Axis<Date> {
+class DateAxis extends ValueAxis<Number> {
+
 
     @Override
-    protected Object autoRange(double v) {
-        return null;
+    protected List<Number> calculateMinorTickMarks() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     protected void setRange(Object o, boolean b) {
-
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     protected Object getRange() {
-        return null;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public double getZeroPosition() {
-        return 0;
+    protected List<Number> calculateTickValues(double v, Object o) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public double getDisplayPosition(Date date) {
-        return 0;
-    }
-
-    @Override
-    public Date getValueForDisplay(double v) {
-        return null;
-    }
-
-    @Override
-    public boolean isValueOnAxis(Date date) {
-        return false;
-    }
-
-    @Override
-    public double toNumericValue(Date date) {
-        return 0;
-    }
-
-    @Override
-    public Date toRealValue(double v) {
-        return null;
-    }
-
-    @Override
-    protected List<Date> calculateTickValues(double v, Object o) {
-        return null;
-    }
-
-    @Override
-    protected String getTickMarkLabel(Date date) {
-        return null;
+    protected String getTickMarkLabel(Number date) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

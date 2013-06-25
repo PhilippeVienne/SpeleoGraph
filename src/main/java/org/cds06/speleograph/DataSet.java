@@ -21,7 +21,7 @@ public class DataSet extends ArrayList<Data> {
     public String getName(){
         if(getReader().getDataOriginFile()==null) return this.toString();
         String name=getReader().getDataOriginFile().getName();
-        name=name.substring(0,name.indexOf(".",name.length()-5));
+        name=name.substring(0,(name.indexOf(".",name.length()-5)!=-1?name.indexOf(".",name.length()-5):name.length()));
         if(getType()!=null) switch (getType()) {
             case PRESSURE:
                 name += " - Pression";
