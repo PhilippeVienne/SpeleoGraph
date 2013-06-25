@@ -57,10 +57,10 @@ public class AppController implements Initializable{
         try {
             DataSetReader reader = new DataSetReader(file);
             //dataLoaded.add(reader.getWater());
-            if(reader.getWater().size()>0){
-                String dataSetName = reader.getDataOriginFile().getName() + " - Water Amount";
-                dataSets.put(dataSetName,reader.getWater());
-            }
+//            if(reader.getWater().size()>0){
+//                String dataSetName = reader.getDataOriginFile().getName() + " - Water Amount";
+//                dataSets.put(dataSetName,reader.getWater());
+//            }
         } catch (Exception e) {
             log.error("Can not open file "+file.toString(),e);
         }
