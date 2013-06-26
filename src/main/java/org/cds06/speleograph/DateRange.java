@@ -1,7 +1,11 @@
 package org.cds06.speleograph;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Binding;
+import javafx.beans.binding.LongBinding;
+import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +15,14 @@ import java.util.Date;
 * Distributed on licence GNU GPL V3.
 */
 class DateRange {
+
+    private class UpdateListener<T> implements ChangeListener<T>{
+
+        @Override
+        public void changed(ObservableValue<? extends T> observableValue, T t, T t2) {
+            DateRange.this.updatePlots();
+        }
+    }
 
     public static enum Length{
         SECOND,
@@ -22,12 +34,38 @@ class DateRange {
         YEAR
     }
 
+    private IntegerProperty numberOfParts=new SimpleIntegerProperty(10);
+
     private ObjectProperty<Date> start= new SimpleObjectProperty<>();
     private ObjectProperty<Date> end=new SimpleObjectProperty<>();
+
+    private ObjectProperty<ArrayList<Date>> plotsForTheRange = new ObjectPropertyBase<ArrayList<Date>>() {
+        @Override
+        public Object getBean() {
+            return DateRange.this;
+        }
+
+        @Override
+        public String getName() {
+            return "Dates to divide the range in parts";
+        }
+    };
+
+    {
+        numberOfParts.addListener(new UpdateListener<>());
+        start.addListener(new UpdateListener<>());
+        end.addListener(new UpdateListener<>());
+    }
 
     public DateRange(Date start, Date end){
         startProperty().setValue(start);
         endProperty().setValue(end);
+        updatePlots();
+    }
+
+    private void updatePlots(){
+        if(endProperty().getValue()!=null && startProperty().getValue()!=null)
+            plotsForTheRange.setValue(divideInParts(numberOfParts.getValue()));
     }
 
     public ObjectProperty<Date> startProperty(){
@@ -38,13 +76,39 @@ class DateRange {
         return end;
     }
 
+    public ObjectProperty<ArrayList<Date>> plotsProperty(){
+        return plotsForTheRange;
+    }
+
+    public IntegerProperty partsProperty(){
+        return numberOfParts;
+    }
+
     /**
      * The length from this Range
      * @return Length in seconds
      */
     public long length(){
-        return Math.round(startProperty().getValue().getTime() - endProperty().getValue().getTime()/1000);
+        return lengthBinding.get();
     }
+
+    /**
+     * The length from this Range
+     * @return Length in seconds
+     */
+    public LongBinding lengthBinding=new LongBinding() {
+
+            {
+                super.bind(start,end);
+            }
+
+            @Override
+            protected long computeValue() {
+                if(endProperty().getValue()!=null && startProperty().getValue()!=null)
+                    return endProperty().getValue().getTime() - startProperty().getValue().getTime() ;
+                return 0;
+            }
+        };
 
     /**
      * Describe this Range by an interval.
@@ -52,17 +116,18 @@ class DateRange {
      * @return The length who best describe the Range
      */
     public Length getRangeCategory(){
-        if(length()>(60*60*24*365))
+        // NOTE: Too big values are calculated and written as long
+        if(length()>31536000000L) // Length is more than a year
             return Length.YEAR;
-        else if(length()>(60*60*24*31))
+        else if(length()>2678400000L) // Length is more than a month
             return Length.MONTH;
-        else if(length()>(60*60*24*7))
+        else if(length()>(1000*60*60*24*7))
             return Length.WEEK;
-        else if(length()>(60*60*24))
+        else if(length()>(1000*60*60*24))
             return Length.DAY;
-        else if(length()>(60*60))
+        else if(length()>(1000*60*60))
             return Length.HOUR;
-        else if(length()>(60))
+        else if(length()>(1000*60))
             return Length.MINUTE;
         else
             return Length.SECOND;
@@ -73,9 +138,10 @@ class DateRange {
      * @param parts the number of parts
      * @return The set of Date values to divide this Range
      */
-    public ArrayList<Date> divideInParts(int parts){
+    private ArrayList<Date> divideInParts(int parts){
         ArrayList<Date> plots=new ArrayList<>(parts+1);
         int partLength = Math.round(length()/parts);
+        System.out.println("Part len : "+partLength);
         for(int i=0;i<parts;i++)
             plots.add(new Date(startProperty().getValue().getTime()+partLength*i));
         plots.add(end.getValue());
