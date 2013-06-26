@@ -1,0 +1,127 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2013, Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/*******************************************************************************
+ *                                                                             *
+ * CalendarView                                                                *
+ *                                                                             *
+ ******************************************************************************/
+
+.calendar-view {
+    -fx-skin: "org.cds06.speleograph.datepicker.skin.CalendarViewSkin";
+}
+
+/* The calendar header, which contains the navigation elements. */
+.calendar-view .header {
+    -fx-background-color: linear-gradient(to bottom, derive(-fx-base, -70%), derive(-fx-base, -90%));
+    -fx-padding: 0.5em;
+}
+
+/* The calendar footer, which contains the today button. It is only visible when the today button is shown */
+.calendar-view .footer {
+    -fx-background-color: linear-gradient(to top, derive(-fx-base, -70%), derive(-fx-base, -90%));
+    -fx-padding: 0.5em;
+}
+
+/* The 3 different panes, which show the month, the year, and the decades */
+.calendar-view .month-view, .calendar-view .year-view, .calendar-view .decades-view {
+    -fx-background-color: linear-gradient(to bottom, derive(-fx-base, 80%), derive(-fx-base, 40%));
+    -fx-padding: 0;
+}
+
+/* The buttons in the header and the footer */
+.calendar-view .navigation-button, .calendar-view .today-button {
+    -fx-background-color: null;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+}
+
+.calendar-view .navigation-title {
+    -fx-background-color: null;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-radius: 4px;
+}
+
+/* don't make the title button transparent, when it is disabled in the decades view */
+.calendar-view .navigation-title:disabled {
+    -fx-opacity: 1;
+}
+
+/* The arrow for navigation. SVG is used for it. */
+.calendar-view .navigation-arrow {
+    /*padding determines the size of the arrow; This should match the design size in the SVG */
+    /*-fx-padding: 4 3.5 4 3.5;*/
+    -fx-padding: 0.333333em 0.333333em 0.333333em 0.333333em; /* 2 3.5 2 3.5 */
+    -fx-shape: "M 100 100 L 300 100 L 200 300 z";
+    -fx-background-color: #ffffff;
+}
+
+/* The cell which contain the week day names */
+.calendar-view .weekdays {
+    -fx-background-color: -fx-body-color;
+    -fx-padding: 3px;
+}
+
+.calendar-view .week-number {
+    -fx-font-size: 0.8em;
+    -fx-padding: 4px;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * DateCell                                                                    *
+ *                                                                             *
+ ******************************************************************************/
+
+.date-cell {
+    -fx-skin: "org.cds06.speleograph.datepicker.skin.DateCellSkin";
+}
+
+/* The usual button which either display the day of the current month, or the month in the year view, or the year in the decades view */
+.date-cell .button, .calendar-view .year-view-button, .calendar-view .decades-view-button {
+    -fx-background-color: null;
+    -fx-background-insets: 0, 0, 0, 0;
+    -fx-cursor: hand;
+    -fx-padding: 0.4em;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+}
+
+/* The hover state of the buttons */
+.date-cell .button:hover, .calendar-view .decades-view .button:hover, .calendar-view .year-view .button:hover {
+    -fx-background-color: -fx-cell-hover-color;
+}
+
+/* The day buttons for the previous and next month. */
+.date-cell.other-month .button {
+    -fx-opacity: 0.7;
+    -fx-font-weight: normal;
+}
+
+/* The button which shows the current day. */
+.date-cell.selected .button {
+    -fx-background-color: -fx-accent;
+}

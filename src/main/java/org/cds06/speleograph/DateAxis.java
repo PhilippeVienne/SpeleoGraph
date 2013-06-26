@@ -77,7 +77,7 @@ public class DateAxis extends Axis<Date> {
      * Maximal date for this axis.
      * Default value: {@code new Date(System.currentTimeMillis())}
      */
-    private final ObjectProperty<Date> maxDateProperty=new ObjectPropertyBase<Date>(new Date(System.currentTimeMillis())) {
+    private final ObjectProperty<Date> maxDateProperty=new ObjectPropertyBase<Date>(new Date(System.currentTimeMillis()+1000*60*60*24*7)) {
         @Override
         public Object getBean() {
             return DateAxis.this;
