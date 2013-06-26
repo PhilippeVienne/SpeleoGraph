@@ -34,6 +34,7 @@ public class DataSet extends ArrayList<Data> {
                 break;
             case TEMPERATURE:
                 name += " - Température";
+                break;
             case TEMPERATURE_MIN_MAX:
                 name += " - Température (Min/Max)";
         }

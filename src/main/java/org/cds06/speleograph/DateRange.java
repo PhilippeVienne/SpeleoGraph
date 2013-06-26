@@ -14,7 +14,7 @@ import java.util.Date;
 * This file is created by PhilippeGeek.
 * Distributed on licence GNU GPL V3.
 */
-class DateRange {
+public class DateRange {
 
     private class UpdateListener<T> implements ChangeListener<T>{
 
@@ -141,7 +141,6 @@ class DateRange {
     private ArrayList<Date> divideInParts(int parts){
         ArrayList<Date> plots=new ArrayList<>(parts+1);
         long partLength = length()/parts;
-        System.out.println("Part len : "+partLength);
         for(int i=0;i<parts;i++)
             plots.add(new Date(startProperty().getValue().getTime()+partLength*i));
         plots.add(end.getValue());

@@ -251,8 +251,6 @@ public class DateAxis extends Axis<Date> {
     @Override
     protected List<Date> calculateTickValues(double length, Object range) {
         this.length.setValue(length);
-        for(Date d:tickedDates.get())
-            System.out.println(d);
         return tickedDates.get();
     }
 
