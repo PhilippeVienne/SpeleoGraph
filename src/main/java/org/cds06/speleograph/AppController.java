@@ -1,14 +1,21 @@
 package org.cds06.speleograph;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectPropertyBase;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.Axis;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.stage.FileChooser;
@@ -26,10 +33,22 @@ public class AppController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(AppController.class);
 
     public ListView<DataSet> openedList;
+    public LineChart<Date,Number> chart;
 
-    private void process(DataSetReader dataSetReader) {
 
-    }
+    private ObservableList<XYChart.Series<Date, Number>> chartList=FXCollections.observableArrayList();
+
+    private Property<ObservableList<XYChart.Series<Date, Number>>> shownLists=new ObjectPropertyBase<ObservableList<XYChart.Series<Date, Number>>>(chartList) {
+        @Override
+        public Object getBean() {
+            return AppController.this;
+        }
+
+        @Override
+        public String getName() {
+            return "Shown Lists";
+        }
+    };
 
     public void open() {
         FileChooser fileChooser = new FileChooser();
@@ -71,13 +90,17 @@ public class AppController implements Initializable {
 
     private ArrayList<File> openedFiles = new ArrayList<>();
 
+    private ObservableMap<XYChart.Series<Date,Number>,ObservableBooleanValue> chartSeries=FXCollections.observableHashMap();
+
     private ObservableList<DataSet> data = FXCollections.observableArrayList();
 
     {
         data.addListener(new ListChangeListener<DataSet>() {
             @Override
             public void onChanged(Change<? extends DataSet> change) {
-
+               for(DataSet set:change.getList()){
+                    chartSeries.put(set.getSeriesForChart(),set.shownProperty());
+               }
             }
         });
     }
@@ -94,12 +117,18 @@ public class AppController implements Initializable {
                         new Callback<DataSet, ObservableValue<Boolean>>() {
                             @Override
                             public ObservableValue<Boolean> call(final DataSet datas) {
-                                ObservableValue<Boolean> booleanObservableValue=datas.shownProperty();
+                                final BooleanProperty booleanObservableValue=datas.shownProperty();
                                 if(!datas.observed) {
                                     booleanObservableValue.addListener(new ChangeListener<Boolean>() {
                                         @Override
                                         public void changed(ObservableValue<? extends Boolean> observableValue, Boolean before, Boolean after) {
-                                            update(datas,after);
+                                            if(before){
+                                                // We have to hide the series
+                                                hide((DataSet)booleanObservableValue.getBean());
+                                            }else{
+                                                // We have to show the series
+                                                show((DataSet) booleanObservableValue.getBean());
+                                            }
                                         }
                                     });
                                     datas.observed = true;
@@ -121,10 +150,32 @@ public class AppController implements Initializable {
                             }
                         }
                 ));
+        chart.setAnimated(false);
     }
 
-    private void update(DataSet data, Boolean after) {
+    private void hide(DataSet dataSet) {
+        XYChart.Series<Date,Number> linkedSeries = null;
+        for(XYChart.Series series:chartSeries.keySet()){
+            if(chartSeries.get(series)==dataSet.shownProperty())
+                linkedSeries=series;
+        }
+        chart.getData().remove(linkedSeries);
+    }
 
+    private void show(DataSet dataSet) {
+        XYChart.Series<Date,Number> linkedSeries = null;
+        for(XYChart.Series series:chartSeries.keySet()){
+            if(chartSeries.get(series)==dataSet.shownProperty()) {
+                linkedSeries = series;
+            }
+        }
+        if(linkedSeries==null) return;
+        if(chart.getData().size()<=0) {
+            ((DateAxis) chart.getXAxis()).setMinDate(dataSet.getDateRange().startProperty().get());
+            ((DateAxis) chart.getXAxis()).setMaxDate(dataSet.getDateRange().endProperty().get());
+        }
+        chart.getData().add(linkedSeries);
+        chart.layout();
     }
 
 }

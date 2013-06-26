@@ -1,169 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.collections.*?>
+<?import javafx.geometry.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.*?>
-<AnchorPane fx:controller="org.cds06.speleograph.AppController" id="AnchorPane" maxHeight="-Infinity"
-            maxWidth="-Infinity" minHeight="300.0" minWidth="500.0" prefHeight="400.0" prefWidth="600.0"
-            xmlns:fx="http://javafx.com/fxml">
-    <children>
-        <MenuBar prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <menus>
-                <Menu mnemonicParsing="false" text="File">
-                    <items>
-                        <MenuItem mnemonicParsing="false" onAction="#open" text="Open"/>
-                        <MenuItem mnemonicParsing="false" onAction="#close" text="Close"/>
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
-        <BorderPane minHeight="374.0" minWidth="600.0" prefHeight="374.0" prefWidth="600.0"
-                    AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                    AnchorPane.topAnchor="24.0">
-            <bottom>
-                <HBox prefHeight="100.0" prefWidth="200.0">
-                    <children>
-                        <VBox prefHeight="100.0" prefWidth="300.0" HBox.hgrow="NEVER">
-                            <children>
-                                <Label text="Start on :" VBox.vgrow="NEVER">
-                                    <VBox.margin>
-                                        <Insets bottom="10.0" left="20.0" top="5.0" fx:id="x1"/>
-                                    </VBox.margin>
-                                </Label>
-                                <HBox prefHeight="-1.0" prefWidth="276.0" VBox.vgrow="SOMETIMES">
-                                    <children>
-                                        <ChoiceBox fx:id="startDay" prefWidth="48.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                        <ChoiceBox fx:id="startMonth" prefWidth="87.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                        <ChoiceBox fx:id="startYear" prefWidth="46.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                        <ChoiceBox fx:id="startHour" prefWidth="46.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                        <ChoiceBox fx:id="startMinutes" prefWidth="46.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                    </children>
-                                    <VBox.margin>
-                                        <Insets left="10.0" fx:id="x2"/>
-                                    </VBox.margin>
-                                </HBox>
-                            </children>
-                        </VBox>
-                        <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="SOMETIMES">
-                            <children>
-                                <Label text="End on :" VBox.margin="$x1"/>
-                                <HBox prefHeight="-1.0" prefWidth="276.0" VBox.margin="$x2" VBox.vgrow="ALWAYS">
-                                    <children>
-                                        <ChoiceBox fx:id="endDay" prefWidth="48.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                        <ChoiceBox fx:id="endMonth" prefWidth="87.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                        <ChoiceBox fx:id="endYear" prefWidth="46.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                        <ChoiceBox fx:id="endHour" prefWidth="46.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                        <ChoiceBox fx:id="endMinutes" prefWidth="46.0">
-                                            <items>
-                                                <FXCollections fx:factory="observableArrayList">
-                                                    <String fx:value="Item 1"/>
-                                                    <String fx:value="Item 2"/>
-                                                    <String fx:value="Item 3"/>
-                                                </FXCollections>
-                                            </items>
-                                        </ChoiceBox>
-                                    </children>
-                                </HBox>
-                            </children>
-                        </VBox>
-                    </children>
-                </HBox>
-            </bottom>
-            <center>
-                <LineChart id="LineChart" fx:id="graph" alternativeColumnFillVisible="true" createSymbols="true"
-                           horizontalGridLinesVisible="true" legendSide="LEFT" legendVisible="true"
-                           verticalGridLinesVisible="true" verticalZeroLineVisible="true">
-                    <xAxis>
-                        <CategoryAxis side="BOTTOM"/>
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis side="LEFT"/>
-                    </yAxis>
-                </LineChart>
-            </center>
-            <right>
-                <ListView fx:id="openedList" prefHeight="200.0" prefWidth="200.0"/>
-            </right>
-            <top>
-                <ToolBar/>
-            </top>
-        </BorderPane>
-    </children>
+<?import org.cds06.speleograph.*?>
+<?import org.cds06.speleograph.DateAxis?>
+<?scenebuilder-classpath-element ../../../../target/classes?>
+<?scenebuilder-classpath-element C:/Users/PhilippeGeek/.m2/repository/org/jfxtras/jfxtras-labs/2.2-r5/jfxtras-labs-2.2-r5.jar?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="500.0" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="org.cds06.speleograph.AppController">
+  <children>
+    <BorderPane minHeight="374.0" minWidth="600.0" prefHeight="374.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <center>
+        <SplitPane dividerPositions="0.5919732441471572" focusTraversable="true" mouseTransparent="false" pickOnBounds="false" prefHeight="160.0" prefWidth="200.0" visible="true">
+          <items>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+              <children>
+                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <children>
+                    <LineChart fx:id="chart" alternativeColumnFillVisible="true" createSymbols="false" horizontalGridLinesVisible="true" legendSide="BOTTOM" legendVisible="true" prefHeight="367.0" prefWidth="351.0" verticalGridLinesVisible="true" verticalZeroLineVisible="true" VBox.vgrow="ALWAYS">
+                      <xAxis>
+                        <DateAxis side="BOTTOM" />
+                      </xAxis>
+                      <yAxis>
+                        <NumberAxis side="LEFT" upperBound="30.0" />
+                      </yAxis>
+                    </LineChart>
+                  </children>
+                </VBox>
+              </children>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+              <children>
+                <ListView fx:id="openedList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              </children>
+            </AnchorPane>
+          </items>
+        </SplitPane>
+      </center>
+      <top>
+        <ToolBar>
+          <items>
+            <Button mnemonicParsing="false" onAction="#open" text="Ouvrir un fichier" />
+          </items>
+        </ToolBar>
+      </top>
+    </BorderPane>
+  </children>
 </AnchorPane>

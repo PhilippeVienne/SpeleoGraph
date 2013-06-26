@@ -1,6 +1,9 @@
 package org.cds06.speleograph;
 
+import javafx.beans.binding.Binding;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.chart.XYChart;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,6 +85,15 @@ public class DataSet extends ArrayList<Data> {
             if(d.getDate().after(newer)) newer=d.getDate();
         }
         return new DateRange(older,newer);
+    }
+
+    public XYChart.Series<Date,Number> getSeriesForChart(){
+        XYChart.Series<Date,Number> series=new XYChart.Series<>();
+        orderByDate(); // Be sure to order by date
+        series.setName(getName());
+        for(Data data:this)
+            series.getData().add(new XYChart.Data<Date, Number>(data.getDate(),data.getValue(),data));
+        return series;
     }
 
 }

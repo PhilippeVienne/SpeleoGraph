@@ -140,7 +140,7 @@ class DateRange {
      */
     private ArrayList<Date> divideInParts(int parts){
         ArrayList<Date> plots=new ArrayList<>(parts+1);
-        int partLength = Math.round(length()/parts);
+        long partLength = length()/parts;
         System.out.println("Part len : "+partLength);
         for(int i=0;i<parts;i++)
             plots.add(new Date(startProperty().getValue().getTime()+partLength*i));
