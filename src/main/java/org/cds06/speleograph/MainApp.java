@@ -22,16 +22,16 @@ public class MainApp extends Application {
 
         log.info("Starting " + NAME + " application");
 
-        String fxmlFile = "/fxml/App.fxml";
+        String fxmlFile = "App.fxml";
         log.debug("Loading FXML for main view from: {}", fxmlFile);
         FXMLLoader loader = new FXMLLoader();
         Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
 
         log.debug("Showing JFX scene");
         Scene scene = new Scene(rootNode, 500, 400);
-        scene.getStylesheets().add("/styles/styles.css");
+        scene.getStylesheets().add("/org/cds06/speleograph/styles.css");
 
-        stage.setTitle("Hello JavaFX and Maven");
+        stage.setTitle(MainApp.NAME);
         stage.setScene(scene);
         stage.show();
     }

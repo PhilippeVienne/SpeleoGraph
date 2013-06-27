@@ -5,6 +5,9 @@
     <option name="id" value="1354983814436" />
     <option name="name" value="default" />
   </component>
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
   <component name="IdProvider" IDEtalkID="2CB5F26418251438BEDDEA79737D58B6" />
   <component name="MavenProjectsManager">
     <option name="originalFiles">
@@ -13,7 +16,10 @@
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="Java SDK 1.7.0_21 (Oracle) (64bit)" project-jdk-type="JavaSDK">
+  <component name="ProjectResources">
+    <resource url="http://jakarta.apache.org/log4j/" location="$PROJECT_DIR$/src/main/resources/log4j.dtd" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true" project-jdk-name="Java SDK 1.7.0_25 (Oracle) (64bit)" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
 </project>

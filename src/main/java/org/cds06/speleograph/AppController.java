@@ -1,9 +1,6 @@
 package org.cds06.speleograph;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectPropertyBase;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
@@ -11,10 +8,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -27,35 +23,64 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.ResourceBundle;
 
 public class AppController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(AppController.class);
 
+    /**
+     * List of opened files.
+     * <p>This variable is used to know which files are already opened and parsed to not reopen them.</p>
+     */
+    private ArrayList<File> openedFiles = new ArrayList<>();
+
+    /**
+     * Current DataSets opened in this application.
+     * <p>When a file is parsed, all DataSet read from it come here.</p>
+     */
+    private ObservableList<DataSet> data = FXCollections.observableArrayList();
+
+    /**
+     * Series which can be shown.
+     * <p>Every series is associated to a boolean which determine if a Series is currently shown on graph area.</p>
+     */
+    private ObservableMap<XYChart.Series<Date, Number>, ObservableBooleanValue> chartSeries = FXCollections.observableHashMap();
+
+    /**
+     * List of opened dataSets.
+     */
+    @FXML
     public ListView<DataSet> openedList;
-    public LineChart<Date,Number> chart;
 
+    /**
+     * The actual chart area.
+     */
+    @FXML
+    public LineChart<Date, Number> chart;
 
-    private ObservableList<XYChart.Series<Date, Number>> chartList=FXCollections.observableArrayList();
-
-    private Property<ObservableList<XYChart.Series<Date, Number>>> shownLists=new ObjectPropertyBase<ObservableList<XYChart.Series<Date, Number>>>(chartList) {
-        @Override
-        public Object getBean() {
-            return AppController.this;
-        }
-
-        @Override
-        public String getName() {
-            return "Shown Lists";
-        }
-    };
-
+    /**
+     * Open a new File in the Application.
+     * <p>This function is the entry point if a button want to open a new file</p>
+     * <p>
+     * In this function, we do the following :
+     * <ul>
+     * <li>Ask to the user a .csv or .txt file to open</li>
+     * <li>Check if it's not already opened</li>
+     * <li>Convert it if it's a Reefnet File</li>
+     * <li>Read the file</li>
+     * <li>Add the read data to the {@link #data}</li>
+     * <li>Add the file to the {@link #openedList}</li>
+     * </ul>
+     * </p>
+     */
+    @FXML
     public void open() {
         FileChooser fileChooser = new FileChooser();
 
         //Set extension filter
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files (*.csv,*.txt)", "*.csv", "*.txt"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("ReefNet CSV files (*.csv,*.txt)", "*.csv", "*.txt"));
 
         // For tests only
         fileChooser.setInitialDirectory(new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Pluvio Villebruc"));
@@ -88,26 +113,25 @@ public class AppController implements Initializable {
 
     }
 
-    private ArrayList<File> openedFiles = new ArrayList<>();
-
-    private ObservableMap<XYChart.Series<Date,Number>,ObservableBooleanValue> chartSeries=FXCollections.observableHashMap();
-
-    private ObservableList<DataSet> data = FXCollections.observableArrayList();
-
-    {
+    {   // Add listener to create the Chart Series when a new data is added.
         data.addListener(new ListChangeListener<DataSet>() {
             @Override
             public void onChanged(Change<? extends DataSet> change) {
-               for(DataSet set:change.getList()){
-                    chartSeries.put(set.getSeriesForChart(),set.shownProperty());
-               }
+                for (DataSet set : change.getList()) {
+                    chartSeries.put(set.getSeriesForChart(), set.shownProperty());
+                }
             }
         });
     }
 
-    public void close() {
-
-    }
+//    Not used :
+//    /**
+//     * Close the application.
+//     */
+//    @FXML
+//    public void close() {
+//        System.exit(0); // A little much violent
+//    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -117,15 +141,15 @@ public class AppController implements Initializable {
                         new Callback<DataSet, ObservableValue<Boolean>>() {
                             @Override
                             public ObservableValue<Boolean> call(final DataSet datas) {
-                                final BooleanProperty booleanObservableValue=datas.shownProperty();
-                                if(!datas.observed) {
+                                final BooleanProperty booleanObservableValue = datas.shownProperty();
+                                if (!datas.observed) {
                                     booleanObservableValue.addListener(new ChangeListener<Boolean>() {
                                         @Override
                                         public void changed(ObservableValue<? extends Boolean> observableValue, Boolean before, Boolean after) {
-                                            if(before){
+                                            if (before) {
                                                 // We have to hide the series
-                                                hide((DataSet)booleanObservableValue.getBean());
-                                            }else{
+                                                hide((DataSet) booleanObservableValue.getBean());
+                                            } else {
                                                 // We have to show the series
                                                 show((DataSet) booleanObservableValue.getBean());
                                             }
@@ -144,33 +168,44 @@ public class AppController implements Initializable {
 
                             @Override
                             public DataSet fromString(String s) {
-                                for(DataSet d:data)
-                                    if(d.getName().equals(s)) return d;
+                                for (DataSet d : data)
+                                    if (d.getName().equals(s)) return d;
                                 return null;
                             }
                         }
                 ));
-        chart.setAnimated(false);
     }
 
+    /**
+     * Hide a DataSet on the chart.
+     *
+     * @param dataSet The dataSet to hide
+     */
     private void hide(DataSet dataSet) {
-        XYChart.Series<Date,Number> linkedSeries = null;
-        for(XYChart.Series series:chartSeries.keySet()){
-            if(chartSeries.get(series)==dataSet.shownProperty())
-                linkedSeries=series;
+        XYChart.Series<Date, Number> linkedSeries = null;
+        for (XYChart.Series<Date, Number> series : chartSeries.keySet()) {
+            if (chartSeries.get(series) == dataSet.shownProperty())
+                linkedSeries = series;
         }
         chart.getData().remove(linkedSeries);
     }
 
+    /**
+     * Show a DataSet on the chart.
+     * <p>If the user has not defined a {@link DateRange} and the DataSet will be the onlyone on the graph the DateRange
+     * is defined to be the minimal and maximal date from the DataSet</p>
+     *
+     * @param dataSet The dataSet to show
+     */
     private void show(DataSet dataSet) {
-        XYChart.Series<Date,Number> linkedSeries = null;
-        for(XYChart.Series series:chartSeries.keySet()){
-            if(chartSeries.get(series)==dataSet.shownProperty()) {
+        XYChart.Series<Date, Number> linkedSeries = null;
+        for (XYChart.Series<Date, Number> series : chartSeries.keySet()) {
+            if (chartSeries.get(series) == dataSet.shownProperty()) {
                 linkedSeries = series;
             }
         }
-        if(linkedSeries==null) return;
-        if(chart.getData().size()<=0) {
+        if (linkedSeries == null) return;
+        if (chart.getData().size() <= 0) {
             ((DateAxis) chart.getXAxis()).setMinDate(dataSet.getDateRange().startProperty().get());
             ((DateAxis) chart.getXAxis()).setMaxDate(dataSet.getDateRange().endProperty().get());
         }
