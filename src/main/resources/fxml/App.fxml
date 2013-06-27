@@ -15,6 +15,7 @@
 <?scenebuilder-classpath-element ../../../../target/classes?>
 <?scenebuilder-classpath-element C:/Users/PhilippeGeek/.m2/repository/org/jfxtras/jfxtras-labs/2.2-r5/jfxtras-labs-2.2-r5.jar?>
 
+<?import org.cds06.speleograph.datepicker.DatePicker?>
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="500.0" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="org.cds06.speleograph.AppController">
   <children>
     <BorderPane minHeight="374.0" minWidth="600.0" prefHeight="374.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -52,6 +53,11 @@
           </items>
         </ToolBar>
       </top>
+      <bottom>
+          <HBox>
+              <DatePicker/>
+          </HBox>
+      </bottom>
     </BorderPane>
   </children>
 </AnchorPane>

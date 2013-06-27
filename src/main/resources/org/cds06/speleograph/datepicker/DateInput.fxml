@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" fx:controller="org.cds06.speleograph.datepicker.DateInput" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="313.0" xmlns:fx="http://javafx.com/fxml">
+  <children>
+    <HBox prefHeight="24.0" prefWidth="313.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <ChoiceBox fx:id="day" prefWidth="45.0"/>
+        <ChoiceBox fx:id="month" prefWidth="111.5" HBox.hgrow="ALWAYS"/>
+        <ChoiceBox fx:id="year" prefWidth="62.5"/>
+        <ChoiceBox fx:id="hour" prefWidth="45.0"/>
+        <ChoiceBox fx:id="minute" prefWidth="45.0"/>
+      </children>
+    </HBox>
+  </children>
+</AnchorPane>
