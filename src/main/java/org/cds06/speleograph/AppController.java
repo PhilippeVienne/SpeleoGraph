@@ -8,21 +8,32 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import org.cds06.speleograph.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -213,4 +224,50 @@ public class AppController implements Initializable {
         chart.layout();
     }
 
+    /**
+     * Open a popup to let the user define a start point for DateAxis.
+     */
+    @FXML
+    public void setStart(ActionEvent event) {
+        final Stage stage = new Stage();
+
+        VBox parent = new VBox();
+        parent.setSpacing(5);
+        parent.setPadding(new Insets(5));
+
+        final DatePicker datePicker = new DatePicker();
+        datePicker.setDateFormat(new SimpleDateFormat("dd/MM/yyyy"));
+        datePicker.setShowWeeks(false);
+        parent.getChildren().add(datePicker);
+
+        final Button button = new Button("Valider");
+        button.setMaxWidth(Double.MAX_VALUE);
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                LoggerFactory.getLogger(AppController.class).debug("Set start date: " + datePicker.getValue());
+                ((DateAxis) chart.getXAxis()).setMinDate(datePicker.getValue());
+                chart.layout();
+                stage.close();
+            }
+        });
+        parent.getChildren().add(button);
+
+        Scene scene = new Scene(parent);
+
+        stage.setScene(scene);
+        stage.setTitle("Date selection");
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(
+                ((Node) event.getSource()).getScene().getWindow());
+        stage.show();
+    }
+
+    /**
+     * Open a popup to let the user define a start point for DateAxis.
+     */
+    @FXML
+    public void setEnd() {
+
+    }
 }
