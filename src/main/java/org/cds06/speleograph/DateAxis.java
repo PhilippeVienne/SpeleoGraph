@@ -1,28 +1,27 @@
 package org.cds06.speleograph;
 
-import javafx.application.Application;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.*;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Scene;
 import javafx.scene.chart.Axis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.stage.Stage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 /**
-* This file is created by PhilippeGeek.
-* Distributed on licence GNU GPL V3.
-*/
+ * DateAxis for JavaFX Charts.
+ * <p>This class was written to create an axis of date, with a minimal and maximal date shown.</p>
+ * @see DateRange
+ * @author Philippe VIENNE
+ * @since 1.0
+ */
 public class DateAxis extends Axis<Date> {
 
     //
@@ -33,17 +32,7 @@ public class DateAxis extends Axis<Date> {
      * Minimal date for this axis.
      * Default value: {@code new Date(System.currentTimeMillis())}
      */
-    private final ObjectProperty<Date> minDateProperty=new ObjectPropertyBase<Date>(new Date(System.currentTimeMillis())) {
-        @Override
-        public Object getBean() {
-            return DateAxis.this;
-        }
-
-        @Override
-        public String getName() {
-            return "Minimal Date shown on the graphic";
-        }
-    };
+    private final ObjectProperty<Date> minDateProperty=new SimpleObjectProperty<>(this,"max date",new Date(System.currentTimeMillis()));
 
     /**
      * Property accessor for minimal date displayed on this axis.
@@ -77,17 +66,7 @@ public class DateAxis extends Axis<Date> {
      * Maximal date for this axis.
      * Default value: {@code new Date(System.currentTimeMillis())}
      */
-    private final ObjectProperty<Date> maxDateProperty=new ObjectPropertyBase<Date>(new Date(System.currentTimeMillis())) {
-        @Override
-        public Object getBean() {
-            return DateAxis.this;
-        }
-
-        @Override
-        public String getName() {
-            return "Maximal Date shown on the graphic";
-        }
-    };
+    private final ObjectProperty<Date> maxDateProperty=new SimpleObjectProperty<>(this,"max date",new Date(System.currentTimeMillis()+604800000L));
 
     /**
      * Property accessor for maximal date displayed on this axis.
@@ -129,17 +108,7 @@ public class DateAxis extends Axis<Date> {
      * @see #minDateProperty()
      * @see #maxDateProperty()
      */
-    private ObjectProperty<DateRange> rangeProperty=new ObjectPropertyBase<DateRange>(new DateRange(getMinDate(),getMaxDate())) {
-        @Override
-        public Object getBean() {
-            return DateAxis.this;
-        }
-
-        @Override
-        public String getName() {
-            return "Range Value";
-        }
-    };
+    private ObjectProperty<DateRange> rangeProperty=new SimpleObjectProperty<>(this,"range",new DateRange(getMinDate(),getMaxDate()));
 
     /**
      * Property for the actual range shown.
@@ -165,17 +134,7 @@ public class DateAxis extends Axis<Date> {
         });
     }
 
-    private  ObjectProperty<ArrayList<Date>> tickedDates=new ObjectPropertyBase<ArrayList<Date>>() {
-        @Override
-        public Object getBean() {
-            return DateAxis.this;
-        }
-
-        @Override
-        public String getName() {
-            return "Ticked dates list";
-        }
-    };
+    private  ObjectProperty<ArrayList<Date>> tickedDates=new SimpleObjectProperty<>(this,"ticked dates list");
 
     {
         tickedDates.bindBidirectional(rangeProperty().getValue().plotsProperty());
@@ -256,9 +215,19 @@ public class DateAxis extends Axis<Date> {
 
     @Override
     protected String getTickMarkLabel(Date date) {
-        DateFormat dateFormat=new SimpleDateFormat();
+        DateFormat dateFormat;
         switch(rangeProperty().get().getRangeCategory()){
-
+            case SECOND:
+            case MINUTE:
+                dateFormat=new SimpleDateFormat("mm:ss");
+                break;
+            case HOUR:
+            case DAY:
+                dateFormat=new SimpleDateFormat("hh:mm");
+                break;
+            case WEEK:
+            case MONTH:
+            case YEAR:
             default:
                 dateFormat=new SimpleDateFormat("dd/MM/yy");
         }
