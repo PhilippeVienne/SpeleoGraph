@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a23db210-e12a-445b-aa1e-172da5c5360a" name="Default" comment="Display a PopUp to select a start date">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/DateSelector.fxml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/datepicker/DateSelector.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml" afterPath="$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/datepicker/CalendarView.java" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/datepicker/CalendarView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/PhilippeGeek.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/PhilippeGeek.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+    <list default="true" id="a23db210-e12a-445b-aa1e-172da5c5360a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SpeleoGraph.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372354958158" ignored="false" />
+    <file path="/Dummy.txt" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372355042225" ignored="false" />
     <file path="/a.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372320009719" ignored="false" />
     <file path="/MainApp.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372320448078" ignored="false" />
     <file path="/AppController.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372345660831" ignored="false" />
@@ -104,7 +97,7 @@
       <file leaf-file-name="CalendarView.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/datepicker/CalendarView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="116" column="7" selection-start="3703" selection-end="3848" vertical-scroll-proportion="0.39459458">
+            <state line="112" column="22" selection-start="3729" selection-end="3729" vertical-scroll-proportion="0.27207208">
               <folding>
                 <element signature="e#0#12954#0" expanded="true" />
               </folding>
@@ -809,7 +802,11 @@
       <created>1372338019367</created>
       <updated>1372338019367</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Display a PopUp to select a start date">
+      <created>1372355049851</created>
+      <updated>1372355049851</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1032,7 +1029,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/datepicker/CalendarView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="116" column="7" selection-start="3703" selection-end="3848" vertical-scroll-proportion="0.39459458">
+        <state line="112" column="22" selection-start="3729" selection-end="3729" vertical-scroll-proportion="0.27207208">
           <folding>
             <element signature="e#0#12954#0" expanded="true" />
           </folding>
