@@ -1,29 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a23db210-e12a-445b-aa1e-172da5c5360a" name="Default" comment="Add all documentation comments (long work)">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/log4j.dtd" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/datepicker/package-info.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/styles.css" />
-      <change type="DELETED" beforePath="H:\Dev\Projects\SpeleoGraph\src\main\resources\images\background.jpg" afterPath="" />
-      <change type="DELETED" beforePath="H:\Dev\Projects\SpeleoGraph\src\main\resources\org.cds06.speleograph\App.fxml" afterPath="" />
-      <change type="DELETED" beforePath="H:\Dev\Projects\SpeleoGraph\src\main\resources\org.cds06.speleograph\styles.css" afterPath="" />
-      <change type="DELETED" beforePath="H:\Dev\Projects\SpeleoGraph\src\main\resources\org\cds06\speleograph\datepicker\DateInput.fxml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSet.java" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSetReader.java" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSetReader.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateAxis.java" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateAxis.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateRange.java" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateRange.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/MainApp.java" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/MainApp.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/ReefnetFileConverter.java" afterPath="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/ReefnetFileConverter.java" />
+    <list default="true" id="a23db210-e12a-445b-aa1e-172da5c5360a" name="Default" comment="">
+      <change type="DELETED" beforePath="H:\Dev\Projects\SpeleoGraph\src\main\resources\fxml\App.fxml" afterPath="" />
+      <change type="DELETED" beforePath="H:\Dev\Projects\SpeleoGraph\src\main\resources\styles\styles.css" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/log4j.xml" afterPath="$PROJECT_DIR$/src/main/resources/log4j.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SpeleoGraph.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337840166" ignored="false" />
+    <file path="/Dummy.txt" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337934545" ignored="false" />
     <file path="/a.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372320009719" ignored="false" />
     <file path="/MainApp.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372320448078" ignored="false" />
     <file path="/AppController.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337757669" ignored="false" />
@@ -34,7 +20,7 @@
     <file path="/DateRange.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372335561858" ignored="false" />
     <file path="/package-info.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372334893499" ignored="false" />
     <file path="/fragment.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372335817250" ignored="false" />
-    <file path="/log4j.xml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372336187848" ignored="false" />
+    <file path="/log4j.xml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337980121" ignored="false" />
     <file path="/ReefnetFileConverter.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337127399" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -96,19 +82,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="log4j.xml" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="log4j.xml" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/resources/log4j.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="34" selection-start="247" selection-end="247" vertical-scroll-proportion="0.0">
+            <state line="6" column="31" selection-start="263" selection-end="263" vertical-scroll-proportion="0.17708333">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="App.fxml" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="App.fxml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="54" column="99" selection-start="3448" selection-end="3448" vertical-scroll-proportion="0.5277778">
+            <state line="54" column="91" selection-start="3076" selection-end="3076" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -215,11 +201,11 @@
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/MainApp.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateAxis.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/ReefnetFileConverter.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/log4j.xml" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSetReader.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateRange.java" />
         <option value="$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml" />
+        <option value="$PROJECT_DIR$/src/main/resources/log4j.xml" />
       </list>
     </option>
   </component>
@@ -791,6 +777,11 @@
       <created>1372319983503</created>
       <updated>1372319983503</updated>
     </task>
+    <task id="LOCAL-00001" summary="Add all documentation comments (long work)">
+      <created>1372337942818</created>
+      <updated>1372337942818</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -808,7 +799,7 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32962137" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32962137" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -817,7 +808,7 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Log4jMonitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.6703786" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32962137" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32962137" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Regex" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -987,13 +978,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/log4j.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="34" selection-start="247" selection-end="247" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSetReader.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="191" column="24" selection-start="6784" selection-end="6784" vertical-scroll-proportion="0.0">
@@ -1021,7 +1005,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="54" column="99" selection-start="3448" selection-end="3448" vertical-scroll-proportion="0.5277778">
+        <state line="54" column="91" selection-start="3076" selection-end="3076" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/log4j.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="31" selection-start="263" selection-end="263" vertical-scroll-proportion="0.17708333">
           <folding />
         </state>
       </provider>
