@@ -16,8 +16,8 @@ public class SpeleoChart extends XYChart<Date, Number> {
      * plot background and plot area that includes vertical and horizontal grid
      * lines and fills, are added.
      *
-     * @param xAxis X Axis for this XY chart
-     * @param yAxis Y Axis for this XY chart
+     * @param dateAxis   X Axis for this XY chart
+     * @param numberAxis Y Axis for this XY chart
      */
     public SpeleoChart(Axis<Date> dateAxis, Axis<Number> numberAxis) {
         super(dateAxis, numberAxis);
