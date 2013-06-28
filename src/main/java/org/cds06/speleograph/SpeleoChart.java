@@ -1,7 +1,13 @@
 package org.cds06.speleograph;
 
+import javafx.beans.property.SimpleMapProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.chart.Axis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import org.apache.log4j.Logger;
 
 import java.util.Date;
 
@@ -9,7 +15,45 @@ import java.util.Date;
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class SpeleoChart extends XYChart<Date, Number> {
+public class SpeleoChart extends LineChart<Date, Number> {
+
+    private static Logger log = Logger.getLogger(SpeleoChart.class);
+
+    final public class SpeleoDataMap extends SimpleMapProperty<DataSet, SpeleoChart.Series<Date, Number>> {
+
+        public SpeleoDataMap() {
+            super(SpeleoChart.this, "Data Map for the chart", FXCollections.<DataSet, Series<Date, Number>>observableHashMap());
+        }
+
+        @Override
+        public Series<Date, Number> put(DataSet data, Series<Date, Number> s) {
+            if (s == null) {
+                return put(data, SpeleoChart.generateSeriesFor(data));
+            }
+            return super.put(data, s);
+        }
+
+    }
+
+    public SpeleoDataMap dataMap = new SpeleoDataMap();
+
+    {
+        dataMap.addListener(new MapChangeListener<DataSet, Series<Date, Number>>() {
+            @Override
+            public void onChanged(Change<? extends DataSet, ? extends Series<Date, Number>> change) {
+                if (change.wasAdded() && change.getValueAdded() != null) {
+                    log.debug("DataSet '" + change.getKey().getName() + "' was added with a non-null Series");
+                    if (!SpeleoChart.this.getData().contains(change.getValueAdded()))
+                        SpeleoChart.this.getData().add(change.getValueAdded());
+                } else if (change.wasRemoved()) {
+                    log.debug("DataSet '" + change.getKey().getName() + "' was removed");
+                    if (SpeleoChart.this.getData().contains(change.getValueRemoved()))
+                        SpeleoChart.this.getData().remove(change.getValueRemoved());
+                    updateLegend();
+                }
+            }
+        });
+    }
 
     /**
      * Constructs a XYChart given the two axes. The initial content for the chart
@@ -21,6 +65,19 @@ public class SpeleoChart extends XYChart<Date, Number> {
      */
     public SpeleoChart(Axis<Date> dateAxis, Axis<Number> numberAxis) {
         super(dateAxis, numberAxis);
+        dataProperty().setValue(FXCollections.<Series<Date, Number>>observableArrayList());
+        dataProperty().getValue();
+        setAnimated(false);
+        dateAxis.setAnimated(false);
+        numberAxis.setAnimated(false);
+    }
+
+    public SpeleoChart(Axis<Date> xAxis, Axis<Number> yAxis, ObservableList<Series<Date, Number>> data) {
+        super(xAxis, yAxis, data);
+    }
+
+    public SpeleoChart() {
+        super(new DateAxis(), new NumberAxis());
     }
 
     /**
@@ -34,7 +91,7 @@ public class SpeleoChart extends XYChart<Date, Number> {
      */
     @Override
     protected void dataItemAdded(Series<Date, Number> series, int itemIndex, Data<Date, Number> item) {
-
+        super.dataItemAdded(series, itemIndex, item);
     }
 
     /**
@@ -47,7 +104,7 @@ public class SpeleoChart extends XYChart<Date, Number> {
      */
     @Override
     protected void dataItemRemoved(Data<Date, Number> item, Series<Date, Number> series) {
-
+        super.dataItemRemoved(item, series);
     }
 
     /**
@@ -57,7 +114,7 @@ public class SpeleoChart extends XYChart<Date, Number> {
      */
     @Override
     protected void dataItemChanged(Data<Date, Number> item) {
-
+        super.dataItemChanged(item);
     }
 
     /**
@@ -71,7 +128,8 @@ public class SpeleoChart extends XYChart<Date, Number> {
      */
     @Override
     protected void seriesAdded(Series<Date, Number> series, int seriesIndex) {
-
+        super.seriesAdded(series, seriesIndex);
+        log.debug("Oh, a new Data has been added :-)");
     }
 
     /**
@@ -83,7 +141,8 @@ public class SpeleoChart extends XYChart<Date, Number> {
      */
     @Override
     protected void seriesRemoved(Series<Date, Number> series) {
-
+        super.seriesRemoved(series);
+        log.debug("Oh no ! a Data has been removed :-(");
     }
 
     /**
@@ -93,6 +152,28 @@ public class SpeleoChart extends XYChart<Date, Number> {
      */
     @Override
     protected void layoutPlotChildren() {
+        super.layoutPlotChildren();
+    }
 
+    public void refresh() {
+        getXAxis().requestAxisLayout();
+        getYAxis().requestAxisLayout();
+        layoutPlotChildren();
+        requestChartLayout();
+    }
+
+    /**
+     * Generate series for a DataSet.
+     *
+     * @param data The DataSet to use to generate the series
+     * @return The series.
+     */
+    private static Series<Date, Number> generateSeriesFor(DataSet data) {
+        Series<Date, Number> s = new Series<>();
+        s.setName(data.getName());
+        for (org.cds06.speleograph.Data d : data) {
+            s.getData().add(new Data<Date, Number>(d.getDate(), d.getValue(), data));
+        }
+        return s;
     }
 }

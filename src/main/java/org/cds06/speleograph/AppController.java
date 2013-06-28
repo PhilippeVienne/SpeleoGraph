@@ -1,6 +1,6 @@
 package org.cds06.speleograph;
 
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
@@ -10,7 +10,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -58,7 +57,8 @@ public class AppController implements Initializable {
      * The actual chart area.
      */
     @FXML
-    public LineChart<Date, Number> chart;
+    public SpeleoChart chart;
+    private SimpleBooleanProperty rangeSetByUser = new SimpleBooleanProperty(this, "Range set by User", false);
 
     /**
      * Open a new File in the Application.
@@ -117,7 +117,19 @@ public class AppController implements Initializable {
         data.addListener(new ListChangeListener<DataSet>() {
             @Override
             public void onChanged(Change<? extends DataSet> change) {
-                for (DataSet set : change.getList()) {
+                for (final DataSet set : change.getList()) {
+                    set.shownProperty().addListener(new ChangeListener<Boolean>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Boolean> observableValue, Boolean before, Boolean after) {
+                            if (before) {
+                                // We have to hide the series
+                                hide(set);
+                            } else {
+                                // We have to show the series
+                                show(set);
+                            }
+                        }
+                    });
                     chartSeries.put(set.getSeriesForChart(), set.shownProperty());
                 }
             }
@@ -141,23 +153,7 @@ public class AppController implements Initializable {
                         new Callback<DataSet, ObservableValue<Boolean>>() {
                             @Override
                             public ObservableValue<Boolean> call(final DataSet datas) {
-                                final BooleanProperty booleanObservableValue = datas.shownProperty();
-                                if (!datas.observed) {
-                                    booleanObservableValue.addListener(new ChangeListener<Boolean>() {
-                                        @Override
-                                        public void changed(ObservableValue<? extends Boolean> observableValue, Boolean before, Boolean after) {
-                                            if (before) {
-                                                // We have to hide the series
-                                                hide((DataSet) booleanObservableValue.getBean());
-                                            } else {
-                                                // We have to show the series
-                                                show((DataSet) booleanObservableValue.getBean());
-                                            }
-                                        }
-                                    });
-                                    datas.observed = true;
-                                }
-                                return booleanObservableValue;
+                                return datas.shownProperty();
                             }
                         },
                         new StringConverter<DataSet>() {
@@ -182,12 +178,7 @@ public class AppController implements Initializable {
      * @param dataSet The dataSet to hide
      */
     private void hide(DataSet dataSet) {
-        XYChart.Series<Date, Number> linkedSeries = null;
-        for (XYChart.Series<Date, Number> series : chartSeries.keySet()) {
-            if (chartSeries.get(series) == dataSet.shownProperty())
-                linkedSeries = series;
-        }
-        chart.getData().remove(linkedSeries);
+        chart.dataMap.remove(dataSet);
     }
 
     /**
@@ -198,19 +189,11 @@ public class AppController implements Initializable {
      * @param dataSet The dataSet to show
      */
     private void show(DataSet dataSet) {
-        XYChart.Series<Date, Number> linkedSeries = null;
-        for (XYChart.Series<Date, Number> series : chartSeries.keySet()) {
-            if (chartSeries.get(series) == dataSet.shownProperty()) {
-                linkedSeries = series;
-            }
+        chart.dataMap.put(dataSet, null);
+        if (chart.getData().size() <= 0 && !rangeSetByUser.getValue()) {
+            ((DateAxis) chart.getXAxis()).rangeProperty().set(dataSet.getDateRange());
         }
-        if (linkedSeries == null) return;
-        if (chart.getData().size() <= 0) {
-            ((DateAxis) chart.getXAxis()).setMinDate(dataSet.getDateRange().startProperty().get());
-            ((DateAxis) chart.getXAxis()).setMaxDate(dataSet.getDateRange().endProperty().get());
-        }
-        chart.getData().add(linkedSeries);
-        chart.layout();
+        chart.refresh();
     }
 
 }

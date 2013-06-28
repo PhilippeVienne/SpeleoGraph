@@ -3,15 +3,13 @@
 <?scenebuilder-classpath-element ../../../../target/classes?>
 <?scenebuilder-classpath-element C:/Users/PhilippeGeek/.m2/repository/org/jfxtras/jfxtras-labs/2.2-r5/jfxtras-labs-2.2-r5.jar?>
 
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.*?>
-<?import org.cds06.speleograph.DateAxis?>
 <?import org.cds06.speleograph.datepicker.DatePicker?>
+<?import org.cds06.speleograph.SpeleoChart?>
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="500.0"
             prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.cds06.speleograph.AppController">
@@ -28,19 +26,13 @@
                     <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                           AnchorPane.topAnchor="0.0">
-                        <LineChart fx:id="chart" alternativeColumnFillVisible="true"
-                                   createSymbols="false" animated="false"
-                                   horizontalGridLinesVisible="true" legendSide="BOTTOM"
-                                   legendVisible="true" prefHeight="367.0" prefWidth="351.0"
-                                   verticalGridLinesVisible="true" verticalZeroLineVisible="true"
-                                   VBox.vgrow="ALWAYS">
-                            <xAxis>
-                                <DateAxis side="BOTTOM"/>
-                            </xAxis>
-                            <yAxis>
-                                <NumberAxis side="LEFT" upperBound="30.0"/>
-                            </yAxis>
-                        </LineChart>
+                        <SpeleoChart fx:id="chart" alternativeColumnFillVisible="true"
+                                     createSymbols="false" animated="false"
+                                     horizontalGridLinesVisible="true" legendSide="BOTTOM"
+                                     legendVisible="true" prefHeight="367.0" prefWidth="351.0"
+                                     verticalGridLinesVisible="true" verticalZeroLineVisible="true"
+                                     VBox.vgrow="ALWAYS">
+                        </SpeleoChart>
                     </VBox>
                 </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
