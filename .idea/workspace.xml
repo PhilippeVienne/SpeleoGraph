@@ -4,7 +4,7 @@
     <list default="true" id="a23db210-e12a-445b-aa1e-172da5c5360a" name="Default" comment="" />
     <ignored path="SpeleoGraph.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431497971" ignored="false" />
+    <file path="/Dummy.txt" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431650682" ignored="false" />
     <file path="/a.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372320009719" ignored="false" />
     <file path="/MainApp.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372320448078" ignored="false" />
     <file path="/AppController.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431338909" ignored="false" />
@@ -18,7 +18,7 @@
     <file path="/log4j.xml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337980121" ignored="false" />
     <file path="/ReefnetFileConverter.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337127399" ignored="false" />
     <file path="/SpeleoChart.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431226664" ignored="false" />
-    <file path="$PROJECT_DIR$/.idea/workspace.xml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431483734" ignored="false" />
+    <file path="$PROJECT_DIR$/.idea/workspace.xml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431794155" ignored="false" />
     <file path="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372422798347" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -83,19 +83,9 @@
       <file leaf-file-name="AppController.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="311" column="39" selection-start="11447" selection-end="11447" vertical-scroll-proportion="0.92719483">
+            <state line="313" column="30" selection-start="11542" selection-end="11542" vertical-scroll-proportion="9.580646">
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#4563#5556#0" expanded="true" />
-                <element signature="e#4868#5429#0" expanded="true" />
-                <element signature="e#5406#5407#0" expanded="true" />
-                <element signature="e#5545#5546#0" expanded="true" />
-                <element signature="e#5958#6257#0" expanded="true" />
-                <element signature="e#6230#6231#0" expanded="true" />
-                <element signature="e#10072#10905#0" expanded="true" />
-                <element signature="e#10894#10895#0" expanded="true" />
-                <element signature="e#11294#12134#0" expanded="true" />
-                <element signature="e#12123#12124#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -105,11 +95,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/SpeleoChart.java">
           <provider selected="true" editor-type-id="text-editor">
             <state line="159" column="43" selection-start="6483" selection-end="6483" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#807#838#0" expanded="true" />
-                <element signature="e#2637#2659#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -636,12 +622,12 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="MemberChooser.showClasses" value="true" />
     <property name="FullScreen" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -733,19 +719,6 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -772,6 +745,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -889,7 +875,7 @@
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.39904988" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3979239" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -903,8 +889,8 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Log4jMonitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.6009501" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32779098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.672209" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32779098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Regex" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="true" anchor="bottom" auto_hide="true" internal_type="SLIDING" type="SLIDING" visible="true" weight="0.32897863" sideWeight="0.5" order="15" side_tool="false" content_ui="combo" x="-1188" y="-189" width="1096" height="800" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -1007,16 +993,12 @@
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.7.0_25/jre/lib/rt.jar!/sun/reflect/misc/ReflectUtil.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="0" selection-start="1693" selection-end="1693" vertical-scroll-proportion="0.33333334">
-          <folding />
-        </state>
+        <state line="46" column="0" selection-start="1693" selection-end="1693" vertical-scroll-proportion="0.33333334" />
       </provider>
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.7.0_25/jre/lib/jfxrt.jar!/javafx/fxml/FXMLLoader.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="808" column="0" selection-start="33649" selection-end="33649" vertical-scroll-proportion="0.21793275">
-          <folding />
-        </state>
+        <state line="808" column="0" selection-start="33649" selection-end="33649" vertical-scroll-proportion="0.21793275" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSet.java">
@@ -1035,16 +1017,12 @@
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-controls/src/javafx/scene/control/Button.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="179" column="0" selection-start="6698" selection-end="6698" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="179" column="0" selection-start="6698" selection-end="6698" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-controls/src/javafx/scene/chart/Axis.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="420" column="20" selection-start="15580" selection-end="15580" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="420" column="20" selection-start="15580" selection-end="15580" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-charts/src/javafx/scene/chart/XYChart.java">
@@ -1056,16 +1034,14 @@
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-common/src/javafx/scene/Parent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1032" column="0" selection-start="39113" selection-end="39113" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="1032" column="0" selection-start="39113" selection-end="39113" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-charts/src/javafx/scene/chart/LineChart.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="398" column="29" selection-start="18606" selection-end="18606" vertical-scroll-proportion="-0.011210762">
           <folding>
-            <element signature="e#2971#2995#0" expanded="true" />
+            <element signature="e#2971#2995#0" expanded="false" />
             <element signature="class#3432:4708" expanded="false" />
             <element signature="docComment;method#getCreateSymbols#0;class#LineChart#0" expanded="false" />
             <element signature="docComment;method#LineChart#0;class#LineChart#0" expanded="false" />
@@ -1087,9 +1063,7 @@
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-charts/src/javafx/scene/chart/Chart.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="385" column="0" selection-start="16510" selection-end="16510" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="385" column="0" selection-start="16510" selection-end="16510" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateAxis.java">
@@ -1116,29 +1090,15 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/SpeleoChart.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="159" column="43" selection-start="6483" selection-end="6483" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#807#838#0" expanded="true" />
-            <element signature="e#2637#2659#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="311" column="39" selection-start="11447" selection-end="11447" vertical-scroll-proportion="0.92719483">
+        <state line="313" column="30" selection-start="11542" selection-end="11542" vertical-scroll-proportion="9.580646">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#4563#5556#0" expanded="true" />
-            <element signature="e#4868#5429#0" expanded="true" />
-            <element signature="e#5406#5407#0" expanded="true" />
-            <element signature="e#5545#5546#0" expanded="true" />
-            <element signature="e#5958#6257#0" expanded="true" />
-            <element signature="e#6230#6231#0" expanded="true" />
-            <element signature="e#10072#10905#0" expanded="true" />
-            <element signature="e#10894#10895#0" expanded="true" />
-            <element signature="e#11294#12134#0" expanded="true" />
-            <element signature="e#12123#12124#0" expanded="true" />
           </folding>
         </state>
       </provider>
