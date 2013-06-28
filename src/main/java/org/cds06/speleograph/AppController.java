@@ -1,5 +1,6 @@
 package org.cds06.speleograph;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
@@ -8,20 +9,33 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import org.cds06.speleograph.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -118,6 +132,7 @@ public class AppController implements Initializable {
             @Override
             public void onChanged(Change<? extends DataSet> change) {
                 for (final DataSet set : change.getList()) {
+                    // This listener should be into SpeleoChart
                     set.shownProperty().addListener(new ChangeListener<Boolean>() {
                         @Override
                         public void changed(ObservableValue<? extends Boolean> observableValue, Boolean before, Boolean after) {
@@ -152,14 +167,14 @@ public class AppController implements Initializable {
                 CheckBoxListCell.forListView(
                         new Callback<DataSet, ObservableValue<Boolean>>() {
                             @Override
-                            public ObservableValue<Boolean> call(final DataSet datas) {
-                                return datas.shownProperty();
+                            public ObservableValue<Boolean> call(final DataSet dataSet) {
+                                return dataSet.shownProperty();
                             }
                         },
                         new StringConverter<DataSet>() {
                             @Override
-                            public String toString(DataSet datas) {
-                                return datas.getName();
+                            public String toString(DataSet dataSet) {
+                                return dataSet.getName();
                             }
 
                             @Override
@@ -190,10 +205,124 @@ public class AppController implements Initializable {
      */
     private void show(DataSet dataSet) {
         chart.dataMap.put(dataSet, null);
-        if (chart.getData().size() <= 0 && !rangeSetByUser.getValue()) {
-            ((DateAxis) chart.getXAxis()).rangeProperty().set(dataSet.getDateRange());
+        if (chart.getData().size() <= 1 && !rangeSetByUser.getValue()) {
+            chart.getXAxis().rangeProperty().set(dataSet.getDateRange());
         }
         chart.refresh();
     }
 
+    public void autoRange() {
+        if (chart.getData().size() <= 0) return;
+        Date start = null;
+        Date end = null;
+        for (XYChart.Series<Date, Number> s : chart.getData())
+            for (XYChart.Data<Date, Number> d : s.getData()) {
+                if (start == null && end == null) {
+                    start = d.XValueProperty().getValue();
+                    end = d.XValueProperty().getValue();
+                } else if (d.XValueProperty().getValue().before(start)) {
+                    start = d.XValueProperty().getValue();
+                } else if (d.XValueProperty().getValue().after(end)) {
+                    end = d.XValueProperty().getValue();
+                }
+            }
+        rangeSetByUser.setValue(false);
+        chart.getXAxis().rangeProperty().setValue(new DateRange(start, end));
+        chart.refresh();
+    }
+
+    private class PopUpDatePrompt extends Stage {
+
+        public Button button;
+        public Text t = new Text();
+        public DatePicker picker;
+        public VBox box;
+        public ObjectProperty<Date> selectedDate;
+
+        public PopUpDatePrompt(Window parent) {
+
+            box = new VBox(8.0);
+            box.setPadding(new Insets(5));
+
+            t.setText("");
+            t.setVisible(false);
+            t.setFill(Color.DARKRED);
+
+            picker = new DatePicker();
+            picker.setDateFormat(new SimpleDateFormat("dd/MM/yyyy"));
+            picker.setMaxWidth(Double.MAX_VALUE);
+            selectedDate = picker.valueProperty();
+
+            button = new Button("Valider");
+            button.setMaxWidth(Double.MAX_VALUE);
+
+            box.getChildren().addAll(picker, button);
+
+            setTitle("Séléctionner une date");
+            setScene(new Scene(box));
+
+            initOwner(parent);
+            initModality(Modality.WINDOW_MODAL);
+            setX(parent.getX() + (parent.getWidth() / 2) - 50);
+            setY(parent.getY() + (parent.getHeight() / 2) - 50);
+        }
+
+        public void error(String why) {
+            log.error("Erreur : " + why);
+        }
+    }
+
+    public void defineStartDate(ActionEvent actionEvent) {
+        Window w = null;
+        if (actionEvent.getSource() instanceof Button) {
+            Button button = (Button) actionEvent.getSource();
+            w = button.getScene().getWindow();
+        }
+        final PopUpDatePrompt prompt = new PopUpDatePrompt(w);
+        prompt.button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                final DateAxis xAxis = chart.getXAxis();
+                rangeSetByUser.setValue(true);
+                if (AppController.this.rangeSetByUser.getValue()) {
+                    Date endDate = xAxis.rangeProperty().getValue().endProperty().getValue();
+                    if (prompt.selectedDate.getValue().before(endDate)) {
+                        xAxis.rangeProperty().setValue(new DateRange(prompt.selectedDate.getValue(), endDate));
+                        chart.refresh();
+                        prompt.close();
+                    } else {
+                        prompt.error("La date de début ne peut pas être après celle de fin");
+                    }
+                }
+            }
+        });
+        prompt.show();
+    }
+
+    public void defineStopDate(ActionEvent actionEvent) {
+        Window w = null;
+        if (actionEvent.getSource() instanceof Button) {
+            Button button = (Button) actionEvent.getSource();
+            w = button.getScene().getWindow();
+        }
+        final PopUpDatePrompt prompt = new PopUpDatePrompt(w);
+        prompt.button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                final DateAxis xAxis = chart.getXAxis();
+                rangeSetByUser.setValue(true);
+                if (AppController.this.rangeSetByUser.getValue()) {
+                    Date startDate = xAxis.rangeProperty().getValue().startProperty().getValue();
+                    if (prompt.selectedDate.getValue().after(startDate)) {
+                        xAxis.rangeProperty().setValue(new DateRange(startDate, prompt.selectedDate.getValue()));
+                        chart.refresh();
+                        prompt.close();
+                    } else {
+                        prompt.error("La date de fin ne peut pas être avant celle de début");
+                    }
+                }
+            }
+        });
+        prompt.show();
+    }
 }

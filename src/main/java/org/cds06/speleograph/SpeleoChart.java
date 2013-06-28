@@ -155,11 +155,21 @@ public class SpeleoChart extends LineChart<Date, Number> {
         super.layoutPlotChildren();
     }
 
+    @Override
+    public DateAxis getXAxis() {
+        return (DateAxis) super.getXAxis();
+    }
+
+    /**
+     * Full call for refresh all chart.
+     */
     public void refresh() {
         getXAxis().requestAxisLayout();
         getYAxis().requestAxisLayout();
         layoutPlotChildren();
-        requestChartLayout();
+        layoutChildren();
+        setNeedsLayout(true);
+        layout();
     }
 
     /**

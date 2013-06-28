@@ -284,6 +284,14 @@ public class DateAxis extends Axis<Date> {
         return tickedDates.get();
     }
 
+    @Override
+    public void requestAxisLayout() {
+        invalidateRange();
+        super.requestAxisLayout();
+        setNeedsLayout(true);
+        layout();
+    }
+
     /**
      * Determine the best label for a date.
      *

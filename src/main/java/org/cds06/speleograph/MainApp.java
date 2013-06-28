@@ -28,7 +28,7 @@ public class MainApp extends Application {
         Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
 
         log.debug("Showing JFX scene");
-        Scene scene = new Scene(rootNode, 500, 400);
+        Scene scene = new Scene(rootNode, 800, 700);
         scene.getStylesheets().add("/org/cds06/speleograph/styles.css");
 
         stage.setTitle(MainApp.NAME);

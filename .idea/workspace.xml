@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a23db210-e12a-445b-aa1e-172da5c5360a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="a23db210-e12a-445b-aa1e-172da5c5360a" name="Default" comment="" />
     <ignored path="SpeleoGraph.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372421549185" ignored="false" />
+    <file path="/Dummy.txt" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431497971" ignored="false" />
     <file path="/a.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372320009719" ignored="false" />
     <file path="/MainApp.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372320448078" ignored="false" />
-    <file path="/AppController.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372421061588" ignored="false" />
-    <file path="/App.fxml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372416957792" ignored="false" />
+    <file path="/AppController.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431338909" ignored="false" />
+    <file path="/App.fxml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372430709830" ignored="false" />
     <file path="/DataSetReader.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337701108" ignored="false" />
     <file path="/DataSet.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372327789771" ignored="false" />
-    <file path="/DateAxis.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372421169602" ignored="false" />
+    <file path="/DateAxis.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372425504246" ignored="false" />
     <file path="/DateRange.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372335561858" ignored="false" />
     <file path="/package-info.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372334893499" ignored="false" />
-    <file path="/fragment.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372335817250" ignored="false" />
+    <file path="/fragment.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372427953313" ignored="false" />
     <file path="/log4j.xml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337980121" ignored="false" />
     <file path="/ReefnetFileConverter.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372337127399" ignored="false" />
-    <file path="/SpeleoChart.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372421520305" ignored="false" />
+    <file path="/SpeleoChart.java" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431226664" ignored="false" />
+    <file path="$PROJECT_DIR$/.idea/workspace.xml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372431483734" ignored="false" />
+    <file path="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" changelist="a23db210-e12a-445b-aa1e-172da5c5360a" time="1372422798347" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,37 +80,35 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="SpeleoChart.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/SpeleoChart.java">
+      <file leaf-file-name="AppController.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="179" column="0" selection-start="7049" selection-end="7049" vertical-scroll-proportion="0.0">
+            <state line="311" column="39" selection-start="11447" selection-end="11447" vertical-scroll-proportion="0.92719483">
               <folding>
-                <element signature="e#807#838#0" expanded="true" />
-                <element signature="e#1231#2153#0" expanded="true" />
-                <element signature="e#2142#2143#0" expanded="true" />
-                <element signature="e#2637#2659#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#4563#5556#0" expanded="true" />
+                <element signature="e#4868#5429#0" expanded="true" />
+                <element signature="e#5406#5407#0" expanded="true" />
+                <element signature="e#5545#5546#0" expanded="true" />
+                <element signature="e#5958#6257#0" expanded="true" />
+                <element signature="e#6230#6231#0" expanded="true" />
+                <element signature="e#10072#10905#0" expanded="true" />
+                <element signature="e#10894#10895#0" expanded="true" />
+                <element signature="e#11294#12134#0" expanded="true" />
+                <element signature="e#12123#12124#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainApp.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/MainApp.java">
+      <file leaf-file-name="SpeleoChart.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/SpeleoChart.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="0" selection-start="773" selection-end="773" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="XYChart.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-charts/src/javafx/scene/chart/XYChart.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="588" column="34" selection-start="25415" selection-end="25430" vertical-scroll-proportion="-9.96">
+            <state line="159" column="43" selection-start="6483" selection-end="6483" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="e#4075#6744#0" expanded="true" />
-                <element signature="e#4097#4110#0" expanded="true" />
-                <element signature="e#6737#6738#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#807#838#0" expanded="true" />
+                <element signature="e#2637#2659#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -119,73 +117,16 @@
       <file leaf-file-name="App.fxml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="57" selection-start="2075" selection-end="2075" vertical-scroll-proportion="0.0">
+            <state line="34" column="81" selection-start="2338" selection-end="2338" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LineChart.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-charts/src/javafx/scene/chart/LineChart.java">
+      <file leaf-file-name="MainApp.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/MainApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="168" column="40" selection-start="7244" selection-end="7252" vertical-scroll-proportion="-5.88">
-              <folding>
-                <element signature="e#2971#2995#0" expanded="true" />
-                <element signature="class#3432:4708" expanded="false" />
-                <element signature="docComment;method#getCreateSymbols#0;class#LineChart#0" expanded="false" />
-                <element signature="docComment;method#LineChart#0;class#LineChart#0" expanded="false" />
-                <element signature="method#dataItemChanged#0;class#LineChart#0" expanded="false" />
-                <element signature="method#seriesChanged#0;class#LineChart#0" expanded="false" />
-                <element signature="method#seriesRemoved#0;class#LineChart#0" expanded="false" />
-                <element signature="method#createDataRemoveTimeline#0;class#LineChart#0" expanded="false" />
-                <element signature="method#createSymbol#0;class#LineChart#0" expanded="false" />
-                <element signature="docComment;method#updateLegend#0;class#LineChart#0" expanded="false" />
-                <element signature="method#updateLegend#0;class#LineChart#0" expanded="false" />
-                <element signature="class#StyleableProperties#0;class#LineChart#0" expanded="false" />
-                <element signature="docComment;method#impl_CSS_STYLEABLES#0;class#LineChart#0" expanded="false" />
-                <element signature="method#impl_CSS_STYLEABLES#0;class#LineChart#0" expanded="false" />
-                <element signature="docComment;method#impl_getStyleableProperties#0;class#LineChart#0" expanded="false" />
-                <element signature="method#impl_getStyleableProperties#0;class#LineChart#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AppController.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="154" column="87" selection-start="5596" selection-end="5596" vertical-scroll-proportion="0.2990099">
-              <folding>
-                <element signature="e#4329#4890#0" expanded="true" />
-                <element signature="e#4867#4868#0" expanded="true" />
-                <element signature="e#5687#5688#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Axis.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-controls/src/javafx/scene/chart/Axis.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="420" column="22" selection-start="15582" selection-end="15582" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DateAxis.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateAxis.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="135" column="36" selection-start="4034" selection-end="4034" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DataSet.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSet.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="35" column="44" selection-start="774" selection-end="774" vertical-scroll-proportion="0.0">
+            <state line="30" column="48" selection-start="952" selection-end="952" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -213,13 +154,13 @@
         <option value="$PROJECT_DIR$/src/main/resources/org.cds06.speleograph/App.fxml" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSet.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/datepicker/package-info.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/MainApp.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/ReefnetFileConverter.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSetReader.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateRange.java" />
         <option value="$PROJECT_DIR$/src/main/resources/log4j.xml" />
-        <option value="$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateAxis.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/MainApp.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/SpeleoChart.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java" />
       </list>
@@ -691,6 +632,7 @@
     <property name="options.lastSelected" value="Errors" />
     <property name="last_opened_file_path" value="$USER_HOME$/IdeaProjects" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="GoToClass.includeJavaFiles" value="false" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -931,7 +873,11 @@
       <created>1372421555612</created>
       <updated>1372421555612</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Can update as we want (human way) the date range.">
+      <created>1372431504366</created>
+      <updated>1372431504366</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -943,13 +889,13 @@
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39904988" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.39904988" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32897863" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32897863" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.36698338" order="1" side_tool="true" content_ui="tabs" />
@@ -957,7 +903,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Log4jMonitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.6710214" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.6009501" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32779098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Regex" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="true" anchor="bottom" auto_hide="true" internal_type="SLIDING" type="SLIDING" visible="true" weight="0.32897863" sideWeight="0.5" order="15" side_tool="false" content_ui="combo" x="-1188" y="-189" width="1096" height="800" />
@@ -1013,7 +959,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Can update as we want (programmable way) the date range." />
+    <option name="LAST_COMMIT_MESSAGE" value="Can update as we want (human way) the date range." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1030,6 +976,7 @@
     <MESSAGE value="Add all documentation comments (long work)" />
     <MESSAGE value="Add the SpeleoChart Class" />
     <MESSAGE value="Can update as we want (programmable way) the date range." />
+    <MESSAGE value="Can update as we want (human way) the date range." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1051,20 +998,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk1.7.0_25/jre/lib/jfxrt.jar!/javafx/collections/MapChangeListener.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="4" selection-start="415" selection-end="415" vertical-scroll-proportion="0.06563707">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.7.0_25/jre/lib/jfxrt.jar!/javafx/collections/FXCollections.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="36" selection-start="2034" selection-end="2034" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.7.0_25/src.zip!/java/lang/Class.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="358" column="0" selection-start="13888" selection-end="13888" vertical-scroll-proportion="0.0">
@@ -1086,9 +1019,51 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="44" selection-start="774" selection-end="774" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-common/src/javafx/scene/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6863" column="0" selection-start="274050" selection-end="274050" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-controls/src/javafx/scene/control/Button.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="179" column="0" selection-start="6698" selection-end="6698" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-controls/src/javafx/scene/chart/Axis.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="420" column="20" selection-start="15580" selection-end="15580" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-charts/src/javafx/scene/chart/XYChart.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="155" column="0" selection-start="6975" selection-end="6975" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-common/src/javafx/scene/Parent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1032" column="0" selection-start="39113" selection-end="39113" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-charts/src/javafx/scene/chart/LineChart.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="168" column="40" selection-start="7244" selection-end="7252" vertical-scroll-proportion="-5.88">
+        <state line="398" column="29" selection-start="18606" selection-end="18606" vertical-scroll-proportion="-0.011210762">
           <folding>
             <element signature="e#2971#2995#0" expanded="true" />
             <element signature="class#3432:4708" expanded="false" />
@@ -1110,73 +1085,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-charts/src/javafx/scene/chart/XYChart.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="588" column="34" selection-start="25415" selection-end="25430" vertical-scroll-proportion="-9.96">
-          <folding>
-            <element signature="e#4075#6744#0" expanded="true" />
-            <element signature="e#4097#4110#0" expanded="true" />
-            <element signature="e#6737#6738#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-charts/src/javafx/scene/chart/Chart.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="284" column="18" selection-start="11031" selection-end="11031" vertical-scroll-proportion="0.36995515">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DataSet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="44" selection-start="774" selection-end="774" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/MainApp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="0" selection-start="773" selection-end="773" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="57" selection-start="2075" selection-end="2075" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-common/src/javafx/scene/Parent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="820" column="16" selection-start="32031" selection-end="32031" vertical-scroll-proportion="0.3320158">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/../../Java/javafx-2.2-sourcecode.zip!/rt-e71070b0e0c0/javafx-ui-controls/src/javafx/scene/chart/Axis.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="420" column="22" selection-start="15582" selection-end="15582" vertical-scroll-proportion="0.0">
+        <state line="385" column="0" selection-start="16510" selection-end="16510" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/DateAxis.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="135" column="36" selection-start="4034" selection-end="4034" vertical-scroll-proportion="0.0">
+        <state line="288" column="26" selection-start="8536" selection-end="8536" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/MainApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="48" selection-start="952" selection-end="952" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/org/cds06/speleograph/App.fxml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="81" selection-start="2338" selection-end="2338" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/SpeleoChart.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="179" column="0" selection-start="7049" selection-end="7049" vertical-scroll-proportion="0.0">
+        <state line="159" column="43" selection-start="6483" selection-end="6483" vertical-scroll-proportion="0.0">
           <folding>
+            <element signature="imports" expanded="true" />
             <element signature="e#807#838#0" expanded="true" />
-            <element signature="e#1231#2153#0" expanded="true" />
-            <element signature="e#2142#2143#0" expanded="true" />
             <element signature="e#2637#2659#0" expanded="true" />
           </folding>
         </state>
@@ -1184,11 +1126,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/cds06/speleograph/AppController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="154" column="87" selection-start="5596" selection-end="5596" vertical-scroll-proportion="0.2990099">
+        <state line="311" column="39" selection-start="11447" selection-end="11447" vertical-scroll-proportion="0.92719483">
           <folding>
-            <element signature="e#4329#4890#0" expanded="true" />
-            <element signature="e#4867#4868#0" expanded="true" />
-            <element signature="e#5687#5688#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#4563#5556#0" expanded="true" />
+            <element signature="e#4868#5429#0" expanded="true" />
+            <element signature="e#5406#5407#0" expanded="true" />
+            <element signature="e#5545#5546#0" expanded="true" />
+            <element signature="e#5958#6257#0" expanded="true" />
+            <element signature="e#6230#6231#0" expanded="true" />
+            <element signature="e#10072#10905#0" expanded="true" />
+            <element signature="e#10894#10895#0" expanded="true" />
+            <element signature="e#11294#12134#0" expanded="true" />
+            <element signature="e#12123#12124#0" expanded="true" />
           </folding>
         </state>
       </provider>
