@@ -71,7 +71,7 @@ public final class CalendarView extends Control {
     /**
      * This represents the date, which is currently viewed.
      */
-    private final ObjectProperty<Date> viewedDate = new SimpleObjectProperty<Date>(this, "viewedDate");
+    private final ObjectProperty<Date> viewedDate = new SimpleObjectProperty<>(this, "viewedDate");
 
     /**
      * This is the selected date. When this date changes, it also changes the viewed date.
@@ -81,12 +81,12 @@ public final class CalendarView extends Control {
     /**
      * This is the locale which is used for getting day names, month names and so on.
      */
-    private final ObjectProperty<Locale> locale = new SimpleObjectProperty<Locale>(this, "locale");
+    private final ObjectProperty<Locale> locale = new SimpleObjectProperty<>(this, "locale");
 
     /**
      * The calendar, which is used.
      */
-    private final ObjectProperty<Calendar> calendar = new SimpleObjectProperty<Calendar>(this, "calendar");
+    private final ObjectProperty<Calendar> calendar = new SimpleObjectProperty<>(this, "calendar");
 
     /**
      * Indicates whether the weeks numbers are shown.
@@ -96,12 +96,12 @@ public final class CalendarView extends Control {
     /**
      * The min date.
      */
-    private final ObjectProperty<Date> minDate = new SimpleObjectProperty<Date>(this, "minDate");
+    private final ObjectProperty<Date> minDate = new SimpleObjectProperty<>(this, "minDate");
 
     /**
      * The max date.
      */
-    private final ObjectProperty<Date> maxDate = new SimpleObjectProperty<Date>(this, "maxDate");
+    private final ObjectProperty<Date> maxDate = new SimpleObjectProperty<>(this, "maxDate");
 
     /**
      * The cell factory for the dates.
@@ -109,12 +109,12 @@ public final class CalendarView extends Control {
     private final ObjectProperty<Callback<CalendarView, DateCell>> dayCellFactory = new SimpleObjectProperty<>(this, "dayCellFactory");
 
 
-    /**
-     * Initializes a calendar with the default locale.
-     */
-    public CalendarView() {
-        this(Locale.getDefault());
-    }
+//    /**
+//     * Initializes a calendar with the default locale.
+//     */
+//    public CalendarView() {
+//        this(Locale.getDefault());
+//    }
 
 
     /**
@@ -122,7 +122,7 @@ public final class CalendarView extends Control {
      * E.g. if the locale is en-US, the calendar starts the days on Sunday.
      * If it is de-DE the calendar starts the days on Monday.
      * <p/>
-     * Note that the Java implementation only knows {@link java.util.GregorianCalendar} and {@link sun.util.BuddhistCalendar}.
+     * Note that the Java implementation only knows {@link java.util.GregorianCalendar}.
      *
      * @param locale The locale.
      */
