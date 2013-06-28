@@ -133,6 +133,7 @@ public class DateAxis extends Axis<Date> {
         rangeProperty.addListener(new ChangeListener<DateRange>() {
             @Override
             public void changed(ObservableValue<? extends DateRange> observableValue, DateRange oldDateRange, DateRange newDateRange) {
+                requestAxisLayout();
                 minDateProperty().unbindBidirectional(oldDateRange.startProperty());
                 maxDateProperty().unbindBidirectional(oldDateRange.endProperty());
                 minDateProperty().bindBidirectional(newDateRange.startProperty());
