@@ -15,8 +15,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -25,7 +23,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 import org.cds06.speleograph.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,6 +136,7 @@ public class AppController implements Initializable {
                     set.shownProperty().addListener(new ChangeListener<Boolean>() {
                         @Override
                         public void changed(ObservableValue<? extends Boolean> observableValue, Boolean before, Boolean after) {
+                            if (observableValue != set.shownProperty()) return;
                             if (before) {
                                 // We have to hide the series
                                 hide(set);
@@ -163,56 +161,68 @@ public class AppController implements Initializable {
 //        System.exit(0); // A little much violent
 //    }
 
+    /**
+     * ListCell adapted for a DataSet Object.
+     * <p>A DataSetCell should be able to have a checkbox liked to the {@link DataSet#shown} property and allow the
+     * user to edit the name of the set by right-clicking on the list item</p>
+     */
+    private static class DataSetCell extends ListCell<DataSet> {
+        {
+            setEditable(true);
+        }
+
+        /**
+         * {@inheritDoc}
+         * @param set The dataSet which will be shown on the DataSetCell
+         * @param empty Does the dataSet is an empty value ? (generally put false)
+         */
+        @Override
+        public void updateItem(final DataSet set, boolean empty) {
+            super.updateItem(set, empty);
+            if (!empty && set != null) {
+                MenuItem item = MenuItemBuilder.create().onAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        startEdit();
+                        setText(null);
+                        final TextField field = TextFieldBuilder.create().promptText("Entrez un nom ...").build();
+                        field.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                set.nameProperty().set(field.getText());
+                                commitEdit(set);
+                            }
+                        });
+                        setGraphic(field);
+                    }
+                }).text("Changer le nom").build();
+                setContextMenu(new ContextMenu(item));
+                CheckBox box = new CheckBox();
+                box.selectedProperty().bindBidirectional(set.shownProperty());
+                setGraphic(box);
+                setText(set.getName());
+            }
+        }
+
+        /**
+         * Generate the {@link Callback} for a ListView to construct DataSetCell.
+         * @return A proper callback.
+         */
+        public static Callback<ListView<DataSet>, ListCell<DataSet>> factoryForList() {
+            return new Callback<ListView<DataSet>, ListCell<DataSet>>() {
+                @Override
+                public ListCell<DataSet> call(ListView<DataSet> dataSetListView) {
+                    return new DataSetCell();
+                }
+            };
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         openedList.setItems(data);
-        openedList.setCellFactory(new Callback<ListView<DataSet>, ListCell<DataSet>>() {
-            private Callback<ListView<DataSet>, ListCell<DataSet>> checkBoxFactory = CheckBoxListCell.forListView(
-                    new Callback<DataSet, ObservableValue<Boolean>>() {
-                        @Override
-                        public ObservableValue<Boolean> call(final DataSet dataSet) {
-                            return dataSet.shownProperty();
-                        }
-                    },
-                    new StringConverter<DataSet>() {
-                        @Override
-                        public String toString(DataSet dataSet) {
-                            return dataSet.getName();
-                        }
-
-                        @Override
-                        public DataSet fromString(String s) {
-                            for (DataSet d : data)
-                                if (d.getName().equals(s)) return d;
-                            return null;
-                        }
-                    }
-            );
-
-            @Override
-            public ListCell<DataSet> call(final ListView<DataSet> dataSetListView) {
-                final ListCell<DataSet> cell = checkBoxFactory.call(dataSetListView);
-                dataSetListView.setEditable(true);
-                final MenuItem item = new MenuItem("Test");
-                item.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        cell.startEdit();
-                        log.debug("Start editing");
-                    }
-                });
-                cell.setContextMenu(ContextMenuBuilder.create().items(item).build());
-                return cell;
-            }
-        });
-        openedList.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.isSecondaryButtonDown()) {
-                    log.debug("Choose a name ?");
-                }
-            }
-        });
+        openedList.setCellFactory(DataSetCell.factoryForList());
+        openedList.setEditable(true);
     }
 
     /**
@@ -232,6 +242,7 @@ public class AppController implements Initializable {
      * @param dataSet The dataSet to show
      */
     private void show(DataSet dataSet) {
+        if (chart.dataMap.containsKey(dataSet)) return;
         chart.dataMap.put(dataSet, null);
         if (chart.getData().size() <= 1 && !rangeSetByUser.getValue()) {
             chart.getXAxis().rangeProperty().set(dataSet.getDateRange());
