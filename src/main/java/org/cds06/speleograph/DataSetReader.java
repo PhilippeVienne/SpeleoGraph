@@ -7,8 +7,6 @@ package org.cds06.speleograph;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.cds06.speleograph.Data.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -52,7 +50,7 @@ import java.util.*;
  */
 public class DataSetReader {
 
-    private static final Logger log = LoggerFactory.getLogger(DataSetReader.class);
+//    private static final Logger log = LoggerFactory.getLogger(DataSetReader.class);
 
     /**
      * The title read from the first line of file.
@@ -143,7 +141,6 @@ public class DataSetReader {
         Type[] availableTypes = new Type[]{};
         int[][] columns = new int[][]{};
         int dateColumn = -1, timeColumn = -1;
-        int id = 0;
         while ((line = csvReader.readNext()) != null) {
             if (line.length <= 1) {                            // Title Line
                 if (line.length != 0) setTitle(line[0]);
@@ -168,7 +165,7 @@ public class DataSetReader {
                 } catch (ParseException e) {
                     day = GregorianCalendar.getInstance().getTime();
                 }
-                Data data = null;
+                Data data;
                 for (int i = 0; i < availableTypes.length; i++) {
                     if (columns[i][1] != -1) {
                         if (line[columns[i][0]].length() > 0 && line[columns[i][1]].length() > 0) {
@@ -189,24 +186,9 @@ public class DataSetReader {
                         }
                     }
                 }
-                if (data == null) {
-                    log.info("No data on line" + id, line);
-                }
-                id++;
             }
         }
-        //orderDataSetsByDate();
     }
-
-//    Currently not used
-//    /**
-//     * Get the read data for a specific type.
-//     * @param type The type of the wanted data
-//     * @return The DataSet which only contains a Type
-//     */
-//    public DataSet getDataFor(Type type){
-//        return dataSets.get(type);
-//    }
 
     /**
      * Get all sets of Data.

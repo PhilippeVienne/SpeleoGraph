@@ -52,6 +52,14 @@ public class DataSet extends ArrayList<Data> {
             super.bind(name);
         }
 
+        /**
+         * Compute the name of DataSet.
+         * <p>
+         * If the name is user-set, then it returns this name. Otherwise, it computes the name from the Reader title and
+         * the translated data type, for example "SU-75845 - Pressure".
+         * </p>
+         * @inheritDoc
+         */
         @Override
         protected String computeValue() {
             if (name.isNull().getValue()) {
@@ -147,6 +155,14 @@ public class DataSet extends ArrayList<Data> {
      */
     public SimpleBooleanProperty shownProperty() {
         return shown;
+    }
+
+    /**
+     * Accessor for the name property.
+     * The name property can be used to set the name of dataSet.
+     */
+    public SimpleStringProperty nameProperty() {
+        return name;
     }
 
     /**

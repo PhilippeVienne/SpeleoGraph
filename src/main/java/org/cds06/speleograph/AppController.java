@@ -3,12 +3,10 @@ package org.cds06.speleograph;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,9 +14,9 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -55,11 +53,12 @@ public class AppController implements Initializable {
      */
     private ObservableList<DataSet> data = FXCollections.observableArrayList();
 
-    /**
-     * Series which can be shown.
-     * <p>Every series is associated to a boolean which determine if a Series is currently shown on graph area.</p>
-     */
-    private ObservableMap<XYChart.Series<Date, Number>, ObservableBooleanValue> chartSeries = FXCollections.observableHashMap();
+    // Not used and should never be reused
+//    /**
+//     * Series which can be shown.
+//     * <p>Every series is associated to a boolean which determine if a Series is currently shown on graph area.</p>
+//     */
+//    private ObservableMap<XYChart.Series<Date, Number>, ObservableBooleanValue> chartSeries = FXCollections.observableHashMap();
 
     /**
      * List of opened dataSets.
@@ -118,9 +117,13 @@ public class AppController implements Initializable {
         }
 
         try {
+            log.debug("Start reading file " + file.getName());
             DataSetReader reader = new DataSetReader(file);
+            log.debug("End reading file " + file.getName());
             data.addAll(reader.getDataSets().values());
+            log.debug("End add all sets" + file.getName());
             openedFiles.add(openedFile);
+            log.debug("End do all things on file " + file.getName());
         } catch (Exception e) {
             log.error("Can not open file " + file.toString(), e);
         }
@@ -145,7 +148,7 @@ public class AppController implements Initializable {
                             }
                         }
                     });
-                    chartSeries.put(set.getSeriesForChart(), set.shownProperty());
+                    //chartSeries.put(set.getSeriesForChart(), set.shownProperty());
                 }
             }
         });
@@ -163,28 +166,53 @@ public class AppController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         openedList.setItems(data);
-        openedList.setCellFactory(
-                CheckBoxListCell.forListView(
-                        new Callback<DataSet, ObservableValue<Boolean>>() {
-                            @Override
-                            public ObservableValue<Boolean> call(final DataSet dataSet) {
-                                return dataSet.shownProperty();
-                            }
-                        },
-                        new StringConverter<DataSet>() {
-                            @Override
-                            public String toString(DataSet dataSet) {
-                                return dataSet.getName();
-                            }
-
-                            @Override
-                            public DataSet fromString(String s) {
-                                for (DataSet d : data)
-                                    if (d.getName().equals(s)) return d;
-                                return null;
-                            }
+        openedList.setCellFactory(new Callback<ListView<DataSet>, ListCell<DataSet>>() {
+            private Callback<ListView<DataSet>, ListCell<DataSet>> checkBoxFactory = CheckBoxListCell.forListView(
+                    new Callback<DataSet, ObservableValue<Boolean>>() {
+                        @Override
+                        public ObservableValue<Boolean> call(final DataSet dataSet) {
+                            return dataSet.shownProperty();
                         }
-                ));
+                    },
+                    new StringConverter<DataSet>() {
+                        @Override
+                        public String toString(DataSet dataSet) {
+                            return dataSet.getName();
+                        }
+
+                        @Override
+                        public DataSet fromString(String s) {
+                            for (DataSet d : data)
+                                if (d.getName().equals(s)) return d;
+                            return null;
+                        }
+                    }
+            );
+
+            @Override
+            public ListCell<DataSet> call(final ListView<DataSet> dataSetListView) {
+                final ListCell<DataSet> cell = checkBoxFactory.call(dataSetListView);
+                dataSetListView.setEditable(true);
+                final MenuItem item = new MenuItem("Test");
+                item.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        cell.startEdit();
+                        log.debug("Start editing");
+                    }
+                });
+                cell.setContextMenu(ContextMenuBuilder.create().items(item).build());
+                return cell;
+            }
+        });
+        openedList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.isSecondaryButtonDown()) {
+                    log.debug("Choose a name ?");
+                }
+            }
+        });
     }
 
     /**
@@ -211,6 +239,10 @@ public class AppController implements Initializable {
         chart.refresh();
     }
 
+    /**
+     * Set the range by the DataSet.
+     * It used the smaller date and taller date in the current shown set to set the chart bounds.
+     */
     public void autoRange() {
         if (chart.getData().size() <= 0) return;
         Date start = null;
@@ -231,6 +263,10 @@ public class AppController implements Initializable {
         chart.refresh();
     }
 
+    /**
+     * Prompt Window for a Date.
+     * <p>This class is a stage used to show a small window prompt to enter a date.</p>
+     */
     private class PopUpDatePrompt extends Stage {
 
         public Button button;
@@ -267,11 +303,19 @@ public class AppController implements Initializable {
             setY(parent.getY() + (parent.getHeight() / 2) - 50);
         }
 
+        /**
+         * Show an error about the selected date.
+         * @param why Reason of error (should be localized string)
+         */
         public void error(String why) {
-            log.error("Erreur : " + why);
+            log.error("Error: " + why);
         }
     }
 
+    /**
+     * Ask to the user to define the start date of chart.
+     * @param actionEvent the action event is used to get the window to center the prompt box
+     */
     public void defineStartDate(ActionEvent actionEvent) {
         Window w = null;
         if (actionEvent.getSource() instanceof Button) {
@@ -299,6 +343,10 @@ public class AppController implements Initializable {
         prompt.show();
     }
 
+    /**
+     * Ask to the user to define the end date of chart.
+     * @param actionEvent the action event is used to get the window to center the prompt box
+     */
     public void defineStopDate(ActionEvent actionEvent) {
         Window w = null;
         if (actionEvent.getSource() instanceof Button) {
