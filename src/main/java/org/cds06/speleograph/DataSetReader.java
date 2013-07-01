@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Reader for SpeleoGraph files.
@@ -142,8 +142,11 @@ public class DataSetReader {
         CSVReader csvReader = new CSVReader(new FileReader(getDataOriginFile()), ';');
         String[] line;
         HeadersList headers = null;
-        ArrayList<Type> availableTypes = new ArrayList<>(Type.values().length);
-        HashMap<Type, int[]> columns = new HashMap<>(Type.values().length);
+        //ArrayList<Type> availableTypes = new ArrayList<>(Type.values().length);
+        Type[] availableTypes = new Type[]{};
+        //HashMap<Type, int[]> columns = new HashMap<>(Type.values().length);
+        int[][] columns = new int[][]{};
+        int dateColumn = -1, timeColumn = -1;
         int id = 0;
         while ((line = csvReader.readNext()) != null) {
             if (line.length <= 1) {                            // Title Line
@@ -151,42 +154,52 @@ public class DataSetReader {
             } else if (headers == null) {                         // The first line is headers
                 headers = new HeadersList(line.length);
                 Collections.addAll(headers, line);
-                availableTypes = headers.getAvailableTypes();
-                for (Type type : availableTypes) {
-                    if (headers.isMinMaxType(type)) {
-                        columns.put(type, headers.getMinMaxValueColumnIdForType(type));
+                availableTypes = headers.getAvailableTypes().toArray(availableTypes);
+                columns = new int[availableTypes.length][2];
+                for (int i = 0; i < availableTypes.length; i++) {
+                    if (headers.isMinMaxType(availableTypes[i])) {
+                        columns[i] = headers.getMinMaxValueColumnIdForType(availableTypes[i]);
                     } else {
-                        columns.put(type, new int[]{headers.getValueColumnIdForType(type)});
+                        columns[i] = new int[]{headers.getValueColumnIdForType(availableTypes[i]), -1};
                     }
                 }
+                dateColumn = headers.getDateColumnId();
+                timeColumn = headers.getTimeColumnId();
             } else {                                        // An data line
-                String date = line[headers.getDateColumnId()] + " " + line[headers.getTimeColumnId()];
-                String format = "dd/MM/yyyy HH:mm:ss";
+                Date day;
+                try {
+                    day = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(line[dateColumn] + " " + line[timeColumn]);
+                } catch (ParseException e) {
+                    day = GregorianCalendar.getInstance().getTime();
+                }
                 Data data = null;
-                for (Type t : availableTypes) {
-                    data = new Data();
-                    data.setDataType(t);
-                    data.setDate(date, format);
-                    if (headers.isMinMaxType(t)) {
-                        if (line[columns.get(t)[0]].length() > 0 && line[columns.get(t)[1]].length() > 0) {
-                            data.setMinValue(Double.valueOf(line[columns.get(t)[0]].replace(',', '.')));
-                            data.setMaxValue(Double.valueOf(line[columns.get(t)[1]].replace(',', '.')));
-                            dataSets.get(t).add(data);
+                for (int i = 0; i < availableTypes.length; i++) {
+                    if (columns[i][1] != -1) {
+                        if (line[columns[i][0]].length() > 0 && line[columns[i][1]].length() > 0) {
+                            data = new Data();
+                            data.setDataType(availableTypes[i]);
+                            data.setDate(day);
+                            data.setMinValue(Double.valueOf(line[columns[i][0]].replace(',', '.')));
+                            data.setMaxValue(Double.valueOf(line[columns[i][1]].replace(',', '.')));
+                            dataSets.get(availableTypes[i]).add(data);
                         }
                     } else {
-                        if (line[columns.get(t)[0]].length() > 0) {
-                            data.setValue(Double.valueOf(line[headers.getValueColumnIdForType(t)].replace(',', '.')));
-                            dataSets.get(t).add(data);
+                        if (line[columns[i][0]].length() > 0) {
+                            data = new Data();
+                            data.setDataType(availableTypes[i]);
+                            data.setDate(day);
+                            data.setValue(Double.valueOf(line[columns[i][0]].replace(',', '.')));
+                            dataSets.get(availableTypes[i]).add(data);
                         }
                     }
                 }
                 if (data == null) {
-                    log.error("Unable to read line " + id, line);
+                    log.info("No data on line" + id, line);
                 }
                 id++;
             }
         }
-        orderDataSetsByDate();
+        //orderDataSetsByDate();
     }
 
 //    Currently not used
@@ -209,15 +222,6 @@ public class DataSetReader {
         for (Type t : dataSets.keySet())
             if (dataSets.get(t).size() > 0) returned.put(t, dataSets.get(t));
         return returned;
-    }
-
-    /**
-     * Force each set to be ordered by Date.
-     */
-    private void orderDataSetsByDate() {
-        for (Type type : dataSets.keySet()) {
-            dataSets.get(type).orderByDate();
-        }
     }
 
     /**
