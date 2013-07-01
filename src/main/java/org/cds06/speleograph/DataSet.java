@@ -1,6 +1,8 @@
 package org.cds06.speleograph;
 
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.chart.XYChart;
 
 import java.util.ArrayList;
@@ -37,27 +39,73 @@ public class DataSet extends ArrayList<Data> {
     private SimpleBooleanProperty shown = new SimpleBooleanProperty(this, "shown", false);
 
     /**
+     * Name chosen by the user for this DataSet.
+     */
+    private SimpleStringProperty name = new SimpleStringProperty(this, "DataSet.name", null);
+
+    /**
+     * The binder to compute the DataSet's Name.
+     */
+    private final StringBinding nameBinder = new StringBinding() {
+
+        {
+            super.bind(name);
+        }
+
+        /**
+         * Compute the name of DataSet.
+         * <p>
+         * If the name is user-set, then it returns this name. Otherwise, it computes the name from the Reader title and
+         * the translated data type, for example "SU-75845 - Pressure".
+         * </p>
+         * @inheritDoc
+         */
+        @Override
+        protected String computeValue() {
+            if (name.isNull().getValue()) {
+                if (getReader().getDataOriginFile() == null) return this.toString();
+                String name = getReader().getTitle();
+                if (getType() != null) switch (getType()) {
+                    case PRESSURE:
+                        name += " - Pression";
+                        break;
+                    case WATER:
+                        name += " - Précipitations";
+                        break;
+                    case TEMPERATURE:
+                        name += " - Température";
+                        break;
+                    case TEMPERATURE_MIN_MAX:
+                        name += " - Température (Min/Max)";
+                }
+                return name;
+            } else {
+                return name.getValue();
+            }
+        }
+    };
+
+    /**
+     * Construct a DataSet which depends on a Reader.
+     *
+     * @param reader The reader where the data has been taken from.
+     * @param type   The type of data which will be stored in this set.
+     * @throws IllegalArgumentException if reader or type are null.
+     */
+    public DataSet(DataSetReader reader, Data.Type type) {
+        if (reader == null || type == null) throw new IllegalArgumentException("Reader and type can not be null");
+        setReader(reader);
+        setType(type);
+        nameBinder.invalidate();
+    }
+
+    /**
      * Generate a name for the current set.
      *
      * @return The name for this set
      */
     public String getName() {
-        if (getReader().getDataOriginFile() == null) return this.toString();
-        String name = getReader().getTitle();
-        if (getType() != null) switch (getType()) {
-            case PRESSURE:
-                name += " - Pression";
-                break;
-            case WATER:
-                name += " - Précipitations";
-                break;
-            case TEMPERATURE:
-                name += " - Température";
-                break;
-            case TEMPERATURE_MIN_MAX:
-                name += " - Température (Min/Max)";
-        }
-        return name;
+        return nameBinder.get();
     }
 
     /**
@@ -107,6 +155,14 @@ public class DataSet extends ArrayList<Data> {
      */
     public SimpleBooleanProperty shownProperty() {
         return shown;
+    }
+
+    /**
+     * Accessor for the name property.
+     * The name property can be used to set the name of dataSet.
+     */
+    public SimpleStringProperty nameProperty() {
+        return name;
     }
 
     /**

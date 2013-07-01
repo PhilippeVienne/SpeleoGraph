@@ -3,12 +3,10 @@ package org.cds06.speleograph;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,9 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -27,7 +23,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 import org.cds06.speleograph.datepicker.DatePicker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,11 +50,12 @@ public class AppController implements Initializable {
      */
     private ObservableList<DataSet> data = FXCollections.observableArrayList();
 
-    /**
-     * Series which can be shown.
-     * <p>Every series is associated to a boolean which determine if a Series is currently shown on graph area.</p>
-     */
-    private ObservableMap<XYChart.Series<Date, Number>, ObservableBooleanValue> chartSeries = FXCollections.observableHashMap();
+    // Not used and should never be reused
+//    /**
+//     * Series which can be shown.
+//     * <p>Every series is associated to a boolean which determine if a Series is currently shown on graph area.</p>
+//     */
+//    private ObservableMap<XYChart.Series<Date, Number>, ObservableBooleanValue> chartSeries = FXCollections.observableHashMap();
 
     /**
      * List of opened dataSets.
@@ -118,9 +114,13 @@ public class AppController implements Initializable {
         }
 
         try {
+            log.debug("Start reading file " + file.getName());
             DataSetReader reader = new DataSetReader(file);
+            log.debug("End reading file " + file.getName());
             data.addAll(reader.getDataSets().values());
+            log.debug("End add all sets" + file.getName());
             openedFiles.add(openedFile);
+            log.debug("End do all things on file " + file.getName());
         } catch (Exception e) {
             log.error("Can not open file " + file.toString(), e);
         }
@@ -136,6 +136,7 @@ public class AppController implements Initializable {
                     set.shownProperty().addListener(new ChangeListener<Boolean>() {
                         @Override
                         public void changed(ObservableValue<? extends Boolean> observableValue, Boolean before, Boolean after) {
+                            if (observableValue != set.shownProperty()) return;
                             if (before) {
                                 // We have to hide the series
                                 hide(set);
@@ -145,7 +146,7 @@ public class AppController implements Initializable {
                             }
                         }
                     });
-                    chartSeries.put(set.getSeriesForChart(), set.shownProperty());
+                    //chartSeries.put(set.getSeriesForChart(), set.shownProperty());
                 }
             }
         });
@@ -160,31 +161,68 @@ public class AppController implements Initializable {
 //        System.exit(0); // A little much violent
 //    }
 
+    /**
+     * ListCell adapted for a DataSet Object.
+     * <p>A DataSetCell should be able to have a checkbox liked to the {@link DataSet#shown} property and allow the
+     * user to edit the name of the set by right-clicking on the list item</p>
+     */
+    private static class DataSetCell extends ListCell<DataSet> {
+        {
+            setEditable(true);
+        }
+
+        /**
+         * {@inheritDoc}
+         * @param set The dataSet which will be shown on the DataSetCell
+         * @param empty Does the dataSet is an empty value ? (generally put false)
+         */
+        @Override
+        public void updateItem(final DataSet set, boolean empty) {
+            super.updateItem(set, empty);
+            if (!empty && set != null) {
+                MenuItem item = MenuItemBuilder.create().onAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        startEdit();
+                        setText(null);
+                        final TextField field = TextFieldBuilder.create().promptText("Entrez un nom ...").build();
+                        field.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                set.nameProperty().set(field.getText());
+                                commitEdit(set);
+                            }
+                        });
+                        setGraphic(field);
+                    }
+                }).text("Changer le nom").build();
+                setContextMenu(new ContextMenu(item));
+                CheckBox box = new CheckBox();
+                box.selectedProperty().bindBidirectional(set.shownProperty());
+                setGraphic(box);
+                setText(set.getName());
+            }
+        }
+
+        /**
+         * Generate the {@link Callback} for a ListView to construct DataSetCell.
+         * @return A proper callback.
+         */
+        public static Callback<ListView<DataSet>, ListCell<DataSet>> factoryForList() {
+            return new Callback<ListView<DataSet>, ListCell<DataSet>>() {
+                @Override
+                public ListCell<DataSet> call(ListView<DataSet> dataSetListView) {
+                    return new DataSetCell();
+                }
+            };
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         openedList.setItems(data);
-        openedList.setCellFactory(
-                CheckBoxListCell.forListView(
-                        new Callback<DataSet, ObservableValue<Boolean>>() {
-                            @Override
-                            public ObservableValue<Boolean> call(final DataSet dataSet) {
-                                return dataSet.shownProperty();
-                            }
-                        },
-                        new StringConverter<DataSet>() {
-                            @Override
-                            public String toString(DataSet dataSet) {
-                                return dataSet.getName();
-                            }
-
-                            @Override
-                            public DataSet fromString(String s) {
-                                for (DataSet d : data)
-                                    if (d.getName().equals(s)) return d;
-                                return null;
-                            }
-                        }
-                ));
+        openedList.setCellFactory(DataSetCell.factoryForList());
+        openedList.setEditable(true);
     }
 
     /**
@@ -204,6 +242,7 @@ public class AppController implements Initializable {
      * @param dataSet The dataSet to show
      */
     private void show(DataSet dataSet) {
+        if (chart.dataMap.containsKey(dataSet)) return;
         chart.dataMap.put(dataSet, null);
         if (chart.getData().size() <= 1 && !rangeSetByUser.getValue()) {
             chart.getXAxis().rangeProperty().set(dataSet.getDateRange());
@@ -211,6 +250,10 @@ public class AppController implements Initializable {
         chart.refresh();
     }
 
+    /**
+     * Set the range by the DataSet.
+     * It used the smaller date and taller date in the current shown set to set the chart bounds.
+     */
     public void autoRange() {
         if (chart.getData().size() <= 0) return;
         Date start = null;
@@ -231,6 +274,10 @@ public class AppController implements Initializable {
         chart.refresh();
     }
 
+    /**
+     * Prompt Window for a Date.
+     * <p>This class is a stage used to show a small window prompt to enter a date.</p>
+     */
     private class PopUpDatePrompt extends Stage {
 
         public Button button;
@@ -267,11 +314,19 @@ public class AppController implements Initializable {
             setY(parent.getY() + (parent.getHeight() / 2) - 50);
         }
 
+        /**
+         * Show an error about the selected date.
+         * @param why Reason of error (should be localized string)
+         */
         public void error(String why) {
-            log.error("Erreur : " + why);
+            log.error("Error: " + why);
         }
     }
 
+    /**
+     * Ask to the user to define the start date of chart.
+     * @param actionEvent the action event is used to get the window to center the prompt box
+     */
     public void defineStartDate(ActionEvent actionEvent) {
         Window w = null;
         if (actionEvent.getSource() instanceof Button) {
@@ -299,6 +354,10 @@ public class AppController implements Initializable {
         prompt.show();
     }
 
+    /**
+     * Ask to the user to define the end date of chart.
+     * @param actionEvent the action event is used to get the window to center the prompt box
+     */
     public void defineStopDate(ActionEvent actionEvent) {
         Window w = null;
         if (actionEvent.getSource() instanceof Button) {
