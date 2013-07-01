@@ -90,7 +90,7 @@ public class ReefnetFileConverter {
      * @throws IOException when can not read the file or create the temporary file
      */
     public ReefnetFileConverter(File file) throws IOException {
-        this(file, File.createTempFile("ReefnetToSpeleoGraph", "cvs"));
+        this(file, File.createTempFile("ReefnetToSpeleoGraph", ".cvs"));
     }
 
     /**

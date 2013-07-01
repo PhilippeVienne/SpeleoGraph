@@ -73,6 +73,8 @@ public class Data {
         switch (dataType) {
             case PRESSURE:
                 return (value - 700) / 50;
+            case TEMPERATURE_MIN_MAX:
+                throw new IllegalStateException("Can not give a value for "+Type.TEMPERATURE_MIN_MAX);
             default:
                 return value;
         }

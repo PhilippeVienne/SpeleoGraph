@@ -7,6 +7,7 @@ package org.cds06.speleograph;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.cds06.speleograph.Data.Type;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -135,7 +136,7 @@ public class DataSetReader {
     private void read() throws IOException {
         CSVReader csvReader = new CSVReader(new FileReader(getDataOriginFile()), ';');
         String[] line;
-        HeadersList headers = null;
+        boolean headersRead=false;
         Type[] availableTypes = new Type[]{};
         int[][] columns = new int[][]{};
         int dateColumn = -1, timeColumn = -1;
@@ -144,20 +145,14 @@ public class DataSetReader {
                 if (line.length != 0) setTitle(line[0]);
                 continue;
             }
-            if (headers == null) {                         // The first line is headers
-                headers = new HeadersList(line.length);
-                Collections.addAll(headers, line);
-                availableTypes = headers.getAvailableTypes().toArray(availableTypes);
-                columns = new int[availableTypes.length][2];
-                for (int i = 0; i < availableTypes.length; i++) {
-                    if (headers.isMinMaxType(availableTypes[i])) {
-                        columns[i] = headers.getMinMaxValueColumnIdForType(availableTypes[i]);
-                    } else {
-                        columns[i] = new int[]{headers.getValueColumnIdForType(availableTypes[i]), -1};
-                    }
-                }
-                dateColumn = headers.getDateColumnId();
-                timeColumn = headers.getTimeColumnId();
+            if (!headersRead) {                         // The first line is headers
+                Headers headers= Headers.parseHeaderLine(line);
+                availableTypes = headers.availableTypes;
+                columns = headers.typeColumns;
+                dateColumn = headers.dateColumns[0];
+                timeColumn = headers.dateColumns[1];
+                headersRead=(dateColumn!=-1&&timeColumn!=-1&&availableTypes.length>0);
+                if(!headersRead) LoggerFactory.getLogger(getClass()).error("Error while parsing",line);
                 continue;
             }                                         // An data line
             Date day;
@@ -209,7 +204,7 @@ public class DataSetReader {
      * Helper for read headers.
      * <p>It's Helper is designed to get which data is stored in the file and in which column.</p>
      */
-    private static class HeadersList extends ArrayList<String> {
+    private static class Headers {
 
         /**
          * Define conditions to determine if a column contains a type of data.
@@ -232,122 +227,79 @@ public class DataSetReader {
         /**
          * Condition for date column.
          */
-        private final String dateColumn = "Date";
+        private static final String dateColumn = "Date";
         /**
          * Condition for hour column
          */
-        private final String timeColumn = "Heure";
+        private static final String timeColumn = "Heure";
 
-        /**
-         * Determine which Type of Data are available.
-         *
-         * @return The list of available data
-         */
-        public ArrayList<Type> getAvailableTypes() {
-            ArrayList<Type> list = new ArrayList<>(headerConditions.size());
-            for (Type type : headerConditions.keySet())
-                if (hasType(type)) list.add(type);
-            return list;
+        public enum HEADER_TYPE{
+            AVAILABLE_TYPES,
+            COLUMNS_FOR_AVAILABLE_TYPES,
+            DATE_COLUMNS
         }
 
         /**
-         * Determine if the header has got a type of data.
-         *
-         * @param t The type to check
-         * @return true if data is available
+         * Parse all data into a header line.
+         * @return Header Data stored in an HashMap by Header_Type
          */
-        public boolean hasType(Type t) {
-            if (!headerConditions.keySet().contains(t)) return false;
-            if (headerConditions.get(t).length > 0) {
-                if (isMinMaxType(t)) {
-                    boolean hasGotMin = false, hasGotMax = false;
-                    for (String c : this) {
-                        if (c.contains(headerConditions.get(t)[1])) hasGotMin = true;
-                        if (c.contains(headerConditions.get(t)[2])) hasGotMax = true;
+        public static Headers parseHeaderLine(String[] line){
+            Headers headers = new Headers();
+            ArrayList<Type> availableTypes=new ArrayList<>();
+            ArrayList<int[]> columns=new ArrayList<>();
+            Type t;
+            for(int i=0;i<headerConditions.size();i++){
+                t= (Type) headerConditions.keySet().toArray()[i];
+                String[] strings = (String[]) headerConditions.values().toArray()[i];
+                for (int condition = 0, stringsLength = (strings).length; condition < stringsLength; condition++) {
+                    String s = strings[condition];
+                    if(s==null) continue;
+                    s=s.toLowerCase();
+                    if(condition==0){
+                        for (int columnId = 0, lineLength = line.length; columnId < lineLength; columnId++) {
+                            String l = line[columnId];
+                            if (l.toLowerCase().contains(s)) {
+                                availableTypes.add(t);
+                                columns.add(new int[]{columnId,-1});
+                                columnId=lineLength;
+                            }
+                        }
+                    } else if(condition==1) {
+                        int[] columnsFound=new int[]{-1,-1};
+                        String condition2=strings[condition+1].toLowerCase();
+                        for (
+                                int columnId = 0, lineLength = line.length;
+                                columnId < lineLength;
+                                columnId++) {
+                            String l = line[columnId].toLowerCase();
+                            if (l.contains(s)) {
+                                columnsFound[0]=columnId;
+                            } else if(l.contains(condition2))
+                                columnsFound[1]=columnId;
+                            if(columnsFound[0]!=-1&&columnsFound[1]!=-1){
+                                availableTypes.add(t);
+                                columns.add(columnsFound);
+                                columnId=lineLength;
+                            }
+                        }
+                        condition=stringsLength;
                     }
-                    return hasGotMax && hasGotMin;
                 }
-                for (String c : this)
-                    if (c.contains(headerConditions.get(t)[0])) return true;
             }
-            return false;
-        }
-
-        /**
-         * Determine the column id for a type.
-         *
-         * @param t The type
-         * @return The index of type or -1 if it's not found.
-         * @throws IllegalStateException if t is not a type which has got a single value
-         */
-        public int getValueColumnIdForType(Type t) {
-            if (isMinMaxType(t)) throw new IllegalStateException(t + " is not a single value type");
-            if (!hasType(t)) return -1;
-            for (int i = 0; i < this.size(); i++)
-                if (this.get(i).contains(headerConditions.get(t)[0])) return i;
-            return -1;
-        }
-
-        /**
-         * Determine the columns ids for a type with min and max values.
-         *
-         * @param type The type
-         * @return Indexes in an array or Array of -1 if it's not found.
-         * @throws IllegalStateException if t is not a type which has got a single value
-         */
-        public int[] getMinMaxValueColumnIdForType(Type type) {
-            if (!isMinMaxType(type)) throw new IllegalStateException(type + " is not a min/max value type");
-            int[] ids = {-1, -1};
-            if (!hasType(type)) return ids;
-            for (int i = 0; i < this.size(); i++) {
-                String c = this.get(i);
-                if (c.contains(headerConditions.get(type)[1])) ids[0] = i;
-                if (c.contains(headerConditions.get(type)[2])) ids[1] = i;
+            headers.availableTypes=availableTypes.toArray(new Type[availableTypes.size()]);
+            headers.typeColumns=columns.toArray(new int[availableTypes.size()][2]);
+            headers.dateColumns=new int[2];
+            for (int i = 0, lineLength = line.length; i < lineLength; i++) {
+                String l = line[i];
+                if(l.contains(dateColumn)) headers.dateColumns[0]=i;
+                if(l.contains(timeColumn)) headers.dateColumns[1]=i;
             }
-            return ids;
+            return headers;
         }
 
-        /**
-         * Determine if a Type has only a Minimal and Maximal values.
-         *
-         * @param type The type to check
-         * @return true if type has only minimal and maximal columns.
-         */
-        public boolean isMinMaxType(Type type) {
-            return (headerConditions.get(type).length > 0) && headerConditions.get(type)[0] == null;
-        }
-
-        /**
-         * Determine the Date column id
-         *
-         * @return the id or -1 if it's not found
-         */
-        public int getDateColumnId() {
-            for (int i = 0; i < this.size(); i++)
-                if (this.get(i).contains(dateColumn)) return i;
-            return -1;
-        }
-
-        /**
-         * Determine the Time column id
-         *
-         * @return the id or -1 if it's not found
-         */
-        public int getTimeColumnId() {
-            for (int i = 0; i < this.size(); i++)
-                if (this.get(i).contains(timeColumn)) return i;
-            return -1;
-        }
-
-        /**
-         * Setup a constructor.
-         *
-         * @param i Number of header columns.
-         * @see ArrayList
-         */
-        public HeadersList(int i) {
-            super(i);
-        }
+        public Type[] availableTypes;
+        public int[][] typeColumns;
+        public int[] dateColumns;
 
     }
 }
