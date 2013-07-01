@@ -182,7 +182,16 @@ public class SpeleoChart extends LineChart<Date, Number> {
         Series<Date, Number> s = new Series<>();
         s.setName(data.getName());
         for (org.cds06.speleograph.Data d : data) {
-            s.getData().add(new Data<Date, Number>(d.getDate(), d.getValue(), data));
+            double n;
+            switch (d.getDataType()) {
+                case PRESSURE:
+                    n = (d.getValue() - 700) / 50;
+                    break;
+                default:
+                    n = d.getValue();
+            }
+            //if(n>=(n-0.01*n)&&n<=(n+0.01*n)) continue;
+            s.getData().add(new Data<>(d.getDate(), (Number) n, data));
         }
         return s;
     }
