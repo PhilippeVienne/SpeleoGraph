@@ -69,9 +69,7 @@ public class DataSetReader {
 
     {   // Setup DataSets
         for (Type type : Type.values()) {
-            dataSets.put(type, new DataSet());
-            dataSets.get(type).setReader(this);
-            dataSets.get(type).setType(type);
+            dataSets.put(type, new DataSet(this, type));
         }
     }
 
@@ -142,9 +140,7 @@ public class DataSetReader {
         CSVReader csvReader = new CSVReader(new FileReader(getDataOriginFile()), ';');
         String[] line;
         HeadersList headers = null;
-        //ArrayList<Type> availableTypes = new ArrayList<>(Type.values().length);
         Type[] availableTypes = new Type[]{};
-        //HashMap<Type, int[]> columns = new HashMap<>(Type.values().length);
         int[][] columns = new int[][]{};
         int dateColumn = -1, timeColumn = -1;
         int id = 0;
