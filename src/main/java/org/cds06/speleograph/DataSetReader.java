@@ -50,8 +50,6 @@ import java.util.*;
  */
 public class DataSetReader {
 
-//    private static final Logger log = LoggerFactory.getLogger(DataSetReader.class);
-
     /**
      * The title read from the first line of file.
      */
@@ -144,7 +142,9 @@ public class DataSetReader {
         while ((line = csvReader.readNext()) != null) {
             if (line.length <= 1) {                            // Title Line
                 if (line.length != 0) setTitle(line[0]);
-            } else if (headers == null) {                         // The first line is headers
+                continue;
+            }
+            if (headers == null) {                         // The first line is headers
                 headers = new HeadersList(line.length);
                 Collections.addAll(headers, line);
                 availableTypes = headers.getAvailableTypes().toArray(availableTypes);
@@ -158,31 +158,34 @@ public class DataSetReader {
                 }
                 dateColumn = headers.getDateColumnId();
                 timeColumn = headers.getTimeColumnId();
-            } else {                                        // An data line
-                Date day;
-                try {
-                    day = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(line[dateColumn] + " " + line[timeColumn]);
-                } catch (ParseException e) {
-                    day = GregorianCalendar.getInstance().getTime();
-                }
-                Data data;
-                for (int i = 0; i < availableTypes.length; i++) {
+                continue;
+            }                                         // An data line
+            Date day;
+            try {
+                day = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(line[dateColumn] + " " + line[timeColumn]);
+            } catch (ParseException e) {
+                day = GregorianCalendar.getInstance().getTime();
+            }
+            for (int i = 0; i < availableTypes.length; i++) {
+                if (line[columns[i][0]].length() > 0) {
                     if (columns[i][1] != -1) {
-                        if (line[columns[i][0]].length() > 0 && line[columns[i][1]].length() > 0) {
-                            data = new Data();
-                            data.setDataType(availableTypes[i]);
-                            data.setDate(day);
-                            data.setMinValue(Double.valueOf(line[columns[i][0]].replace(',', '.')));
-                            data.setMaxValue(Double.valueOf(line[columns[i][1]].replace(',', '.')));
-                            dataSets.get(availableTypes[i]).add(data);
+                        if (line[columns[i][1]].length() > 0) {
+                            new Data(
+                                    dataSets.get(availableTypes[i]),
+                                    availableTypes[i],
+                                    day,
+                                    Double.valueOf(line[columns[i][0]].replace(',', '.')),
+                                    Double.valueOf(line[columns[i][1]].replace(',', '.'))
+                            );
                         }
                     } else {
                         if (line[columns[i][0]].length() > 0) {
-                            data = new Data();
-                            data.setDataType(availableTypes[i]);
-                            data.setDate(day);
-                            data.setValue(Double.valueOf(line[columns[i][0]].replace(',', '.')));
-                            dataSets.get(availableTypes[i]).add(data);
+                            new Data(
+                                    dataSets.get(availableTypes[i]),
+                                    availableTypes[i],
+                                    day,
+                                    Double.valueOf(line[columns[i][0]].replace(',', '.'))
+                            );
                         }
                     }
                 }
@@ -219,7 +222,10 @@ public class DataSetReader {
         static {   // Write conditions for each type
             headerConditions.put(Type.PRESSURE, new String[]{"Pression"});
             headerConditions.put(Type.TEMPERATURE, new String[]{"Moy. : Température, °C"});
-            headerConditions.put(Type.TEMPERATURE_MIN_MAX, new String[]{null, "Min. : Température, °C", "Max. : Température, °C"});
+            headerConditions.put(
+                    Type.TEMPERATURE_MIN_MAX,
+                    new String[]{null, "Min. : Température, °C", "Max. : Température, °C"}
+            );
             headerConditions.put(Type.WATER, new String[]{"Pluvio"});
         }
 

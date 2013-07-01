@@ -4,13 +4,8 @@
  */
 package org.cds06.speleograph;
 
-import com.sun.media.sound.InvalidFormatException;
-
-import java.beans.*;
-import java.io.Serializable;
-import java.text.ParseException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -21,106 +16,66 @@ import java.util.Date;
  */
 public class Data {
 
-    public Type getDataType() {
-        return dataType;
+    /**
+     * Describe the type of the Data.
+     * It should never be null.
+     */
+    public Type dataType;
+
+    /**
+     * Measure date.
+     * When has this data been measured ?
+     */
+    public Date date;
+
+    /**
+     * Value (without units) of the data.
+     */
+    public Double value;
+
+    /**
+     * Minimal value during the measure.
+     */
+    public Double minValue;
+
+    /**
+     * Maximal value during the measure.
+     */
+    public Double maxValue;
+
+    /**
+     * The dataSet which contains the measure.
+     */
+    public DataSet originalSet;
+
+    public Data(DataSet originalSet, Type type, Date date, double value) {
+        this.originalSet = originalSet;
+        if (!originalSet.contains(this)) originalSet.add(this);
+        this.dataType = type;
+        this.date = date;
+        this.value = value;
     }
 
-    public void setDataType(Type dataType) {
+    public Data(DataSet originalSet, Type dataType, Date date, Double maxValue, Double minValue) {
+        this.originalSet = originalSet;
+        if (!originalSet.contains(this)) originalSet.add(this);
+        this.maxValue = maxValue;
+        this.minValue = minValue;
+        this.date = date;
         this.dataType = dataType;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
     /**
-     * Setter for measure date.
-     * You should prefer use the function #setDate(String,String)
-     * @param date The date to set
+     * Computes a value between approximately 0 and 100 for a chart view.
+     * @return The computed value
      */
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    /**
-     * Parse a date for this data.
-     * @param date The string representing the date to parse and set
-     * @param format The date format in the string
-     * @see SimpleDateFormat#parse(String)
-     * @throws InvalidFormatException On parsing error, see SimpleDateFormat for more details
-     */
-    public void setDate(String date, String format) throws InvalidFormatException {
-        try {
-            this.setDate(new SimpleDateFormat(format).parse(date));
-        } catch (ParseException e) {
-            throw new InvalidFormatException("The date "+date+" can not be parse with "+format);
+    public Number getValueForAChart() {
+        switch (dataType) {
+            case PRESSURE:
+                return (value - 700) / 50;
+            default:
+                return value;
         }
-    }
-
-    /**
-     * Getter for #value field.
-     * If there is a min and max values but no value, this function will return the average of both.
-     * @return The current value of Data
-     */
-    public Double getValue() {
-        if(value==Double.MIN_VALUE&&isMinAndMaxSat())
-            return (getMinValue()+getMaxValue())/2;
-        return value;
-    }
-
-    /**
-     * Set the value of current data.
-     * If it's a Temperature information and #isMinAndMaxSat is false, then min and max value are the value.
-     * @param value the data value
-     */
-    public void setValue(Double value) {
-        this.value = value;
-        if(getDataType()==Type.TEMPERATURE&&!isMinAndMaxSat()){
-            maxValue = value;
-            minValue = value;
-        }
-    }
-
-    /**
-     * Set all values of current data.
-     * It's a one call function to set value, min and max.
-     * @param value the data value
-     * @param maxValue maximal value on this Date
-     * @param minValue minimal value on this Date
-     * @see #setMinValue(Double)
-     * @see #setMaxValue(Double)
-     * @see #setValue(Double)
-     */
-    public void setValue(Double value,Double maxValue,Double minValue){
-        setMaxValue(maxValue);
-        setMinValue(minValue);
-        setValue(value);
-    }
-
-    /**
-     * Detect if there is a Minimal and a Maximal value.
-     * There is a Minimal and Maximal value if one of theme is not equal to
-     * {@code Double.MIN_VALUE}.
-     * @return A boolean true if one of theme valid the condition
-     */
-    public boolean isMinAndMaxSat(){
-        return ((getMinValue()!=Double.MIN_VALUE)||(getMaxValue()!=Double.MIN_VALUE));
-    }
-
-    public Double getMinValue() {
-        return minValue;
-    }
-
-    public void setMinValue(Double minValue) {
-        this.minValue = minValue;
-    }
-
-    public Double getMaxValue() {
-        return maxValue;
-    }
-
-    public void setMaxValue(Double maxValue) {
-        this.maxValue = maxValue;
     }
 
     static public enum Type{
@@ -142,34 +97,16 @@ public class Data {
         WATER
     }
 
-    private Type dataType = Type.TEMPERATURE;
-    private Date date = Calendar.getInstance().getTime();
-    private Double value = Double.MIN_VALUE;
-    private Double minValue = Double.MIN_VALUE;
-    private Double maxValue = Double.MIN_VALUE;
-
     @Override
     public String toString() {
-        String desc="Measure information :\n";
-        desc+=" - Type: "+getDataType().toString()+"\n";
-        desc+=" - Date: "+SimpleDateFormat.getDateTimeInstance().format(getDate())+"\n";
-        switch(getDataType()){
-            case TEMPERATURE_MIN_MAX:
-                desc += " - Value is between "+getMinValue()+"°C and "+getMaxValue()+"°C";
-                break;
-            case WATER:
-                desc += " - Cumulative "+getValue()+"mm/m²";
-                break;
-            case TEMPERATURE:
-                desc += " - Value : "+getValue()+"°C";
-                break;
-            case PRESSURE:
-                desc += " - Value : "+getValue()+"Pa";
-                break;
-            default:
-                desc += " - Value : "+getValue();
-        }
-        desc+="\n";
+        String desc = "Measure(";
+        if (dataType != null) desc += "TYPE=" + dataType + ", ";
+        if (date != null) desc += "DATE=" + SimpleDateFormat
+                .getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date) + ", ";
+        if (value != null) desc += "VALUE=" + value + ", ";
+        if (minValue != null) desc += "MIN_VALUE=" + minValue + ", ";
+        if (maxValue != null) desc += "MAX_VALUE=" + maxValue + ", ";
+        desc += ")";
         return desc;
     }
 }

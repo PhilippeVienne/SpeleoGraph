@@ -3,7 +3,6 @@ package org.cds06.speleograph;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.chart.XYChart;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -166,44 +165,17 @@ public class DataSet extends ArrayList<Data> {
     }
 
     /**
-     * Order all data by date.
-     */
-    public void orderByDate() {
-        for (int i = 0; i < size() - 1; i++) {
-            if (get(i).getDate().after(get(i + 1).getDate())) {
-                Data d = get(i + 1);
-                set(i + 1, get(i));
-                set(i, d);
-            }
-        }
-    }
-
-    /**
      * Get the minimal and maximal date from data in this set.
      *
      * @return The range of this Set
      */
     public DateRange getDateRange() {
-        Date older = get(0).getDate(), newer = get(size() - 1).getDate();
+        Date older = get(0).date, newer = get(size() - 1).date;
         for (Data d : this) {
-            if (d.getDate().before(older)) older = d.getDate();
-            if (d.getDate().after(newer)) newer = d.getDate();
+            if (d.date.before(older)) older = d.date;
+            if (d.date.after(newer)) newer = d.date;
         }
         return new DateRange(older, newer);
-    }
-
-    /**
-     * Generate a chart series with this set of data.
-     *
-     * @return The big series.
-     */
-    public XYChart.Series<Date, Number> getSeriesForChart() {
-        XYChart.Series<Date, Number> series = new XYChart.Series<>();
-        orderByDate(); // Be sure to order by date
-        series.setName(getName());
-        for (Data data : this)
-            series.getData().add(new XYChart.Data<Date, Number>(data.getDate(), data.getValue(), data));
-        return series;
     }
 
 }
