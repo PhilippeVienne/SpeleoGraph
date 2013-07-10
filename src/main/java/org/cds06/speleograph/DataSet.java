@@ -18,7 +18,6 @@ public class DataSet extends ArrayList<Data> {
      * Flag to determine if shown property is listened.
      *
      * @see #shown
-     * @see AppController#initialize(java.net.URL, java.util.ResourceBundle) This function use this flag
      */
     public boolean observed = false;
 

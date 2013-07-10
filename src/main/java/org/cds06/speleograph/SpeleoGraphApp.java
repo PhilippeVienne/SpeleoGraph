@@ -4,6 +4,10 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,9 +61,28 @@ public class SpeleoGraphApp extends JFrame {
         line_chart_dataset.addValue(60, "schools", "1990");
         line_chart_dataset.addValue(120, "schools", "2000");
         line_chart_dataset.addValue(240, "schools", "2010");
+        line_chart_dataset.addValue(60, "hotels", "1970");
+        line_chart_dataset.addValue(30, "hotels", "1980");
+        line_chart_dataset.addValue(80, "hotels", "1990");
+        line_chart_dataset.addValue(210, "hotels", "2000");
+        line_chart_dataset.addValue(200, "hotels", "2010");
 
                 /* Step -2:Define the JFreeChart object to create line chart */
-        lineChartObject = ChartFactory.createTimeSeriesChart(null, null, null, null, true, true, false);
+        lineChartObject = ChartFactory.createTimeSeriesChart(null, null, null, null, true, false, false);
+
+//        lineChartObject.getCategoryPlot().setRenderer(1,new AreaRenderer());
+//        lineChartObject.getCategoryPlot().setRenderer(0,new AreaRenderer());
+//        lineChartObject.getCategoryPlot().getDataset(1);
+        final TimeSeriesCollection dataset = new TimeSeriesCollection();
+        final TimeSeries series = new TimeSeries("Price");
+        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis()), 250));
+        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60)), 245));
+        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60 * 2)), 400));
+        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60 * 3)), 120));
+        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60 * 4)), 30));
+        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60 * 5)), 250));
+        dataset.addSeries(series);
+        lineChartObject.getXYPlot().setDataset(0, dataset);
 
 
         ChartPanel chartPanel = new ChartPanel(lineChartObject);
@@ -180,6 +203,11 @@ public class SpeleoGraphApp extends JFrame {
             delegate.add(e);
             fireIntervalAdded(this, index, index);
         }
+
+    }
+
+    private class SpeleoGraphFileReader {
+
 
     }
 }
