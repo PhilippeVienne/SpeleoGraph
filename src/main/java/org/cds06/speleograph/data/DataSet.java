@@ -192,7 +192,10 @@ public class DataSet implements XYDataset, Series.SeriesChangeListener {
             refreshShownList();
     }
 
+    private Type type = null;
+
     public Type getType() {
+        if (type != null) return type;
         for (Type type : dataSets.keySet()) {
             if (getDataSet(type).equals(this))
                 return type;

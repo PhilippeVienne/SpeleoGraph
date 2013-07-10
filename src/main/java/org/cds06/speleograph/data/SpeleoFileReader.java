@@ -7,7 +7,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 import javax.swing.*;
 import java.io.File;
@@ -96,15 +96,6 @@ public class SpeleoFileReader {
         headerConditions.put(Type.WATER, new String[]{"Pluvio"});
     }
 
-    /**
-     * Condition for date column.
-     */
-    private static final String dateColumn = "Date";
-    /**
-     * Condition for hour column
-     */
-    private static final String timeColumn = "Heure";
-
     public static HashMap<Type, Integer[]> readHeaders(String[] line) {
         HashMap<Type, Integer[]> typeAndColumns = new HashMap<>();
         for (int i = 0; i < line.length; i++) {
@@ -173,29 +164,22 @@ public class SpeleoFileReader {
             long t0 = System.currentTimeMillis();
             Series[] series = SpeleoFileReader.readFile(new File(demo));
             System.out.println(System.currentTimeMillis() - t0);
+            for (int i1 = 0, seriesLength = series.length; i1 < seriesLength; i1++) {
+                Series s = series[i1];
+                if (s.getType().equals(Type.WATER))
+                    series[i1] = Sampling.sampling(s, 86400000);
+            }
             DataSet.pushSeries(series);
             DataSet[] sets = new DataSet[]{DataSet.getDataSet(Type.TEMPERATURE), DataSet.getDataSet(Type.WATER)};
-//            for(DataSet set:sets){
-//                for(int i=0;i<set.getSeriesCount();i++){
-//                    final Number start;
-//                    Number date= 0d;
-//                    for(int j=0;j<set.getItemCount(i);j++){
-//                        final Number x = set.getX(i, j);
-//                        if(x.doubleValue()<date.doubleValue()) System.out.println("Error on "+i+", "+j);
-//                        date = x;
-//                    }
-//                }
-//            }
             JFreeChart chart = ChartFactory.createTimeSeriesChart("Demo SpeleoGraph", "Temps", null, sets[0], true, true, false);
             final XYPlot plot = chart.getXYPlot();
-            StandardXYItemRenderer renderer = new StandardXYItemRenderer();
             for (int i = 0, setsLength = sets.length; i < setsLength; i++) {
                 DataSet set = sets[i];
                 set.refresh();
                 final NumberAxis axis = set.getType().getAxis();
                 plot.setDataset(i, set);
                 plot.setRangeAxis(i, axis);
-                plot.setRenderer(i, renderer);
+                plot.setRenderer(i, new XYLineAndShapeRenderer(true, false));
                 plot.setRangeAxis(i, axis);
                 plot.mapDatasetToRangeAxis(i, i);
                 plot.setRangeAxisLocation(i, AxisLocation.BOTTOM_OR_LEFT);
