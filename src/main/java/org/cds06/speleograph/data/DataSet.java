@@ -30,6 +30,7 @@ public class DataSet implements XYDataset, Series.SeriesChangeListener {
     public static void pushSeries(Series... series) {
         for (Series s : series) {
             DataSet set = getDataSet(s.getType());
+            s.addListener(set);
             set.series.add(s);
         }
     }

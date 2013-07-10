@@ -72,11 +72,33 @@ public class Series implements Comparable {
 
     public void setShow(boolean v) {
         show = v;
+        notifyListeners(PropertyName.SHOWN);
     }
 
+    /**
+     * Compare a series to another.
+     * @param o Series to compare
+     * @return 0 if equal, -1 in other case
+     */
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(@SuppressWarnings("NullableProblems") Object o) {
+        if (o == null) throw new NullPointerException("Can not compare null elements");
         return this.equals(o) ? 0 : -1;
+    }
+
+    private ArrayList<SeriesChangeListener> listeners = new ArrayList<>();
+
+    protected void notifyListeners(PropertyName property) {
+        for (SeriesChangeListener listener : listeners)
+            listener.onChange(this, property);
+    }
+
+    public void addListener(SeriesChangeListener listener) {
+        if (!listeners.contains(listener)) listeners.add(listener);
+    }
+
+    public void removeListener(SeriesChangeListener listener) {
+        if (listeners.contains(listener)) listeners.remove(listener);
     }
 
     public interface SeriesChangeListener {
@@ -84,8 +106,11 @@ public class Series implements Comparable {
     }
 
     public enum PropertyName {
-        SHOWN,
-        TYPE
+        SHOWN
+    }
+
+    public String toString() {
+        return type.getName();
     }
 
 }
