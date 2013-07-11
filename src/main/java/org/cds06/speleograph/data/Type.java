@@ -5,6 +5,8 @@ import org.jfree.chart.axis.NumberAxis;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This file is created by PhilippeGeek.
@@ -12,10 +14,11 @@ import java.text.ParsePosition;
  */
 public class Type implements Comparable<Type> {
 
-    public static Type PRESSURE = new Type(DataType.PRESSURE);
-    public static Type TEMPERATURE = new Type(DataType.TEMPERATURE);
-    public static Type TEMPERATURE_MIN_MAX = new Type(DataType.TEMPERATURE_MIN_MAX);
-    public static Type WATER = new Type(DataType.WATER);
+    public static final Type UNKNOWN = new Type(DataType.OTHER,"","Donnée");
+    public static final Type PRESSURE = new Type(DataType.PRESSURE);
+    public static final Type TEMPERATURE = new Type(DataType.TEMPERATURE);
+    public static final Type TEMPERATURE_MIN_MAX = new Type(DataType.TEMPERATURE_MIN_MAX);
+    public static final Type WATER = new Type(DataType.WATER);
 
     /**
      * All types are equal.
@@ -77,6 +80,7 @@ public class Type implements Comparable<Type> {
     }
 
     private DataType type;
+    private List<DataSet> sets = new ArrayList<>();
     private String unit;
     private String name;
     private NumberAxis axis;
@@ -103,6 +107,14 @@ public class Type implements Comparable<Type> {
             return Double.valueOf(source.split(" ", 2)[0]);
         }
     };
+
+    public void registerToDataSet(DataSet set){
+        sets.add(set);
+    }
+
+    public void unlinkFromDataSet(DataSet set){
+        sets.remove(set);
+    }
 
     public Type(DataType type) {
         setUpDefaults(type);

@@ -17,16 +17,16 @@ public class Series implements Comparable {
         return Calendar.getInstance().getTime();
     }
 
-    public Series(File origin, Type type) {
-        this.type = type;
+    public Series(File origin) {
         this.origin = origin;
     }
 
     private boolean show = true; // = false;
     private File origin = null;
     private ArrayList<Item> items = new ArrayList<>();
-    private Type type;
     private DateRange range;
+    private DataSet set;
+    private String name;
 
     public int getItemCount() {
         if (items == null) return 0;
@@ -59,7 +59,8 @@ public class Series implements Comparable {
     }
 
     public Type getType() {
-        return type;
+        if(set == null) return Type.UNKNOWN;
+        return set.getType();
     }
 
     public ArrayList<Item> getItems() {
@@ -101,6 +102,24 @@ public class Series implements Comparable {
         if (listeners.contains(listener)) listeners.remove(listener);
     }
 
+    public DataSet getSet() {
+        return set;
+    }
+
+    public void setSet(DataSet set) {
+        this.set = set;
+    }
+
+    public String getName() {
+        if(name == null)
+            name = getOrigin().getName() + " - " + getType().getName();
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public interface SeriesChangeListener {
         public void onChange(Series theSeriesChanged, PropertyName propertyName);
     }
@@ -110,7 +129,7 @@ public class Series implements Comparable {
     }
 
     public String toString() {
-        return type.getName();
+        return getName();
     }
 
 }

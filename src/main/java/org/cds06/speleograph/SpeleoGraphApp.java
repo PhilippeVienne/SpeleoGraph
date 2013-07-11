@@ -1,9 +1,13 @@
 package org.cds06.speleograph;
 
+import org.cds06.speleograph.data.DataSet;
+import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.SpeleoFileReader;
+import org.cds06.speleograph.utils.ObservableArrayList;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.XYPlot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +40,7 @@ public class SpeleoGraphApp extends JFrame {
         toolBar.add(new OpenSpeleoGraphFileAction());
     }
 
-    public SpeleoDataListModel listModel = new SpeleoDataListModel();
+    public SpeleoSeriesListModel listModel = new SpeleoSeriesListModel();
 
     private CheckBoxList list = new CheckBoxList(listModel);
 
@@ -46,14 +50,12 @@ public class SpeleoGraphApp extends JFrame {
         panel.add(scrollPane, BorderLayout.EAST);
     }
 
-    JFreeChart chart;
+    private final JFreeChart chart = ChartFactory.createTimeSeriesChart(null, null, null, null, true, true, false);
+    private final XYPlot plot = chart.getXYPlot();
+    private final ObservableArrayList<DataSet> dataSets = new ObservableArrayList<>();
 
     public SpeleoGraphApp() {
         super("SpeleoGraph");
-
-        chart = ChartFactory.createTimeSeriesChart(null, null, null, null, true, true, false);
-        chart.getPlot().setNoDataMessage("Aucune donnée à afficher");
-        chart.getPlot().getDatasetGroup();
 
         panel.add(new ChartPanel(chart), BorderLayout.CENTER);
 
@@ -106,6 +108,7 @@ public class SpeleoGraphApp extends JFrame {
                     try {
                         log.debug("Start reading file " + file.getName());
                         org.cds06.speleograph.data.DataSet.pushSeries(SpeleoFileReader.readFile(file));
+
                         log.debug("End reading file " + file.getName());
                         openedFiles.add(openedFile);
                         log.debug("End do all things on file " + file.getName());
@@ -143,11 +146,11 @@ public class SpeleoGraphApp extends JFrame {
     //////////          SUB-CLASS
     ////////////////////////////////////////////////////////////////
 
-    private class SpeleoDataListModel extends AbstractListModel<DataSet> {
+    private class SpeleoSeriesListModel extends AbstractListModel<Series> {
 
         private static final long serialVersionUID = 1L;
 
-        private ArrayList<DataSet> delegate = new ArrayList<>();
+        private ArrayList<Series> delegate = new ArrayList<>();
 
         @Override
         public int getSize() {
@@ -155,11 +158,11 @@ public class SpeleoGraphApp extends JFrame {
         }
 
         @Override
-        public DataSet getElementAt(int index) {
+        public Series getElementAt(int index) {
             return delegate.get(index);
         }
 
-        public void add(DataSet e) {
+        public void add(Series e) {
             int index = delegate.size();
             delegate.add(e);
             fireIntervalAdded(this, index, index);

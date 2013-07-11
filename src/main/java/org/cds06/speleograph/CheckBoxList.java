@@ -1,5 +1,7 @@
 package org.cds06.speleograph;
 
+import org.cds06.speleograph.data.Series;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -11,11 +13,11 @@ import java.awt.event.MouseEvent;
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class CheckBoxList extends JList<DataSet> {
+public class CheckBoxList extends JList<Series> {
     protected static Border noFocusBorder =
             new EmptyBorder(1, 1, 1, 1);
 
-    public CheckBoxList(ListModel<DataSet> model) {
+    public CheckBoxList(ListModel<Series> model) {
         super(model);
 
         setCellRenderer(new CellRenderer());
@@ -25,8 +27,8 @@ public class CheckBoxList extends JList<DataSet> {
                 int index = locationToIndex(e.getPoint());
 
                 if (index != -1) {
-                    DataSet value = getModel().getElementAt(index);
-                    value.shownProperty().set(!value.shownProperty().get());
+                    Series value = getModel().getElementAt(index);
+                    value.setShow(!value.isShow());
                     repaint();
                 }
             }
@@ -36,14 +38,14 @@ public class CheckBoxList extends JList<DataSet> {
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    protected final class CellRenderer implements ListCellRenderer<DataSet> {
+    protected final class CellRenderer implements ListCellRenderer<Series> {
 
         private JCheckBox box = new JCheckBox();
 
         public Component getListCellRendererComponent(
-                JList list, DataSet value, int index,
+                JList list, Series value, int index,
                 boolean isSelected, boolean cellHasFocus) {
-            box.setSelected(value.shownProperty().get());
+            box.setSelected(value.isShow());
             box.setText(value.getName());
             box.setBackground(isSelected ?
                     getSelectionBackground() : getBackground());

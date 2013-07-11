@@ -13,10 +13,33 @@ public class ObservableArrayList<E> extends ArrayList<E> {
     private List<ArrayListObserver<E>> observers = null;
     private static final long serialVersionUID = 1L;
 
-    public ObservableArrayList( ArrayListObserver<E> observer ) {
+    /**
+     * Constructs an empty list with the specified initial capacity.
+     *
+     * @param initialCapacity the initial capacity of the list
+     * @throws IllegalArgumentException if the specified initial capacity
+     *                                            is negative
+     */
+    public ObservableArrayList(int initialCapacity) {
+        super(initialCapacity);
+    }
 
-        registerObserver( observer );
+    /**
+     * Constructs an empty list with an initial capacity of ten.
+     */
+    public ObservableArrayList() {
+    }
 
+    /**
+     * Constructs a list containing the elements of the specified
+     * collection, in the order they are returned by the collection's
+     * iterator.
+     *
+     * @param c the collection whose elements are to be placed into this list
+     * @throws NullPointerException if the specified collection is null
+     */
+    public ObservableArrayList(Collection<? extends E> c) {
+        super(c);
     }
 
     @Override
