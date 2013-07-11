@@ -1,7 +1,9 @@
 package org.cds06.speleograph.data;
 
+import org.apache.commons.lang3.Validate;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.renderer.xy.HighLowRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.DomainOrder;
@@ -285,7 +287,9 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
     }
 
     public XYItemRenderer getRenderer() {
-        if (renderer == null) renderer = new XYLineAndShapeRenderer(true, false);
+        if (renderer == null) {
+            renderer = getType().isHighLowType() ? new HighLowRenderer() : new XYLineAndShapeRenderer(true, false);
+        }
         return renderer;
     }
 
@@ -311,7 +315,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public Number getHigh(int series, int item) {
-        return null;
+        return getHighValue(series, item);
     }
 
     /**
@@ -324,7 +328,9 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public double getHighValue(int series, int item) {
-        return 0;
+        Validate.validIndex(this.series, series);
+        Validate.validIndex(this.series.get(series).getItems(), item);
+        return this.series.get(series).getItems().get(item).getHigh();
     }
 
     /**
@@ -336,7 +342,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public Number getLow(int series, int item) {
-        return null;
+        return getLowValue(series, item);
     }
 
     /**
@@ -349,7 +355,9 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public double getLowValue(int series, int item) {
-        return 0;
+        Validate.validIndex(this.series, series);
+        Validate.validIndex(this.series.get(series).getItems(), item);
+        return this.series.get(series).getItems().get(item).getLow();
     }
 
     /**
@@ -361,7 +369,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public Number getOpen(int series, int item) {
-        return null;
+        return getOpenValue(series, item);
     }
 
     /**
@@ -374,7 +382,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public double getOpenValue(int series, int item) {
-        return 0;
+        return Double.NaN;
     }
 
     /**
@@ -386,7 +394,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public Number getClose(int series, int item) {
-        return null;
+        return getCloseValue(series, item);
     }
 
     /**
@@ -399,7 +407,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public double getCloseValue(int series, int item) {
-        return 0;
+        return Double.NaN;
     }
 
     /**
@@ -411,7 +419,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public Number getVolume(int series, int item) {
-        return null;
+        return getVolumeValue(series, item);
     }
 
     /**
@@ -424,6 +432,6 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public double getVolumeValue(int series, int item) {
-        return 0;
+        return Double.NaN;
     }
 }

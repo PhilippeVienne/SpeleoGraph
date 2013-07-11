@@ -19,6 +19,7 @@ public class Type implements Comparable<Type> {
     public static final Type TEMPERATURE = new Type(DataType.TEMPERATURE);
     public static final Type TEMPERATURE_MIN_MAX = new Type(DataType.TEMPERATURE_MIN_MAX);
     public static final Type WATER = new Type(DataType.WATER);
+    private boolean highLow = false;
 
     /**
      * All types are equal.
@@ -109,6 +110,10 @@ public class Type implements Comparable<Type> {
         }
     };
 
+    public boolean isHighLowType() {
+        return highLow;
+    }
+
     public DataSet[] getSets() {
         return sets.toArray(new DataSet[sets.size()]);
     }
@@ -153,6 +158,7 @@ public class Type implements Comparable<Type> {
             case TEMPERATURE_MIN_MAX:
                 this.name = "Température (min/max)";
                 this.unit = "°C";
+                this.highLow = true;
                 break;
             case WATER:
                 this.name = "Précipitations";
