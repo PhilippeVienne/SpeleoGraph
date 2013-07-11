@@ -1,15 +1,8 @@
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.AxisLocation;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.apache.commons.lang3.Validate;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,7 +18,7 @@ import java.util.HashMap;
  */
 public class SpeleoFileReader {
 
-    private static NumberFormat numberFormat = NumberFormat.getNumberInstance();
+    private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
     public static Series[] readFile(File file) throws IOException, ParseException {
         CSVReader reader = new CSVReader(new FileReader(file), ';', '"');
@@ -38,28 +31,49 @@ public class SpeleoFileReader {
             }
             lineToStart++;
         }
-        return readFile(file, readHeaders(line), lineToStart, readDateHeaders(line));
+        final HashMap<Type, Integer[]> map = readHeaders(line);
+        return readFile(
+                file, map.keySet().toArray(new Type[1]), map.values().toArray(new Integer[0][]), lineToStart,
+                readDateHeaders(line));
     }
 
     public static Series[] readFile(
-            File file, HashMap<Type, Integer[]> types, int lineToStart, DateInformation dateInformation) throws IOException, ParseException {
-        Series[] seriesArray = new Series[types.size()];
+            final File file,
+            final Type[] types,
+            final Integer[][] columns,
+            final int lineToStart,
+            final DateInformation dateInformation
+    ) throws IOException, ParseException {
+
+        // Validates Data
         {
-            int i = 0;
-            for (Type t : types.keySet()) {
-                seriesArray[i] = new Series(file, t);
-                i++;
-            }
+            Validate.notNull(dateInformation);
+            Validate.notNull(lineToStart);
+            Validate.notEmpty(types, "Types can not be empty");
+            Validate.notEmpty(columns, "Columns can not be empty");
+            Validate.isTrue(columns.length == types.length, "Columns length and type length are not the sames");
         }
+
+        // Setup series
+        final int numberOfSeries = types.length;
+        final Series[] seriesArray = new Series[numberOfSeries];
+        for (int i = 0; i < numberOfSeries; i++) {
+            seriesArray[i] = new Series(file);
+            seriesArray[i].setSet(DataSet.getDataSet(types[i]));
+        }
+
+        // Create a Reader
         CSVReader reader = new CSVReader(new FileReader(file), ';', '"');
         int lineNumber = 0;
         String[] line;
+
+        // Read line by line
         while ((line = reader.readNext()) != null) {
             lineNumber++;
             if (lineNumber < (lineToStart + 1)) continue;
             Date date = dateInformation.parse(line);
-            for (Series s : seriesArray) {
-                Integer[] columnIds = types.get(s.getType());
+            for (int i = 0, max = types.length; i < max; i++) {
+                Integer[] columnIds = columns[i];
                 Item item;
                 if (columnIds.length == 1) {
                     if ("".equals(line[columnIds[0]])) continue;
@@ -71,10 +85,11 @@ public class SpeleoFileReader {
                 } else {
                     continue;
                 }
-                s.getItems().add(item);
+                seriesArray[i].getItems().add(item);
             }
         }
 
+        // Return the extracted series
         return seriesArray;
     }
 
@@ -96,7 +111,7 @@ public class SpeleoFileReader {
         headerConditions.put(Type.WATER, new String[]{"Pluvio"});
     }
 
-    public static HashMap<Type, Integer[]> readHeaders(String[] line) {
+    private static HashMap<Type, Integer[]> readHeaders(String[] line) {
         HashMap<Type, Integer[]> typeAndColumns = new HashMap<>();
         for (int i = 0; i < line.length; i++) {
             String columnName = line[i];
@@ -118,7 +133,7 @@ public class SpeleoFileReader {
         return typeAndColumns;
     }
 
-    public static DateInformation readDateHeaders(String[] line) {
+    private static DateInformation readDateHeaders(String[] line) {
         int[] columnsForDate = new int[2];
         for (int i = 0; i < line.length; i++) {
             if (line[i].contains("Date")) columnsForDate[0] = i;
@@ -158,40 +173,40 @@ public class SpeleoFileReader {
         }
     }
 
-    public static void main(String[] args) {
-        String demo = "C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Pluvio Villebruc\\2315774_9-tous.txt";
-        try {
-            long t0 = System.currentTimeMillis();
-            Series[] series = SpeleoFileReader.readFile(new File(demo));
-            System.out.println(System.currentTimeMillis() - t0);
-            for (int i1 = 0, seriesLength = series.length; i1 < seriesLength; i1++) {
-                Series s = series[i1];
-                if (s.getType().equals(Type.WATER))
-                    series[i1] = Sampling.sampling(s, 86400000);
-            }
-            DataSet.pushSeries(series);
-            DataSet[] sets = new DataSet[]{DataSet.getDataSet(Type.TEMPERATURE), DataSet.getDataSet(Type.WATER)};
-            JFreeChart chart = ChartFactory.createTimeSeriesChart("Demo SpeleoGraph", "Temps", null, sets[0], true, true, false);
-            final XYPlot plot = chart.getXYPlot();
-            for (int i = 0, setsLength = sets.length; i < setsLength; i++) {
-                DataSet set = sets[i];
-                set.refresh();
-                final NumberAxis axis = set.getType().getAxis();
-                plot.setDataset(i, set);
-                plot.setRangeAxis(i, axis);
-                plot.setRenderer(i, new XYLineAndShapeRenderer(true, false));
-                plot.setRangeAxis(i, axis);
-                plot.mapDatasetToRangeAxis(i, i);
-                plot.setRangeAxisLocation(i, AxisLocation.BOTTOM_OR_LEFT);
-            }
-            ChartFrame frame = new ChartFrame("SpeleoGraph Demo", chart);
-            frame.setSize(600, 300);
-            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            frame.setVisible(true);
-//                    System.out.println(Arrays.toString(DataSet.getDataSetInstances()));
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        String demo = "C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Pluvio Villebruc\\2315774_9-tous.txt";
+//        try {
+//            long t0 = System.currentTimeMillis();
+//            Series[] series = SpeleoFileReader.readFile(new File(demo));
+//            System.out.println(System.currentTimeMillis() - t0);
+//            for (int i1 = 0, seriesLength = series.length; i1 < seriesLength; i1++) {
+//                Series s = series[i1];
+//                if (s.getType().equals(Type.WATER))
+//                    series[i1] = Sampling.sampling(s, 86400000);
+//            }
+//            DataSet.pushSeries(series);
+//            DataSet[] sets = new DataSet[]{DataSet.getDataSet(Type.TEMPERATURE), DataSet.getDataSet(Type.WATER)};
+//            JFreeChart chart = ChartFactory.createTimeSeriesChart("Demo SpeleoGraph", "Temps", null, sets[0], true, true, false);
+//            final XYPlot plot = chart.getXYPlot();
+//            for (int i = 0, setsLength = sets.length; i < setsLength; i++) {
+//                DataSet set = sets[i];
+//                set.refresh();
+//                final NumberAxis axis = set.getType().getAxis();
+//                plot.setDataset(i, set);
+//                plot.setRangeAxis(i, axis);
+//                plot.setRenderer(i, new XYLineAndShapeRenderer(true, false));
+//                plot.setRangeAxis(i, axis);
+//                plot.mapDatasetToRangeAxis(i, i);
+//                plot.setRangeAxisLocation(i, AxisLocation.BOTTOM_OR_LEFT);
+//            }
+//            ChartFrame frame = new ChartFrame("SpeleoGraph Demo", chart);
+//            frame.setSize(600, 300);
+//            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//            frame.setVisible(true);
+////                    System.out.println(Arrays.toString(DataSet.getDataSetInstances()));
+//        } catch (IOException | ParseException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

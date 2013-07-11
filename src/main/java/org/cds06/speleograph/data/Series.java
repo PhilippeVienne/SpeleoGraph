@@ -21,7 +21,7 @@ public class Series implements Comparable {
         this.origin = origin;
     }
 
-    private boolean show = true; // = false;
+    private boolean show = false;
     private File origin = null;
     private ArrayList<Item> items = new ArrayList<>();
     private DateRange range;
@@ -107,6 +107,7 @@ public class Series implements Comparable {
     }
 
     public void setSet(DataSet set) {
+        set.add(this);
         this.set = set;
     }
 

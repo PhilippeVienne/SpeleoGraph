@@ -1,10 +1,14 @@
 package org.cds06.speleograph.data;
 
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.general.DatasetGroup;
-import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.OHLCDataset;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,9 +17,15 @@ import java.util.HashMap;
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class DataSet implements XYDataset, Series.SeriesChangeListener {
+public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
 
     private static HashMap<Type, DataSet> dataSets = new HashMap<>();
+    private ValueAxis valueAxis;
+    private XYItemRenderer renderer;
+
+    public DataSet(Type type) {
+        this.type = type;
+    }
 
     public static DataSet[] getDataSetInstances() {
         return dataSets.values().toArray(new DataSet[dataSets.size()]);
@@ -23,13 +33,13 @@ public class DataSet implements XYDataset, Series.SeriesChangeListener {
 
     public static DataSet getDataSet(Type type) {
         if (dataSets.containsKey(type)) return dataSets.get(type);
-        dataSets.put(type, new DataSet());
+        dataSets.put(type, new DataSet(type));
         return getDataSet(type);
     }
 
-    public static void pushSeries(Series... series) {
+    public static void pushSeries(Type t, Series... series) {
         for (Series s : series) {
-            DataSet set = getDataSet(s.getType());
+            DataSet set = getDataSet(t);
             s.addListener(set);
             set.series.add(s);
         }
@@ -197,18 +207,17 @@ public class DataSet implements XYDataset, Series.SeriesChangeListener {
 
     public Type getType() {
         if (type != null) return type;
-        for (Type type : dataSets.keySet()) {
-            if (getDataSet(type).equals(this))
-                return type;
-        }
-        return null;
+        throw new NullPointerException("Type of DataSet(" + this.hashCode() + ") is null !");
     }
 
     private void refreshShownList() {
-        ArrayList<Series> list = new ArrayList<>(series);
-        for (Series s : list)
-            if (!s.isShow()) list.remove(s);
-        shownSeries = list;
+        for (Series s : series) {
+            if (shownSeries.contains(s) && !s.isShow())
+                shownSeries.remove(s);
+            else if (!shownSeries.contains(s) && s.isShow())
+                shownSeries.add(s);
+        }
+        notifyChangeListeners();
     }
 
     public void refresh() {
@@ -222,8 +231,9 @@ public class DataSet implements XYDataset, Series.SeriesChangeListener {
      */
     protected void notifyChangeListeners() {
         DatasetChangeEvent event = new DatasetChangeEvent(this, this);
-        for (DatasetChangeListener listener : listeners)
+        for (DatasetChangeListener listener : new ArrayList<>(listeners)) {
             listener.datasetChanged(event);
+        }
     }
 
     /**
@@ -267,5 +277,153 @@ public class DataSet implements XYDataset, Series.SeriesChangeListener {
     public void setGroup(DatasetGroup group) {
         if (group == null) throw new NullPointerException("Group can not be null");
         this.group = group;
+    }
+
+    public ValueAxis getValueAxis() {
+        if (valueAxis == null) valueAxis = new NumberAxis();
+        return valueAxis;
+    }
+
+    public XYItemRenderer getRenderer() {
+        if (renderer == null) renderer = new XYLineAndShapeRenderer(true, false);
+        return renderer;
+    }
+
+    public void add(Series series) {
+        if (!this.series.contains(series)) {
+            this.series.add(series);
+            series.addListener(this);
+        }
+        this.refreshShownList();
+    }
+
+    public void remove(Series series) {
+        if (this.series.contains(series)) this.series.remove(series);
+        this.refreshShownList();
+    }
+
+    /**
+     * Returns the high-value for the specified series and item.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The value.
+     */
+    @Override
+    public Number getHigh(int series, int item) {
+        return null;
+    }
+
+    /**
+     * Returns the high-value (as a double primitive) for an item within a
+     * series.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The high-value.
+     */
+    @Override
+    public double getHighValue(int series, int item) {
+        return 0;
+    }
+
+    /**
+     * Returns the low-value for the specified series and item.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The value.
+     */
+    @Override
+    public Number getLow(int series, int item) {
+        return null;
+    }
+
+    /**
+     * Returns the low-value (as a double primitive) for an item within a
+     * series.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The low-value.
+     */
+    @Override
+    public double getLowValue(int series, int item) {
+        return 0;
+    }
+
+    /**
+     * Returns the open-value for the specified series and item.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The value.
+     */
+    @Override
+    public Number getOpen(int series, int item) {
+        return null;
+    }
+
+    /**
+     * Returns the open-value (as a double primitive) for an item within a
+     * series.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The open-value.
+     */
+    @Override
+    public double getOpenValue(int series, int item) {
+        return 0;
+    }
+
+    /**
+     * Returns the y-value for the specified series and item.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The value.
+     */
+    @Override
+    public Number getClose(int series, int item) {
+        return null;
+    }
+
+    /**
+     * Returns the close-value (as a double primitive) for an item within a
+     * series.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The close-value.
+     */
+    @Override
+    public double getCloseValue(int series, int item) {
+        return 0;
+    }
+
+    /**
+     * Returns the volume for the specified series and item.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The value.
+     */
+    @Override
+    public Number getVolume(int series, int item) {
+        return null;
+    }
+
+    /**
+     * Returns the volume-value (as a double primitive) for an item within a
+     * series.
+     *
+     * @param series the series (zero-based index).
+     * @param item   the item (zero-based index).
+     * @return The volume-value.
+     */
+    @Override
+    public double getVolumeValue(int series, int item) {
+        return 0;
     }
 }

@@ -24,7 +24,7 @@ public class Sampling {
     public Sampling(Series originalSeries, long sampleLength) {
         this.originalSeries = originalSeries;
         this.length = sampleLength;
-        this.newSeries = new Series(originalSeries.getOrigin(), originalSeries.getType());
+        this.newSeries = new Series(originalSeries.getOrigin());
     }
 
     public Series getSampledSeries() {

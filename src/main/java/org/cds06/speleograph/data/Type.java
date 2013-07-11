@@ -27,7 +27,7 @@ public class Type implements Comparable<Type> {
      * @return Always 0.
      */
     @Override
-    public int compareTo(Type o) {
+    public int compareTo(@SuppressWarnings("NullableProblems") Type o) {
         return this.equals(o) ? 0 : -1;
     }
 
@@ -104,9 +104,14 @@ public class Type implements Comparable<Type> {
 
         @Override
         public Number parse(String source, ParsePosition parsePosition) {
-            return Double.valueOf(source.split(" ", 2)[0]);
+            source = source.split(" ", 2)[0];
+            return NumberFormat.getNumberInstance().parse(source, parsePosition);
         }
     };
+
+    public DataSet[] getSets() {
+        return sets.toArray(new DataSet[sets.size()]);
+    }
 
     public void registerToDataSet(DataSet set){
         sets.add(set);
