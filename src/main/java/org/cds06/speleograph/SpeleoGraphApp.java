@@ -1,13 +1,9 @@
 package org.cds06.speleograph;
 
+import org.cds06.speleograph.data.SpeleoFileReader;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.time.FixedMillisecond;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.time.TimeSeriesDataItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,48 +46,17 @@ public class SpeleoGraphApp extends JFrame {
         panel.add(scrollPane, BorderLayout.EAST);
     }
 
-    JFreeChart lineChartObject;
+    JFreeChart chart;
 
     public SpeleoGraphApp() {
         super("SpeleoGraph");
-        /* Step - 1: Define the data for the line chart  */
-        DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
-        line_chart_dataset.addValue(15, "schools", "1970");
-        line_chart_dataset.addValue(30, "schools", "1980");
-        line_chart_dataset.addValue(60, "schools", "1990");
-        line_chart_dataset.addValue(120, "schools", "2000");
-        line_chart_dataset.addValue(240, "schools", "2010");
-        line_chart_dataset.addValue(60, "hotels", "1970");
-        line_chart_dataset.addValue(30, "hotels", "1980");
-        line_chart_dataset.addValue(80, "hotels", "1990");
-        line_chart_dataset.addValue(210, "hotels", "2000");
-        line_chart_dataset.addValue(200, "hotels", "2010");
 
-                /* Step -2:Define the JFreeChart object to create line chart */
-        lineChartObject = ChartFactory.createTimeSeriesChart(null, null, null, null, true, false, false);
+        chart = ChartFactory.createTimeSeriesChart(null, null, null, null, true, true, false);
+        chart.getPlot().setNoDataMessage("Aucune donnée à afficher");
+        chart.getPlot().getDatasetGroup();
 
-//        lineChartObject.getCategoryPlot().setRenderer(1,new AreaRenderer());
-//        lineChartObject.getCategoryPlot().setRenderer(0,new AreaRenderer());
-//        lineChartObject.getCategoryPlot().getDataset(1);
-        final TimeSeriesCollection dataset = new TimeSeriesCollection();
-        final TimeSeries series = new TimeSeries("Price");
-        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis()), 250));
-        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60)), 245));
-        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60 * 2)), 400));
-        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60 * 3)), 120));
-        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60 * 4)), 30));
-        series.add(new TimeSeriesDataItem(new FixedMillisecond(System.currentTimeMillis() + (1000 * 60 * 60 * 5)), 250));
-        dataset.addSeries(series);
-        lineChartObject.getXYPlot().setDataset(0, dataset);
+        panel.add(new ChartPanel(chart), BorderLayout.CENTER);
 
-
-        ChartPanel chartPanel = new ChartPanel(lineChartObject);
-        chartPanel.setPreferredSize(new java.awt.Dimension(600, 270));
-        chartPanel.setDomainZoomable(true);
-        chartPanel.setRangeZoomable(true);
-        setContentPane(chartPanel);
-
-        panel.add(chartPanel, BorderLayout.CENTER);
         setContentPane(panel);
         setSize(600, 500);
     }
@@ -140,12 +105,8 @@ public class SpeleoGraphApp extends JFrame {
 
                     try {
                         log.debug("Start reading file " + file.getName());
-                        DataSetReader reader = new DataSetReader(file);
+                        org.cds06.speleograph.data.DataSet.pushSeries(SpeleoFileReader.readFile(file));
                         log.debug("End reading file " + file.getName());
-                        for (DataSet set : reader.getDataSets().values()) {
-                            listModel.add(set);
-                        }
-                        log.debug("End add all sets" + file.getName());
                         openedFiles.add(openedFile);
                         log.debug("End do all things on file " + file.getName());
                     } catch (Exception e) {
@@ -203,11 +164,6 @@ public class SpeleoGraphApp extends JFrame {
             delegate.add(e);
             fireIntervalAdded(this, index, index);
         }
-
-    }
-
-    private class SpeleoGraphFileReader {
-
 
     }
 }

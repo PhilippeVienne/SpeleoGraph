@@ -39,6 +39,10 @@ public class ReefnetFileConverter {
 
     private static Logger logger = LoggerFactory.getLogger(ReefnetFileConverter.class);
 
+    public ReefnetFileConverter() {
+
+    }
+
     /**
      * Detect if a file is a ReefNet CSV format.
      * <p>Open the file as a csv, read the first line, we check that :
