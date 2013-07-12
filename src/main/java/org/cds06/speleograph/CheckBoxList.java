@@ -3,6 +3,7 @@ package org.cds06.speleograph;
 import org.cds06.speleograph.data.Sampling;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.Type;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -101,7 +102,21 @@ public class CheckBoxList extends JList<Series> {
             samplingItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Sampling.sampling(series, 1000 * 60 * 60 * 24);
+                    try {
+                        boolean hasANumber = false;
+                        int duration = 60 * 60 * 24;
+                        while (!hasANumber)
+                            try {
+                                String result = JOptionPane.showInputDialog(CheckBoxList.this, "Quel est la longueur de l'échantillonage (en secondes) ?", 60 * 60 * 24);
+                                duration = Integer.parseInt(result);
+                                hasANumber = true;
+                            } catch (NumberFormatException e1) {
+                                hasANumber = false;
+                            }
+                        Sampling.sampling(series, 1000 * duration);
+                    } catch (Exception e1) {
+                        LoggerFactory.getLogger(CheckBoxList.class).error("Erreur lors de l'échantillonage", e1);
+                    }
                 }
             });
             popupMenu.add(samplingItem);
