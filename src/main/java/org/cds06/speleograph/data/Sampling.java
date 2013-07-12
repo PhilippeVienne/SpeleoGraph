@@ -25,6 +25,8 @@ public class Sampling {
         this.originalSeries = originalSeries;
         this.length = sampleLength;
         this.newSeries = new Series(originalSeries.getOrigin());
+        Type t = this.originalSeries.getType().asStepType();
+        newSeries.setSet(DataSet.getDataSet(t));
     }
 
     public Series getSampledSeries() {

@@ -42,6 +42,17 @@ public class Type implements Comparable<Type>, Cloneable {
         return this.equals(o) ? 0 : -1;
     }
 
+    public Type asStepType() {
+        try {
+            final Type newType = (Type) clone();
+            newType.setSteppedType(true);
+            return newType;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return Type.UNKNOWN;
+    }
+
     public static enum DataType {
         TEMPERATURE,
         TEMPERATURE_MIN_MAX,

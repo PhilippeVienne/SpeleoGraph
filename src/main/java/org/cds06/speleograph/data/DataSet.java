@@ -12,8 +12,7 @@ import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.general.DatasetGroup;
 import org.jfree.data.xy.OHLCDataset;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * This file is created by PhilippeGeek.
@@ -24,6 +23,17 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
     private static HashMap<Type, DataSet> dataSets = new HashMap<>();
     private ValueAxis valueAxis;
     private XYItemRenderer renderer;
+    private static final ArrayList<DatasetChangeListener> STATIC_LISTENERS = new ArrayList<>(2);
+
+    public static void addListener(DatasetChangeListener datasetChangeListener) {
+        if (STATIC_LISTENERS.contains(datasetChangeListener)) return;
+        STATIC_LISTENERS.add(datasetChangeListener);
+    }
+
+    public static void removeListener(DatasetChangeListener datasetChangeListener) {
+        if (STATIC_LISTENERS.contains(datasetChangeListener))
+            STATIC_LISTENERS.remove(datasetChangeListener);
+    }
 
     private DataSet(Type type) {
         this.type = type;
@@ -217,6 +227,9 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
         for (DatasetChangeListener listener : new ArrayList<>(listeners)) {
             listener.datasetChanged(event);
         }
+        for (DatasetChangeListener listener : new ArrayList<>(STATIC_LISTENERS)) {
+            listener.datasetChanged(event);
+        }
     }
 
     private Type type = null;
@@ -248,6 +261,9 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
     protected void notifyChangeListeners() {
         DatasetChangeEvent event = new DatasetChangeEvent(this, this);
         for (DatasetChangeListener listener : new ArrayList<>(listeners)) {
+            listener.datasetChanged(event);
+        }
+        for (DatasetChangeListener listener : new ArrayList<>(STATIC_LISTENERS)) {
             listener.datasetChanged(event);
         }
     }
@@ -317,7 +333,10 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
     }
 
     public void remove(Series series) {
-        if (this.series.contains(series)) this.series.remove(series);
+        if (this.series.contains(series)) {
+            series.setShow(false);
+            this.series.remove(series);
+        }
         this.refreshShownList();
     }
 
@@ -448,5 +467,13 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
     @Override
     public double getVolumeValue(int series, int item) {
         return Double.NaN;
+    }
+
+    public List<Series> getSeries() {
+        return Collections.unmodifiableList(series);
+    }
+
+    public static Collection<DataSet> getInstances() {
+        return dataSets.values();
     }
 }

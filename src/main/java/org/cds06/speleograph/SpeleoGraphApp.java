@@ -3,8 +3,6 @@ package org.cds06.speleograph;
 import org.cds06.speleograph.data.DataSet;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.SpeleoFileReader;
-import org.cds06.speleograph.utils.AbstractChangeArrayListObserver;
-import org.cds06.speleograph.utils.ObservableArrayList;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -23,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * This file is created by PhilippeGeek.
@@ -57,28 +56,11 @@ public class SpeleoGraphApp extends JFrame {
 
     private final JFreeChart chart = ChartFactory.createTimeSeriesChart(null, null, null, null, true, true, false);
     private final XYPlot plot = chart.getXYPlot();
-    private final ObservableArrayList<DataSet> dataSets = new ObservableArrayList<>();
 
     {
-        dataSets.registerObserver(new AbstractChangeArrayListObserver<DataSet>() {
-
+        DataSet.addListener(new DatasetChangeListener() {
             @Override
-            public void onAdd(DataSet element) {
-                super.onAdd(element);
-                element.addChangeListener(new DatasetChangeListener() {
-                    @Override
-                    public void datasetChanged(DatasetChangeEvent event) {
-                        if (event.getSource() instanceof Series) {
-                            listModel.notifyElementsChanged((Series) event.getSource());
-                        } else {
-                            refreshChart();
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onChange(ChangeType type) {
+            public void datasetChanged(DatasetChangeEvent event) {
                 refreshChart();
             }
         });
@@ -91,7 +73,7 @@ public class SpeleoGraphApp extends JFrame {
             plot.setRenderer(i, null);
         }
         int axisIndex = 0;
-        for (final DataSet set : dataSets) {
+        for (final DataSet set : DataSet.getInstances()) {
             if (set == null) continue;
             if (set.getSeriesCount() > 0) {
                 boolean show = false;
@@ -164,14 +146,10 @@ public class SpeleoGraphApp extends JFrame {
                 }
                 log.debug("Start reading file " + file.getName());
                 try {
-                    listModel.add(SpeleoFileReader.readFile(file));
+                    SpeleoFileReader.readFile(file);
                 } catch (IOException | ParseException e) {
-                    e.printStackTrace();
-                }
-                for (DataSet set : DataSet.getDataSetInstances()) {
-                    if (!dataSets.contains(set)) {
-                        dataSets.add(set);
-                    }
+                    JOptionPane.showInternalInputDialog(SpeleoGraphApp.this, "Impossible d'ouvrir le fichier", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
                 log.debug("End reading file " + file.getName());
                 openedFiles.add(openedFile);
@@ -204,34 +182,61 @@ public class SpeleoGraphApp extends JFrame {
     //////////          SUB-CLASS
     ////////////////////////////////////////////////////////////////
 
-    private class SpeleoSeriesListModel extends AbstractListModel<Series> {
+    private class SpeleoSeriesListModel extends AbstractListModel<Series> implements DatasetChangeListener {
 
         private static final long serialVersionUID = 1L;
 
-        private ArrayList<Series> delegate = new ArrayList<>();
+        private Collection<DataSet> sets = DataSet.getInstances();
+
+        {
+            DataSet.addListener(this);
+        }
+
+        public int indexOf(Series s) {
+            int i = 0;
+            for (DataSet set : sets) {
+                for (Series ser : set.getSeries()) {
+                    if (ser == s) return i;
+                    i++;
+                }
+            }
+            return 0;
+        }
 
         public void notifyElementsChanged(Series s) {
-            final int i = delegate.indexOf(s);
+            final int i = indexOf(s);
             fireContentsChanged(s, i, i);
         }
 
         @Override
         public int getSize() {
-            return delegate.size();
+            int size = 0;
+            for (DataSet set : sets) {
+                size += set.getSeries().size();
+            }
+            return size;
         }
 
         @Override
         public Series getElementAt(int index) {
-            return delegate.get(index);
-        }
-
-        public void add(Series... e) {
-            int index = delegate.size();
-            for (int i = delegate.size(), max = i + e.length; i < max; i++) {
-                delegate.add(i, e[i]);
+            int i = 0;
+            for (DataSet set : sets) {
+                for (Series s : set.getSeries()) {
+                    if (index == i) return s;
+                    i++;
+                }
             }
-            fireIntervalAdded(this, index, index + e.length - 1);
+            throw new IndexOutOfBoundsException("Can not find your index");
         }
 
+        /**
+         * Receives notification of an dataset change event.
+         *
+         * @param event information about the event.
+         */
+        @Override
+        public void datasetChanged(DatasetChangeEvent event) {
+            fireContentsChanged(this, 0, getSize() - 1);
+        }
     }
 }

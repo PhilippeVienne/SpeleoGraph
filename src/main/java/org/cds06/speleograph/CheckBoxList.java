@@ -1,6 +1,8 @@
 package org.cds06.speleograph;
 
+import org.cds06.speleograph.data.Sampling;
 import org.cds06.speleograph.data.Series;
+import org.cds06.speleograph.data.Type;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -93,6 +95,30 @@ public class CheckBoxList extends JList<Series> {
             }
         });
         popupMenu.add(renameItem);
+
+        if (series.getType().equals(Type.WATER)) {
+            JMenuItem samplingItem = new JMenuItem("Créer une série échantillonée");
+            samplingItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Sampling.sampling(series, 1000 * 60 * 60 * 24);
+                }
+            });
+            popupMenu.add(samplingItem);
+        }
+
+        {
+            JMenuItem samplingItem = new JMenuItem("Supprimer la série");
+            samplingItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (JOptionPane.showConfirmDialog(CheckBoxList.this, "Etes-vous sur de vouloir supprimer cette série", "Confirmation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
+                        series.getSet().remove(series);
+                    }
+                }
+            });
+            popupMenu.add(samplingItem);
+        }
 
         popupMenu.show(this, mouseEvent.getX(), mouseEvent.getY());
     }
