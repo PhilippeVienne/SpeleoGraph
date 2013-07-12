@@ -68,7 +68,11 @@ public class SpeleoGraphApp extends JFrame {
                 element.addChangeListener(new DatasetChangeListener() {
                     @Override
                     public void datasetChanged(DatasetChangeEvent event) {
-                        refreshChart();
+                        if (event.getSource() instanceof Series) {
+                            listModel.notifyElementsChanged((Series) event.getSource());
+                        } else {
+                            refreshChart();
+                        }
                     }
                 });
             }
@@ -204,6 +208,11 @@ public class SpeleoGraphApp extends JFrame {
         private static final long serialVersionUID = 1L;
 
         private ArrayList<Series> delegate = new ArrayList<>();
+
+        public void notifyElementsChanged(Series s) {
+            final int i = delegate.indexOf(s);
+            fireContentsChanged(s, i, i);
+        }
 
         @Override
         public int getSize() {

@@ -25,7 +25,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
     private ValueAxis valueAxis;
     private XYItemRenderer renderer;
 
-    public DataSet(Type type) {
+    private DataSet(Type type) {
         this.type = type;
     }
 
@@ -201,8 +201,22 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
 
     @Override
     public void onChange(Series changed, Series.PropertyName propertyName) {
+        switch (propertyName) {
+            case SHOWN:
+                refreshShownList();
+            case NAME:
+                notifyChangeListeners(changed);
+        }
+
         if (propertyName == Series.PropertyName.SHOWN)
             refreshShownList();
+    }
+
+    private void notifyChangeListeners(Series changed) {
+        DatasetChangeEvent event = new DatasetChangeEvent(changed, this);
+        for (DatasetChangeListener listener : new ArrayList<>(listeners)) {
+            listener.datasetChanged(event);
+        }
     }
 
     private Type type = null;

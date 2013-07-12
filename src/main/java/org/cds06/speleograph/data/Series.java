@@ -118,6 +118,7 @@ public class Series implements Comparable {
     }
 
     public void setName(String name) {
+        notifyListeners(PropertyName.NAME);
         this.name = name;
     }
 
@@ -126,7 +127,7 @@ public class Series implements Comparable {
     }
 
     public enum PropertyName {
-        SHOWN
+        NAME, SHOWN
     }
 
     public String toString() {
