@@ -133,7 +133,17 @@ public class SpeleoGraphApp extends JFrame {
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 File openedFile = file;
-                if (openedFiles.contains(file)) return;
+                if (openedFiles.contains(file)) {
+                    if (JOptionPane.showConfirmDialog(
+                            SpeleoGraphApp.this,
+                            "Ce fichier a déjà été ouvert, êtes vous sur de vouloir le recharger ? (il peut y avoir" +
+                                    " des doublons)",
+                            "Question",
+                            JOptionPane.OK_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE
+                    ) != JOptionPane.OK_OPTION)
+                        return;
+                }
                 if (ReefnetFileConverter.isReefnetFile(file)) { // We must convert it before using
                     try {
                         ReefnetFileConverter converter = new ReefnetFileConverter(file);

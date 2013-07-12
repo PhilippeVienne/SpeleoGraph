@@ -113,7 +113,16 @@ public class CheckBoxList extends JList<Series> {
                             } catch (NumberFormatException e1) {
                                 hasANumber = false;
                             }
-                        Sampling.sampling(series, 1000 * duration);
+                        boolean hasAName = false;
+                        String name = "";
+                        while (!hasAName)
+                            try {
+                                name = JOptionPane.showInputDialog(CheckBoxList.this, "Quel est le nom de la nouvelle série ?", series.getName());
+                                hasAName = !"".equals(name);
+                            } catch (Exception e1) {
+                                hasAName = false;
+                            }
+                        Sampling.sampling(series, 1000 * duration).setName(name);
                     } catch (Exception e1) {
                         LoggerFactory.getLogger(CheckBoxList.class).error("Erreur lors de l'échantillonage", e1);
                     }
