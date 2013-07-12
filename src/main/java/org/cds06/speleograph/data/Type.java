@@ -12,7 +12,7 @@ import java.util.List;
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class Type implements Comparable<Type> {
+public class Type implements Comparable<Type>, Cloneable {
 
     public static final Type UNKNOWN = new Type(DataType.OTHER,"","Donnée");
     public static final Type PRESSURE = new Type(DataType.PRESSURE);
@@ -20,6 +20,16 @@ public class Type implements Comparable<Type> {
     public static final Type TEMPERATURE_MIN_MAX = new Type(DataType.TEMPERATURE_MIN_MAX);
     public static final Type WATER = new Type(DataType.WATER);
     private boolean highLow = false;
+
+    public boolean isSteppedType() {
+        return isSteppedType;
+    }
+
+    public void setSteppedType(boolean steppedType) {
+        isSteppedType = steppedType;
+    }
+
+    private boolean isSteppedType = false;
 
     /**
      * All types are equal.

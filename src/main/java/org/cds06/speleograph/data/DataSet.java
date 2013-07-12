@@ -297,6 +297,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
 
     public ValueAxis getValueAxis() {
         if (valueAxis == null) valueAxis = new NumberAxis();
+        valueAxis.setLabel(getType().getName() + " (" + getType().getUnit() + ")");
         return valueAxis;
     }
 

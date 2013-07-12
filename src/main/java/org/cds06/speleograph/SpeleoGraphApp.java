@@ -90,8 +90,8 @@ public class SpeleoGraphApp extends JFrame {
             plot.setRangeAxis(i, null);
             plot.setRenderer(i, null);
         }
-        for (int i = 0, max = dataSets.size(); i < max; i++) {
-            final DataSet set = dataSets.get(i);
+        int axisIndex = 0;
+        for (final DataSet set : dataSets) {
             if (set == null) continue;
             if (set.getSeriesCount() > 0) {
                 boolean show = false;
@@ -102,12 +102,13 @@ public class SpeleoGraphApp extends JFrame {
                     }
                 }
                 if (show) {
-                    plot.setDataset(i, set);
-                    plot.setRangeAxis(i, set.getValueAxis(), false);
-                    plot.setRenderer(i, set.getRenderer(), false);
-                    plot.mapDatasetToRangeAxis(i, i);
-                    plot.setRangeAxisLocation(i, AxisLocation.BOTTOM_OR_LEFT);
+                    plot.setDataset(axisIndex, set);
+                    plot.setRangeAxis(axisIndex, set.getValueAxis(), false);
+                    plot.setRenderer(axisIndex, set.getRenderer(), false);
+                    plot.mapDatasetToRangeAxis(axisIndex, axisIndex);
+                    plot.setRangeAxisLocation(axisIndex, AxisLocation.BOTTOM_OR_LEFT);
                     plot.datasetChanged(new DatasetChangeEvent(SpeleoGraphApp.this, set));
+                    axisIndex++;
                 }
             }
         }
