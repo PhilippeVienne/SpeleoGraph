@@ -7,6 +7,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
@@ -27,7 +28,7 @@ import java.util.Collection;
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class SpeleoGraphApp extends JFrame {
+public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
 
     private ArrayList<File> openedFiles = new ArrayList<>();
     private static Logger log = LoggerFactory.getLogger(SpeleoGraphApp.class);
@@ -56,17 +57,13 @@ public class SpeleoGraphApp extends JFrame {
 
     private final JFreeChart chart = ChartFactory.createTimeSeriesChart(null, null, null, null, true, true, false);
     private final XYPlot plot = chart.getXYPlot();
+    private final DateAxis dateAxis = (DateAxis) plot.getDomainAxis();
 
     {
-        DataSet.addListener(new DatasetChangeListener() {
-            @Override
-            public void datasetChanged(DatasetChangeEvent event) {
-                refreshChart();
-            }
-        });
+        DataSet.addListener(this);
     }
 
-    public void refreshChart() {
+    public void datasetChanged(DatasetChangeEvent event) {
         for (int i = 0, max = plot.getDatasetCount(); i < max; i++) {
             plot.setDataset(i, null);
             plot.setRangeAxis(i, null);
@@ -84,6 +81,7 @@ public class SpeleoGraphApp extends JFrame {
                     }
                 }
                 if (show) {
+                    plot.setDomainAxis(dateAxis);
                     plot.setDataset(axisIndex, set);
                     plot.setRangeAxis(axisIndex, set.getValueAxis(), false);
                     plot.setRenderer(axisIndex, set.getRenderer(), false);
@@ -94,16 +92,32 @@ public class SpeleoGraphApp extends JFrame {
                 }
             }
         }
+        if (axisIndex == 0) {
+            plot.setDomainAxis(null);
+        }
+    }
+
+    private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new ChartPanel(chart), scrollPane);
+
+    {
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(600);
+
+//Provide minimum sizes for the two components in the split pane
+        Dimension minimumSize = new Dimension(100, 50);
+        splitPane.getLeftComponent().setMinimumSize(minimumSize);
+        splitPane.getRightComponent().setMinimumSize(minimumSize);
     }
 
     public SpeleoGraphApp() {
         super("SpeleoGraph");
 
         plot.setNoDataMessage("Aucune Donnée");
-        panel.add(new ChartPanel(chart), BorderLayout.CENTER);
+        panel.add(splitPane, BorderLayout.CENTER);
 
         setContentPane(panel);
-        setSize(600, 500);
+        setSize(800, 500);
+        splitPane.setDividerLocation(0.8);
     }
 
     public static void main(String... args) {
@@ -211,11 +225,6 @@ public class SpeleoGraphApp extends JFrame {
                 }
             }
             return 0;
-        }
-
-        public void notifyElementsChanged(Series s) {
-            final int i = indexOf(s);
-            fireContentsChanged(s, i, i);
         }
 
         @Override
