@@ -1,6 +1,5 @@
 package org.cds06.speleograph.data;
 
-import com.sun.istack.internal.NotNull;
 import org.jfree.data.time.DateRange;
 
 import java.util.Calendar;
@@ -103,7 +102,7 @@ public class Item implements Comparable<Item> {
     }
 
     @Override
-    public int compareTo(@NotNull Item o) {
+    public int compareTo( @SuppressWarnings("NullableProblems") Item o) {
         if (o == null) throw new NullPointerException("Value compared is null");
         return getDate().compareTo(o.getDate());
     }
