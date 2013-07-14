@@ -7,7 +7,7 @@
     <groupId>org.cds06</groupId>
     <artifactId>SpeleoGraph</artifactId>
     <name>SpeleoGraph</name>
-    <url>https://github.com/CDS06/SpeleoGraph</url>
+    <url>http://cds06.github.org/SpeleoGraph</url>
 
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
@@ -16,6 +16,22 @@
         <name>CDS06</name>
     </organization>
 
+    <developers>
+        <developer>
+            <name>Philippe VIENNE</name>
+            <email>PhilippeGeek@gmail.com</email>
+            <id>PhilippeGeek</id>
+            <roles><role>Developer</role></roles>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>GNU GPL V3</name>
+            <url>http://www.gnu.org/licenses/gpl.txt</url>
+        </license>
+    </licenses>
+
     <scm>
         <url>https://github.com/CDS06/SpeleoGraph</url>
         <connection>scm:git:git://github.com//CDS06/SpeleoGraph.git</connection>
@@ -23,41 +39,18 @@
     </scm>
 
     <properties>
-        <github.global.server>github</github.global.server>
         <slf4j.version>1.6.1</slf4j.version>
         <java.version>1.7</java.version>
     </properties>
 
     <build>
         <plugins>
-
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>downloads-maven-plugin</artifactId>
-                <version>0.6</version>
-                <configuration>
-                    <description>Official ${project.name} build of the ${project.version} release</description>
-                    <override>true</override>
-                    <includeAttached>true</includeAttached>
-                    <server>github</server>
-                    <repositoryName>SpeleoGraph</repositoryName>
-                    <repositoryOwner>CDS06</repositoryOwner>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>upload</goal>
-                        </goals>
-                        <phase>install</phase>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>
-                <version>0.7</version>
+                <version>0.8</version>
                 <configuration>
-                    <message>Building site for ${project.version}</message>
+                    <message>Creating site for ${project.version}</message>
                     <server>github</server>
                 </configuration>
                 <executions>
@@ -116,6 +109,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
+
                     <archive>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -147,6 +141,34 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-beta-3</version>
+                <!-- do not bind to install phase
+                 <executions>
+                  <execution>
+                    <goals>
+                      <goal>report</goal>
+                    </goals>
+                  </execution>
+                 </executions>
+                 -->
+                <configuration>
+                    <jnlp>
+                        <mainClass>org.cds06.speleograph.SpeleoGraphApp</mainClass>
+                    </jnlp>
+                    <sign>
+                        <keystore>${project.basedir}/SpeleoGraph.jks</keystore>
+                        <keypass>${keystore.password}</keypass>
+                        <storepass>${keystore.password}</storepass>
+                        <storetype>jks</storetype>
+                        <alias>speleograph</alias>
+                        <verify>true</verify>
+                    </sign>
+                    <verbose>true</verbose>
+                </configuration>
             </plugin>
 
         </plugins>

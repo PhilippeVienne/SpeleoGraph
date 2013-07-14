@@ -2,3 +2,4 @@ target
 *.jar
 *.bak
 .idea
+.eclipse
