@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp
+    spec="1.0+"
+    codebase="http://cds06.github.org/SpeleoGraph/jnlp"
+    href="launch.jnlp">
+  <information>
+    <title>SpeleoGraph</title>
+    <vendor>CDS06</vendor>
+    <homepage href="http://cds06.github.org/SpeleoGraph"/>
+  </information>
+  <security>
+     <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.5+"/>
+         
+    <jar href="SpeleoGraph-1.0-SNAPSHOT.jar" main="true"/>
+
+     $extensions
+  </resources>
+  <application-desc main-class="org.cds06.speleograph.SpeleoGraphApp"/>
+</jnlp>
+

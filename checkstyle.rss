@@ -3,7 +3,7 @@
 <rss version="0.91">
   <channel>
     <title>SpeleoGraph - Checkstyle report</title>
-    <link>https://github.com/CDS06/SpeleoGraph</link>
+    <link>http://cds06.github.org/SpeleoGraph</link>
     <description>SpeleoGraph - Checkstyle report</description>
     <language>en-us</language>
     <copyright>&#169;2013 CDS06</copyright>
@@ -13,9 +13,9 @@
              Warnings: 0,
              Infos: 0
       </title>
-            <link>https://github.com/CDS06/SpeleoGraph/checkstyle.html</link>
+            <link>http://cds06.github.org/SpeleoGraph/checkstyle.html</link>
       <description>
-        <p>Click <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html">here</a> for the full Checkstyle report.</p>
+        <p>Click <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html">here</a> for the full Checkstyle report.</p>
 
         <table summary="Files" boder="1">
           <thead>
@@ -29,7 +29,7 @@
           <tbody>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.Type.java">org/cds06/speleograph/data/Type.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.Type.java">org/cds06/speleograph/data/Type.java</a>
                 </td>
                 <td>
                   0
@@ -43,7 +43,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.Sampling.java">org/cds06/speleograph/data/Sampling.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.Sampling.java">org/cds06/speleograph/data/Sampling.java</a>
                 </td>
                 <td>
                   0
@@ -57,7 +57,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.OpenFileWizard.java">org/cds06/speleograph/OpenFileWizard.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.OpenFileWizard.java">org/cds06/speleograph/OpenFileWizard.java</a>
                 </td>
                 <td>
                   0
@@ -71,7 +71,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.utils.ObservableArrayList.java">org/cds06/speleograph/utils/ObservableArrayList.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.utils.ObservableArrayList.java">org/cds06/speleograph/utils/ObservableArrayList.java</a>
                 </td>
                 <td>
                   0
@@ -85,7 +85,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.utils.AbstractChangeArrayListObserver.java">org/cds06/speleograph/utils/AbstractChangeArrayListObserver.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.utils.AbstractChangeArrayListObserver.java">org/cds06/speleograph/utils/AbstractChangeArrayListObserver.java</a>
                 </td>
                 <td>
                   0
@@ -99,7 +99,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.CheckBoxList.java">org/cds06/speleograph/CheckBoxList.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.CheckBoxList.java">org/cds06/speleograph/CheckBoxList.java</a>
                 </td>
                 <td>
                   0
@@ -113,7 +113,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.DataSet.java">org/cds06/speleograph/data/DataSet.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.DataSet.java">org/cds06/speleograph/data/DataSet.java</a>
                 </td>
                 <td>
                   0
@@ -127,7 +127,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.SpeleoGraphApp.java">org/cds06/speleograph/SpeleoGraphApp.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.SpeleoGraphApp.java">org/cds06/speleograph/SpeleoGraphApp.java</a>
                 </td>
                 <td>
                   0
@@ -141,7 +141,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.utils.ArrayListObserver.java">org/cds06/speleograph/utils/ArrayListObserver.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.utils.ArrayListObserver.java">org/cds06/speleograph/utils/ArrayListObserver.java</a>
                 </td>
                 <td>
                   0
@@ -155,7 +155,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.Item.java">org/cds06/speleograph/data/Item.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.Item.java">org/cds06/speleograph/data/Item.java</a>
                 </td>
                 <td>
                   0
@@ -169,7 +169,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.Series.java">org/cds06/speleograph/data/Series.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.Series.java">org/cds06/speleograph/data/Series.java</a>
                 </td>
                 <td>
                   0
@@ -183,7 +183,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.SpeleoFileReader.java">org/cds06/speleograph/data/SpeleoFileReader.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.data.SpeleoFileReader.java">org/cds06/speleograph/data/SpeleoFileReader.java</a>
                 </td>
                 <td>
                   0
@@ -197,7 +197,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.utils.AbstractArrayListObserver.java">org/cds06/speleograph/utils/AbstractArrayListObserver.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.utils.AbstractArrayListObserver.java">org/cds06/speleograph/utils/AbstractArrayListObserver.java</a>
                 </td>
                 <td>
                   0
@@ -211,7 +211,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/CDS06/SpeleoGraph/checkstyle.html#org.cds06.speleograph.ReefnetFileConverter.java">org/cds06/speleograph/ReefnetFileConverter.java</a>
+                  <a href="http://cds06.github.org/SpeleoGraph/checkstyle.html#org.cds06.speleograph.ReefnetFileConverter.java">org/cds06/speleograph/ReefnetFileConverter.java</a>
                 </td>
                 <td>
                   0
