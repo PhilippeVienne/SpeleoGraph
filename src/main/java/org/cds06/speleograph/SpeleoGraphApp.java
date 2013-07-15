@@ -1,6 +1,7 @@
 package org.cds06.speleograph;
 
 import org.cds06.speleograph.data.DataSet;
+import org.cds06.speleograph.data.ImportTable;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.SpeleoFileReader;
 import org.jfree.chart.ChartFactory;
@@ -20,7 +21,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -178,20 +178,20 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
                     }
                 }
                 log.debug("Start reading file " + file.getName());
-//                try {
-//                    ImportTable.openImportWizardFor(SpeleoGraphApp.this, file);
-//                } catch (IOException e) {
-//                    LoggerFactory.getLogger(SpeleoGraphApp.class).error("Erreur lors de la lecture d'un fichier",e);
-//                }
                 try {
-                    SpeleoFileReader.readFile(file);
-                } catch (IOException | ParseException e) {
-                    JOptionPane.showInternalInputDialog(SpeleoGraphApp.this, "Impossible d'ouvrir le fichier", "Erreur", JOptionPane.ERROR_MESSAGE);
-                    return;
+                    ImportTable.openImportWizardFor(SpeleoGraphApp.this, file);
+                } catch (IOException e) {
+                    LoggerFactory.getLogger(SpeleoGraphApp.class).error("Erreur lors de la lecture d'un fichier", e);
                 }
-                log.debug("End reading file " + file.getName());
-                openedFiles.add(openedFile);
-                log.debug("End do all things on file " + file.getName());
+//                try {
+//                    SpeleoFileReader.readFile(file);
+//                } catch (IOException | ParseException e) {
+//                    JOptionPane.showInternalInputDialog(SpeleoGraphApp.this, "Impossible d'ouvrir le fichier", "Erreur", JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+//                log.debug("End reading file " + file.getName());
+//                openedFiles.add(openedFile);
+//                log.debug("End do all things on file " + file.getName());
             }
         }
 

@@ -200,6 +200,16 @@ public class SpeleoFileReader {
                 throw new IllegalStateException("Can not parse a date !", e);
             }
         }
+
+        /**
+         * Determine if a column is already linked to a date format.
+         *
+         * @param index The column index
+         * @return True if a date format exist.
+         */
+        public boolean hasDateInformationForColumn(int index) {
+            return false;
+        }
     }
 
     /**
@@ -288,20 +298,26 @@ public class SpeleoFileReader {
         }
 
         /**
-         * Get information about date columns.
-         * @return The object which represent the date information.
-         */
-        public DateInformation getDateInformation() {
-            return dateInformation;
-        }
-
-        /**
          * Set the date information for the current file.
          * @param dateInformation A non null object which represent the date information.
          */
         public void setDateInformation(DateInformation dateInformation) {
             Validate.notNull(dateInformation);
             this.dateInformation = dateInformation;
+        }
+
+        /**
+         * Determine if a column is already linked to a series.
+         *
+         * @return true if a Series exist for this column.
+         */
+        public boolean hasSeriesForColumn(int index) {
+            for (Integer[] cols : columns) {
+                for (Integer col : cols) {
+                    if (col == index) return true;
+                }
+            }
+            return false;
         }
 
         /**
