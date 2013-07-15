@@ -103,9 +103,9 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
         splitPane.setOneTouchExpandable(true);
 
 //Provide minimum sizes for the two components in the split pane
-        Dimension minimumSize = new Dimension(100, 50);
-        splitPane.getLeftComponent().setMinimumSize(minimumSize);
-        splitPane.getRightComponent().setMinimumSize(minimumSize);
+//        Dimension minimumSize = new Dimension(100, 50);
+//        splitPane.getLeftComponent().setMinimumSize(minimumSize);
+//        splitPane.getRightComponent().setMinimumSize(minimumSize);
         splitPane.setDividerLocation(600);
     }
 
@@ -117,7 +117,16 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
 
         setContentPane(panel);
         setSize(800, 500);
-        splitPane.setDividerLocation(0.8);
+        splitPane.setResizeWeight(1.0);
+        //splitPane.setDividerLocation(0.8);
+    }
+
+    public void openFile(SpeleoFileReader.HeaderInformation information, File file) {
+        try {
+            SpeleoFileReader.read(file, information);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(panel, "Impossible d'ouvrir le fichier", "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void main(String... args) {
@@ -169,6 +178,11 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
                     }
                 }
                 log.debug("Start reading file " + file.getName());
+//                try {
+//                    ImportTable.openImportWizardFor(SpeleoGraphApp.this, file);
+//                } catch (IOException e) {
+//                    LoggerFactory.getLogger(SpeleoGraphApp.class).error("Erreur lors de la lecture d'un fichier",e);
+//                }
                 try {
                     SpeleoFileReader.readFile(file);
                 } catch (IOException | ParseException e) {

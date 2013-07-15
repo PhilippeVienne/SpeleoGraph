@@ -4,6 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
@@ -21,11 +22,11 @@ import java.util.HashMap;
  */
 public class SpeleoFileReader {
 
-    private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
+    private static final Logger log = LoggerFactory.getLogger(SpeleoFileReader.class);
 
     @Deprecated
     public static void readFile(File file) throws IOException, ParseException {
-        CSVReader reader = new CSVReader(new FileReader(file), ';', '"');
+        CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), "UTF-8"), ';', '"');
         int lineToStart = 0;
         String[] line;
         while ((line = reader.readNext()) != null) {
@@ -41,6 +42,7 @@ public class SpeleoFileReader {
             Series s=new Series(file);
             s.setSet(DataSet.getDataSet(t));
             information.set(s,map.get(t));
+            log.debug("Read " + t.getName());
         }
         information.setFirstLineOfData(lineToStart);
         information.setDateInformation(readDateHeaders(line));
@@ -59,6 +61,8 @@ public class SpeleoFileReader {
      *                      see {@link au.com.bytecode.opencsv.CSVReader#readNext()}.
      */
     public static void read(File file, HeaderInformation headers) throws IOException {
+        Validate.notNull(file);
+        Validate.notNull(headers);
         final CSVReader reader = new CSVReader(new FileReader(file), headers.getColumnSeparator(), '"');
         int lineId = -1;
         String[] line;
@@ -92,6 +96,8 @@ public class SpeleoFileReader {
         HashMap<Type, Integer[]> typeAndColumns = new HashMap<>();
         for (int i = 0; i < line.length; i++) {
             String columnName = line[i];
+
+            log.debug("Column: " + columnName);
             for (Type t : headerConditions.keySet()) {
                 String[] conditions = headerConditions.get(t);
                 for (int j = 0, conditionsLength = conditions.length; j < conditionsLength; j++) {
