@@ -20,6 +20,7 @@ public class SpeleoFileReader {
 
     private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
+    @Deprecated
     public static Series[] readFile(File file) throws IOException, ParseException {
         CSVReader reader = new CSVReader(new FileReader(file), ';', '"');
         int lineToStart = 0;
@@ -32,14 +33,21 @@ public class SpeleoFileReader {
             lineToStart++;
         }
         final HashMap<Type, Integer[]> map = readHeaders(line);
+        final int typesLength = map.size();
+        Type[] types= map.keySet().toArray(new Type[typesLength]);
+        final Series[] series = new Series[typesLength];
+        for(int i=0;i<typesLength;i++){
+            series[i] = new Series(file);
+            series[i].setSet(DataSet.getDataSet(types[i]));
+        }
         return readFile(
-                file, map.keySet().toArray(new Type[1]), map.values().toArray(new Integer[0][]), lineToStart,
+                file, series, map.values().toArray(new Integer[0][]), lineToStart,
                 readDateHeaders(line));
     }
 
     public static Series[] readFile(
             final File file,
-            final Type[] types,
+            final Series[] series,
             final Integer[][] columns,
             final int lineToStart,
             final DateInformation dateInformation
@@ -49,18 +57,13 @@ public class SpeleoFileReader {
         {
             Validate.notNull(dateInformation);
             Validate.notNull(lineToStart);
-            Validate.notEmpty(types, "Types can not be empty");
+            Validate.notEmpty(series, "Series to read can not be empty");
             Validate.notEmpty(columns, "Columns can not be empty");
-            Validate.isTrue(columns.length == types.length, "Columns length and type length are not the sames");
+            Validate.isTrue(columns.length == series.length, "Columns length and Series length are not the sames");
         }
 
         // Setup series
-        final int numberOfSeries = types.length;
-        final Series[] seriesArray = new Series[numberOfSeries];
-        for (int i = 0; i < numberOfSeries; i++) {
-            seriesArray[i] = new Series(file);
-            seriesArray[i].setSet(DataSet.getDataSet(types[i]));
-        }
+        final int numberOfSeries = series.length;
 
         // Create a Reader
         CSVReader reader = new CSVReader(new FileReader(file), ';', '"');
@@ -72,7 +75,7 @@ public class SpeleoFileReader {
             lineNumber++;
             if (lineNumber < (lineToStart + 1)) continue;
             Date date = dateInformation.parse(line);
-            for (int i = 0, max = types.length; i < max; i++) {
+            for (int i = 0; i < numberOfSeries; i++) {
                 Integer[] columnIds = columns[i];
                 Item item;
                 if (columnIds.length == 1) {
@@ -85,12 +88,12 @@ public class SpeleoFileReader {
                 } else {
                     continue;
                 }
-                seriesArray[i].getItems().add(item);
+                series[i].getItems().add(item);
             }
         }
 
         // Return the extracted series
-        return seriesArray;
+        return series;
     }
 
     /**
