@@ -101,12 +101,12 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
 
     {
         splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(600);
 
 //Provide minimum sizes for the two components in the split pane
         Dimension minimumSize = new Dimension(100, 50);
         splitPane.getLeftComponent().setMinimumSize(minimumSize);
         splitPane.getRightComponent().setMinimumSize(minimumSize);
+        splitPane.setDividerLocation(600);
     }
 
     public SpeleoGraphApp() {

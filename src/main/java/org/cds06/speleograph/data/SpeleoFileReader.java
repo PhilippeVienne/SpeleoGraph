@@ -2,6 +2,7 @@ package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +11,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -110,41 +112,84 @@ public class SpeleoFileReader {
 
     @Deprecated
     private static DateInformation readDateHeaders(String[] line) {
-        int[] columnsForDate = new int[2];
+        Integer[] columnsForDate = new Integer[]{null,null};
         for (int i = 0; i < line.length; i++) {
             if (line[i].contains("Date")) columnsForDate[0] = i;
             else if (line[i].contains("Heure")) columnsForDate[1] = i;
         }
-        return new DateInformation(columnsForDate);
+        final DateInformation information = new DateInformation();
+        if(columnsForDate[0] != null){
+            information.set(columnsForDate[0],"dd/MM/yyyy");
+        }
+        if(columnsForDate[1] != null){
+            information.set(columnsForDate[1],"HH:mm:ss");
+        }
+        return information;
     }
 
+    /**
+     * Store date-column link information for a file.
+     * <p>Each column can be link to a java date format sheme. When we read an entry, we join all columns for date and
+     * all date formats and ask to Java to parse it. If we got an error on parse, just return the actual date.</p>
+     */
     public static class DateInformation {
 
-        private int[] columnsToJoin = new int[]{};
+        /**
+         * Columns joined to create the date to parse.
+         */
+        private int[] columns = new int[0];
+        /**
+         * The date format for a column with the same array index.
+         * <p>Ex.: dateFormats[i] is the format for columns[i]</p>
+         */
+        private String[] dateFormats = new String[0];
+        /**
+         * This is the final computed value from {@link DateInformation#dateFormats}.
+         */
         private String dateFormat = "dd/MM/yyyy HH:mm:ss";
+
         private SimpleDateFormat format = new SimpleDateFormat(dateFormat);
 
-        public DateInformation(){}
-
-        public DateInformation(int[] columnsToJoin) {
-            this.columnsToJoin = columnsToJoin;
+        protected String computeDateFormat(){
+            dateFormat = StringUtils.join(dateFormats,' ');
+            format = new SimpleDateFormat(dateFormat);
+            return dateFormat;
         }
 
-        public DateInformation(int[] columnsToJoin, String dateFormat) {
-            this.columnsToJoin = columnsToJoin;
-            this.dateFormat = dateFormat;
-            format = new SimpleDateFormat(this.dateFormat);
+        public int set(int column, String format){
+            Validate.notNull(column);
+            Validate.notNull(format);
+            Validate.notEmpty(format);
+            Validate.isTrue(column>=0,"Column index should be positive");
+            {   // Check if format is a valid date format
+                try {
+                    new SimpleDateFormat(format).format(Calendar.getInstance().getTime());
+                } catch (IllegalArgumentException e) {
+                    return -1;
+                }
+            }
+            int index = ArrayUtils.indexOf(columns,column);
+            boolean isAdding = false;
+            if(index == ArrayUtils.INDEX_NOT_FOUND){
+                index = columns.length;
+                columns=Arrays.copyOf(columns,index+1);
+                dateFormats=Arrays.copyOf(dateFormats,index+1);
+                isAdding = true;
+            }
+            columns[index] = column;
+            dateFormats[index] = format;
+            computeDateFormat();
+            return isAdding?1:0;
         }
 
         public Date parse(String[] line) {
-            String dateInAString = "";
-            for (int i = 0, columnsToJoinLength = columnsToJoin.length; i < columnsToJoinLength; i++) {
-                int column = columnsToJoin[i];
-                dateInAString += line[column];
-                if (i != columnsToJoinLength - 1) dateInAString += " ";
+            String[] toJoin = new String[columns.length];
+            for(int i=0; i<columns.length; i++){
+                toJoin[i] = line[columns[i]];
             }
+            String date = StringUtils.join(toJoin,' ');
             try {
-                return format.parse(dateInAString);
+                return format.parse(date);
             } catch (ParseException e) {
                 throw new IllegalStateException("Can not parse a date !", e);
             }
@@ -187,7 +232,7 @@ public class SpeleoFileReader {
         /**
          * Series array, it contains all series to read mapped to an id (the index).
          */
-        protected Series[] series;
+        protected Series[] series = new Series[0];
 
         /**
          * Columns array, contains the columns id to read for a Series.
@@ -199,7 +244,7 @@ public class SpeleoFileReader {
          * </ul>
          * each entry in this array which has null length or length gather than 3 will be ignored.
          */
-        protected Integer[][] columns;
+        protected Integer[][] columns = new Integer[0][];
 
         /**
          * The line in the file where we will start to read data.
@@ -215,7 +260,7 @@ public class SpeleoFileReader {
         /**
          * Separator for each column in this file.
          */
-        private char columnSeparator;
+        private char columnSeparator = ';';
 
         /**
          * Get the value of the line in the file where we will start to read data.
