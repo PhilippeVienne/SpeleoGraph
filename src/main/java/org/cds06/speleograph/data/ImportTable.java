@@ -12,10 +12,19 @@ import java.io.File;
  */
 public class ImportTable extends JTable{
 
+    /**
+     * Number of read columns in the file.
+     */
     private int numberOfColumns;
+    /**
+     * The file used as source of data.
+     */
     private File sourceFile;
-    private Series[] series;
-    private Integer[] columns;
-    private SpeleoFileReader.DateInformation dateInformation;
 
+    private final SpeleoFileReader.HeaderInformation headerInformation = new SpeleoFileReader.HeaderInformation();
+
+    private final SpeleoFileReader.DateInformation dateInformation = new SpeleoFileReader.DateInformation();
+
+    public ImportTable() {
+    }
 }

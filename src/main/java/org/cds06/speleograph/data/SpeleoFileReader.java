@@ -1,14 +1,15 @@
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -21,7 +22,7 @@ public class SpeleoFileReader {
     private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
     @Deprecated
-    public static Series[] readFile(File file) throws IOException, ParseException {
+    public static void readFile(File file) throws IOException, ParseException {
         CSVReader reader = new CSVReader(new FileReader(file), ';', '"');
         int lineToStart = 0;
         String[] line;
@@ -33,67 +34,37 @@ public class SpeleoFileReader {
             lineToStart++;
         }
         final HashMap<Type, Integer[]> map = readHeaders(line);
-        final int typesLength = map.size();
-        Type[] types= map.keySet().toArray(new Type[typesLength]);
-        final Series[] series = new Series[typesLength];
-        for(int i=0;i<typesLength;i++){
-            series[i] = new Series(file);
-            series[i].setSet(DataSet.getDataSet(types[i]));
+        final HeaderInformation information = new HeaderInformation();
+        for(Type t:map.keySet()){
+            Series s=new Series(file);
+            s.setSet(DataSet.getDataSet(t));
+            information.set(s,map.get(t));
         }
-        return readFile(
-                file, series, map.values().toArray(new Integer[0][]), lineToStart,
-                readDateHeaders(line));
+        information.setFirstLineOfData(lineToStart);
+        information.setDateInformation(readDateHeaders(line));
+        read(file,information);
     }
 
-    public static Series[] readFile(
-            final File file,
-            final Series[] series,
-            final Integer[][] columns,
-            final int lineToStart,
-            final DateInformation dateInformation
-    ) throws IOException, ParseException {
-
-        // Validates Data
-        {
-            Validate.notNull(dateInformation);
-            Validate.notNull(lineToStart);
-            Validate.notEmpty(series, "Series to read can not be empty");
-            Validate.notEmpty(columns, "Columns can not be empty");
-            Validate.isTrue(columns.length == series.length, "Columns length and Series length are not the sames");
-        }
-
-        // Setup series
-        final int numberOfSeries = series.length;
-
-        // Create a Reader
-        CSVReader reader = new CSVReader(new FileReader(file), ';', '"');
-        int lineNumber = 0;
+    /**
+     * Read a file into Series.
+     * <p>Series are stored into the {@link HeaderInformation}. This function will call it line by line to push the data
+     * into series. In case of error, we simply continue to the next value.</p>
+     *
+     * @param headers This object contains all data usefull
+     * @param file    The file which we will read
+     * @throws FileNotFoundException If file does not exists.
+     * @throws IOException If an error occurs when read line in the file, to get more information about this exception
+     *                      see {@link au.com.bytecode.opencsv.CSVReader#readNext()}.
+     */
+    public static void read(File file, HeaderInformation headers) throws IOException {
+        final CSVReader reader = new CSVReader(new FileReader(file), headers.getColumnSeparator(), '"');
+        int lineId = -1;
         String[] line;
-
-        // Read line by line
-        while ((line = reader.readNext()) != null) {
-            lineNumber++;
-            if (lineNumber < (lineToStart + 1)) continue;
-            Date date = dateInformation.parse(line);
-            for (int i = 0; i < numberOfSeries; i++) {
-                Integer[] columnIds = columns[i];
-                Item item;
-                if (columnIds.length == 1) {
-                    if ("".equals(line[columnIds[0]])) continue;
-                    item = new Item(date, numberFormat.parse(line[columnIds[0]]).doubleValue());
-                } else if (columnIds.length == 2) {
-                    if ("".equals(line[columnIds[0]])) continue;
-                    if ("".equals(line[columnIds[1]])) continue;
-                    item = new Item(date, numberFormat.parse(line[columnIds[0]]).doubleValue(), numberFormat.parse(line[columnIds[1]]).doubleValue());
-                } else {
-                    continue;
-                }
-                series[i].getItems().add(item);
-            }
+        while ((line=reader.readNext())!=null){
+            lineId++;
+            if(lineId<headers.getFirstLineOfData())continue;
+            headers.read(line);
         }
-
-        // Return the extracted series
-        return series;
     }
 
     /**
@@ -114,6 +85,7 @@ public class SpeleoFileReader {
         headerConditions.put(Type.WATER, new String[]{"Pluvio"});
     }
 
+    @Deprecated
     private static HashMap<Type, Integer[]> readHeaders(String[] line) {
         HashMap<Type, Integer[]> typeAndColumns = new HashMap<>();
         for (int i = 0; i < line.length; i++) {
@@ -136,6 +108,7 @@ public class SpeleoFileReader {
         return typeAndColumns;
     }
 
+    @Deprecated
     private static DateInformation readDateHeaders(String[] line) {
         int[] columnsForDate = new int[2];
         for (int i = 0; i < line.length; i++) {
@@ -150,6 +123,8 @@ public class SpeleoFileReader {
         private int[] columnsToJoin = new int[]{};
         private String dateFormat = "dd/MM/yyyy HH:mm:ss";
         private SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+
+        public DateInformation(){}
 
         public DateInformation(int[] columnsToJoin) {
             this.columnsToJoin = columnsToJoin;
@@ -176,40 +151,196 @@ public class SpeleoFileReader {
         }
     }
 
-//    public static void main(String[] args) {
-//        String demo = "C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Pluvio Villebruc\\2315774_9-tous.txt";
-//        try {
-//            long t0 = System.currentTimeMillis();
-//            Series[] series = SpeleoFileReader.readFile(new File(demo));
-//            System.out.println(System.currentTimeMillis() - t0);
-//            for (int i1 = 0, seriesLength = series.length; i1 < seriesLength; i1++) {
-//                Series s = series[i1];
-//                if (s.getType().equals(Type.WATER))
-//                    series[i1] = Sampling.sampling(s, 86400000);
-//            }
-//            DataSet.pushSeries(series);
-//            DataSet[] sets = new DataSet[]{DataSet.getDataSet(Type.TEMPERATURE), DataSet.getDataSet(Type.WATER)};
-//            JFreeChart chart = ChartFactory.createTimeSeriesChart("Demo SpeleoGraph", "Temps", null, sets[0], true, true, false);
-//            final XYPlot plot = chart.getXYPlot();
-//            for (int i = 0, setsLength = sets.length; i < setsLength; i++) {
-//                DataSet set = sets[i];
-//                set.refresh();
-//                final NumberAxis axis = set.getType().getAxis();
-//                plot.setDataset(i, set);
-//                plot.setRangeAxis(i, axis);
-//                plot.setRenderer(i, new XYLineAndShapeRenderer(true, false));
-//                plot.setRangeAxis(i, axis);
-//                plot.mapDatasetToRangeAxis(i, i);
-//                plot.setRangeAxisLocation(i, AxisLocation.BOTTOM_OR_LEFT);
-//            }
-//            ChartFrame frame = new ChartFrame("SpeleoGraph Demo", chart);
-//            frame.setSize(600, 300);
-//            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//            frame.setVisible(true);
-////                    System.out.println(Arrays.toString(DataSet.getDataSetInstances()));
-//        } catch (IOException | ParseException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    /**
+     * Information about a file header.
+     * <p>A file header is a pack of information which are which series we will read, which columns are liked to a
+     * series, what are the date columns, how to parse the date ...</p>
+     * <p>This class is designed to be used by two classes, the first is {@link ImportTable} which will populate this
+     * class with user information, the second is {@link SpeleoFileReader} which will use it to parse the file fast.</p>
+     *
+     * @see java.io.Serializable This class is serializable to be saved in case we have to reuse it.
+     *
+     * @author Philippe VIENNE
+     * @since 1.0
+     */
+    public static class HeaderInformation implements Serializable{
 
+        /**
+         * Serial Version UID.
+         * Don't forget to change it if you change the serialization methods.
+         */
+        static final long serialVersionUID = 1L;
+
+        /**
+         * Number format is used to parse numbers in columns.
+         * @todo Can improve HeaderInformation to allow number reading on multiple columns ?
+         */
+        private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
+
+        /**
+         * Number of read Series.
+         * This value is computed to go faster while iterating series or columns. It must be a computed value and never
+         * be visible for elements outside this class.
+         */
+        protected int numberOfSeriesToParse;
+
+        /**
+         * Series array, it contains all series to read mapped to an id (the index).
+         */
+        protected Series[] series;
+
+        /**
+         * Columns array, contains the columns id to read for a Series.
+         * <p>Each entry in this array is designed as the following rules :
+         * <ul>
+         *     <li>{@code [int]}: is a single column data and series admit only a value per item</li>
+         *     <li>{@code [int,int]}: each item has a minimal value (first index) and maximal value(second index)</li>
+         *     <li>{@code [int,int,int]}: 0 is a value, 1 a minimal value and 2 a maximal value</li>
+         * </ul>
+         * each entry in this array which has null length or length gather than 3 will be ignored.
+         */
+        protected Integer[][] columns;
+
+        /**
+         * The line in the file where we will start to read data.
+         */
+        protected int firstLineOfData;
+
+        /**
+         * Information about date columns.
+         * <p>A column used for a Date element should not be used for a data.</p>
+         */
+        protected DateInformation dateInformation;
+
+        /**
+         * Separator for each column in this file.
+         */
+        private char columnSeparator;
+
+        /**
+         * Get the value of the line in the file where we will start to read data.
+         * @return An integer if not it will be a RuntimeError.
+         */
+        public int getFirstLineOfData() {
+            return firstLineOfData;
+        }
+
+        /**
+         * Set the value of the line in the file where we will start to read data.
+         * @param firstLineOfData A non-negative integer
+         * @throws IllegalArgumentException if the argument is not an integer or a negative integer.
+         */
+        public void setFirstLineOfData(int firstLineOfData) {
+            Validate.notNull(firstLineOfData,"The argument should not be null.");
+            Validate.isTrue(firstLineOfData>=0,"The argument should be positive");
+            this.firstLineOfData = firstLineOfData;
+        }
+
+        /**
+         * Get information about date columns.
+         * @return The object which represent the date information.
+         */
+        public DateInformation getDateInformation() {
+            return dateInformation;
+        }
+
+        /**
+         * Set the date information for the current file.
+         * @param dateInformation A non null object which represent the date information.
+         */
+        public void setDateInformation(DateInformation dateInformation) {
+            Validate.notNull(dateInformation);
+            this.dateInformation = dateInformation;
+        }
+
+        /**
+         * Get a series for an index.
+         * @param index The series index
+         */
+        public Series getSeries(int index){
+            Validate.validIndex(series,index,"The index should correspond to a series entry");
+            return series[index];
+        }
+
+        /**
+         * Get column information for a series.
+         * @param series The series
+         * @return The column information or null if series is not found in this header.
+         */
+        public Integer[] getColumnInformation(Series series){
+            final int index = ArrayUtils.indexOf(this.series,series);
+            if(index == ArrayUtils.INDEX_NOT_FOUND) return null;
+            Validate.validIndex(columns,index,"No column data for the index %d",index);
+            return columns[index];
+        }
+
+        /**
+         * Set data information for a Series and Columns.
+         *
+         * @param series The series to add (should be not null)
+         * @param column The column information with this format: <ul>
+         *     <li>{@code [int]}: is a single column data and series admit only a value per item</li>
+         *     <li>{@code [int,int]}: each item has a minimal value (first index) and maximal value(second index)</li>
+         *     <li>{@code [int,int,int]}: 0 is a value, 1 a minimal value and 2 a maximal value</li>
+         * </ul>
+         *
+         * @return 0 if it creates a new entry, 1 if it update one, -1 in case of error.
+         */
+        public int set(Series series, Integer[] column){
+            Validate.notNull(series);
+            Validate.notEmpty(column);
+            Validate.isTrue(column.length < 4,"Column array should have a length between 1 and 3 (see documentation)");
+            int index = ArrayUtils.indexOf(this.series,series);
+            boolean isCreated = false;
+            if(index == ArrayUtils.INDEX_NOT_FOUND) {
+                index = this.series.length;
+                this.series = Arrays.copyOf(this.series,index + 1);
+                this.columns = Arrays.copyOf(this.columns,index + 1);
+                this.numberOfSeriesToParse = this.series.length;
+                isCreated = true;
+            }
+            this.series[index] = series;
+            this.columns[index] = column;
+            return isCreated?0:1;
+        }
+
+        /**
+         * Read a line of data.
+         *
+         * @param line The array of columns. Should not be null.
+         * @return 0 if parse is full correct, 1 otherwise.
+         */
+        public int read(String[] line){
+            try {
+                final Date date = dateInformation.parse(line);
+                for (int i = 0; i < numberOfSeriesToParse; i++) {
+                    final Integer[] columnIds = columns[i];
+                    Item item;
+                    if (columnIds.length == 1) {
+                        if ("".equals(line[columnIds[0]])) continue;
+                        item = new Item(date, numberFormat.parse(line[columnIds[0]]).doubleValue());
+                    } else if (columnIds.length == 2) {
+                        if ("".equals(line[columnIds[0]])) continue;
+                        if ("".equals(line[columnIds[1]])) continue;
+                        item = new Item(date, numberFormat.parse(line[columnIds[0]]).doubleValue(), numberFormat.parse(line[columnIds[1]]).doubleValue());
+                    } else {
+                        continue;
+                    }
+                    series[i].getItems().add(item);
+                }
+                return 0;
+            } catch (ParseException e) {
+                LoggerFactory.getLogger(SpeleoFileReader.class).error("Can not read an entry",e);
+                return 1;
+            }
+        }
+
+        public char getColumnSeparator() {
+            return columnSeparator;
+        }
+
+        public void setColumnSeparator(char columnSeparator) {
+            this.columnSeparator = columnSeparator;
+        }
+    }
 }
