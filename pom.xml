@@ -1,4 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2013 Philippe VIENNE
+  ~
+  ~ This file is a part of SpeleoGraph
+  ~
+  ~ SpeleoGraph is free software: you can redistribute
+  ~ it and/or modify it under the terms of the GNU General
+  ~ Public License as published by the Free Software
+  ~ Foundation, either version 3 of the License, or (at your
+  ~ option) any later version.
+  ~
+  ~ SpeleoGraph is distributed in the hope that it will
+  ~ be useful, but WITHOUT ANY WARRANTY; without even the
+  ~ implied warranty of MERCHANTABILITY or FITNESS FOR A
+  ~ PARTICULAR PURPOSE.  See the GNU General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public
+  ~ License along with SpeleoGraph.
+  ~ If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -41,6 +63,7 @@
     <properties>
         <slf4j.version>1.6.1</slf4j.version>
         <java.version>1.7</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
@@ -53,14 +76,14 @@
                     <message>Creating site for ${project.version}</message>
                     <server>github</server>
                 </configuration>
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>site</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>site</phase>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>site</phase>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -77,11 +100,6 @@
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
                             <version>2.7</version>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>webstart-maven-plugin</artifactId>
-                            <version>1.0-beta-3</version>
                         </plugin>
                     </reportPlugins>
                 </configuration>
@@ -120,30 +138,6 @@
                 </executions>
             </plugin>
             <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>webstart-maven-plugin</artifactId>
                 <version>1.0-beta-3</version>
@@ -177,6 +171,13 @@
 
 
     <dependencies>
+
+        <!-- IDEA Annotations -->
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
+            <version>12.0</version>
+        </dependency>
 
         <!-- Chart for Swing -->
 
