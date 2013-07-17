@@ -22,6 +22,7 @@
 
 package org.cds06.speleograph.actions;
 
+import org.cds06.speleograph.I18nSupport;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class OpenReefnetFileAction extends AbstractAction {
      * @param component The parent component used to display dialogs.
      */
     public OpenReefnetFileAction(JComponent component) {
-        super("Importer");
+        super(I18nSupport.translate("actions.openReefNetFile"));
         parent = component;
     }
 
