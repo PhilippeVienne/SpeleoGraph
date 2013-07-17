@@ -1,4 +1,0 @@
-/* The main calendar pane */
-.date-picker {
-    -fx-skin: "org.cds06.speleograph.datepicker.skin.DatePickerSkin";
-}

@@ -39,6 +39,10 @@ public class ReefnetFileConverter {
 
     private static Logger logger = LoggerFactory.getLogger(ReefnetFileConverter.class);
 
+    public ReefnetFileConverter() {
+
+    }
+
     /**
      * Detect if a file is a ReefNet CSV format.
      * <p>Open the file as a csv, read the first line, we check that :
@@ -90,7 +94,7 @@ public class ReefnetFileConverter {
      * @throws IOException when can not read the file or create the temporary file
      */
     public ReefnetFileConverter(File file) throws IOException {
-        this(file, File.createTempFile("ReefnetToSpeleoGraph", "cvs"));
+        this(file, File.createTempFile("ReefnetToSpeleoGraph", ".cvs"));
     }
 
     /**
