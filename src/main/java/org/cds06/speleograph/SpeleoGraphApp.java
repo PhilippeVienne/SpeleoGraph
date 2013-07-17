@@ -30,7 +30,7 @@ import java.util.Collection;
  */
 public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
 
-    private ArrayList<File> openedFiles = new ArrayList<>();
+    //private ArrayList<File> openedFiles = new ArrayList<>();
     private static Logger log = LoggerFactory.getLogger(SpeleoGraphApp.class);
 
     private JPanel panel = new JPanel(new BorderLayout(2, 2));
@@ -130,6 +130,23 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
     }
 
     public static void main(String... args) {
+
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) { // NON-NLS
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+            catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e2) {
+                System.out.println("Leave default Java LookAndFeel"); // NON-NLS
+            }
+        }
+
         new SpeleoGraphApp().setVisible(true);
     }
 
@@ -140,7 +157,7 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
     private class OpenSpeleoGraphFileAction extends AbstractAction {
 
         public OpenSpeleoGraphFileAction() {
-            super("Ouvrir un fichier");
+            super("Importer des données");
         }
 
         private File debugFolder = new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\");
@@ -156,17 +173,17 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 File openedFile = file;
-                if (openedFiles.contains(file)) {
-                    if (JOptionPane.showConfirmDialog(
-                            SpeleoGraphApp.this,
-                            "Ce fichier a déjà été ouvert, êtes vous sur de vouloir le recharger ? (il peut y avoir" +
-                                    " des doublons)",
-                            "Question",
-                            JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.QUESTION_MESSAGE
-                    ) != JOptionPane.OK_OPTION)
-                        return;
-                }
+//                if (openedFiles.contains(file)) {
+//                    if (JOptionPane.showConfirmDialog(
+//                            SpeleoGraphApp.this,
+//                            "Ce fichier a déjà été ouvert, êtes vous sur de vouloir le recharger ? (il peut y avoir" +
+//                                    " des doublons)",
+//                            "Question",
+//                            JOptionPane.OK_CANCEL_OPTION,
+//                            JOptionPane.QUESTION_MESSAGE
+//                    ) != JOptionPane.OK_OPTION)
+//                        return;
+//                }
                 if (ReefnetFileConverter.isReefnetFile(file)) { // We must convert it before using
                     try {
                         ReefnetFileConverter converter = new ReefnetFileConverter(file);

@@ -156,17 +156,17 @@ public class CheckBoxList extends JList<Series> {
                 boolean isSelected, boolean cellHasFocus) {
             box.setSelected(value.isShow());
             box.setText(value.getName());
-            box.setBackground(isSelected ?
-                    getSelectionBackground() : getBackground());
-            box.setForeground(isSelected ?
-                    getSelectionForeground() : getForeground());
+//            box.setBackground(isSelected ?
+//                    getSelectionBackground() : getBackground());
+//            box.setForeground(isSelected ?
+//                    getSelectionForeground() : getForeground());
             box.setEnabled(isEnabled());
             box.setFont(getFont());
             box.setFocusPainted(false);
             box.setBorderPainted(true);
-            box.setBorder(isSelected ?
-                    UIManager.getBorder(
-                            "List.focusCellHighlightBorder") : noFocusBorder);
+//            box.setBorder(isSelected ?
+//                    UIManager.getBorder(
+//                            "List.focusCellHighlightBorder") : noFocusBorder);
             return box;
         }
     }
