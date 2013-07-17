@@ -38,15 +38,15 @@ public class SpeleoFileReader {
         }
         final HashMap<Type, Integer[]> map = readHeaders(line);
         final HeaderInformation information = new HeaderInformation();
-        for(Type t:map.keySet()){
-            Series s=new Series(file);
+        for (Type t : map.keySet()) {
+            Series s = new Series(file);
             s.setSet(DataSet.getDataSet(t));
-            information.set(s,map.get(t));
+            information.set(s, map.get(t));
             log.debug("Read " + t.getName());
         }
         information.setFirstLineOfData(lineToStart);
         information.setDateInformation(readDateHeaders(line));
-        read(file,information);
+        read(file, information);
     }
 
     /**
@@ -57,8 +57,8 @@ public class SpeleoFileReader {
      * @param headers This object contains all data usefull
      * @param file    The file which we will read
      * @throws FileNotFoundException If file does not exists.
-     * @throws IOException If an error occurs when read line in the file, to get more information about this exception
-     *                      see {@link au.com.bytecode.opencsv.CSVReader#readNext()}.
+     * @throws IOException           If an error occurs when read line in the file, to get more information about this exception
+     *                               see {@link au.com.bytecode.opencsv.CSVReader#readNext()}.
      */
     public static void read(File file, HeaderInformation headers) throws IOException {
         Validate.notNull(file);
@@ -66,9 +66,9 @@ public class SpeleoFileReader {
         final CSVReader reader = new CSVReader(new FileReader(file), headers.getColumnSeparator(), '"');
         int lineId = -1;
         String[] line;
-        while ((line=reader.readNext())!=null){
+        while ((line = reader.readNext()) != null) {
             lineId++;
-            if(lineId<headers.getFirstLineOfData())continue;
+            if (lineId < headers.getFirstLineOfData()) continue;
             headers.read(line);
         }
     }
@@ -118,17 +118,17 @@ public class SpeleoFileReader {
 
     @Deprecated
     private static DateInformation readDateHeaders(String[] line) {
-        Integer[] columnsForDate = new Integer[]{null,null};
+        Integer[] columnsForDate = new Integer[]{null, null};
         for (int i = 0; i < line.length; i++) {
             if (line[i].contains("Date")) columnsForDate[0] = i;
             else if (line[i].contains("Heure")) columnsForDate[1] = i;
         }
         final DateInformation information = new DateInformation();
-        if(columnsForDate[0] != null){
-            information.set(columnsForDate[0],"dd/MM/yyyy");
+        if (columnsForDate[0] != null) {
+            information.set(columnsForDate[0], "dd/MM/yyyy");
         }
-        if(columnsForDate[1] != null){
-            information.set(columnsForDate[1],"HH:mm:ss");
+        if (columnsForDate[1] != null) {
+            information.set(columnsForDate[1], "HH:mm:ss");
         }
         return information;
     }
@@ -156,17 +156,17 @@ public class SpeleoFileReader {
 
         private SimpleDateFormat format = new SimpleDateFormat(dateFormat);
 
-        protected String computeDateFormat(){
-            dateFormat = StringUtils.join(dateFormats,' ');
+        protected String computeDateFormat() {
+            dateFormat = StringUtils.join(dateFormats, ' ');
             format = new SimpleDateFormat(dateFormat);
             return dateFormat;
         }
 
-        public int set(int column, String format){
+        public int set(int column, String format) {
             Validate.notNull(column);
             Validate.notNull(format);
             Validate.notEmpty(format);
-            Validate.isTrue(column>=0,"Column index should be positive");
+            Validate.isTrue(column >= 0, "Column index should be positive");
             {   // Check if format is a valid date format
                 try {
                     new SimpleDateFormat(format).format(Calendar.getInstance().getTime());
@@ -174,26 +174,26 @@ public class SpeleoFileReader {
                     return -1;
                 }
             }
-            int index = ArrayUtils.indexOf(columns,column);
+            int index = ArrayUtils.indexOf(columns, column);
             boolean isAdding = false;
-            if(index == ArrayUtils.INDEX_NOT_FOUND){
+            if (index == ArrayUtils.INDEX_NOT_FOUND) {
                 index = columns.length;
-                columns=Arrays.copyOf(columns,index+1);
-                dateFormats=Arrays.copyOf(dateFormats,index+1);
+                columns = Arrays.copyOf(columns, index + 1);
+                dateFormats = Arrays.copyOf(dateFormats, index + 1);
                 isAdding = true;
             }
             columns[index] = column;
             dateFormats[index] = format;
             computeDateFormat();
-            return isAdding?1:0;
+            return isAdding ? 1 : 0;
         }
 
         public Date parse(String[] line) {
             String[] toJoin = new String[columns.length];
-            for(int i=0; i<columns.length; i++){
+            for (int i = 0; i < columns.length; i++) {
                 toJoin[i] = line[columns[i]];
             }
-            String date = StringUtils.join(toJoin,' ');
+            String date = StringUtils.join(toJoin, ' ');
             try {
                 return format.parse(date);
             } catch (ParseException e) {
@@ -208,7 +208,30 @@ public class SpeleoFileReader {
          * @return True if a date format exist.
          */
         public boolean hasDateInformationForColumn(int index) {
-            return false;
+            return ArrayUtils.contains(columns, index);
+        }
+
+        /**
+         * Get the current format for a column
+         *
+         * @param column The column to find
+         * @return The format or null if this column has no date format.
+         */
+        public String getForColumn(int column) {
+            for (int i = 0; i < columns.length; i++)
+                if (columns[i] == column)
+                    return dateFormats[i];
+            return null;
+        }
+
+        /**
+         * Delete an entry.
+         *
+         * @param index The index of column to delete
+         */
+        public void remove(int index) {
+            dateFormats = ArrayUtils.removeElement(dateFormats, getForColumn(index));
+            columns = ArrayUtils.removeElement(columns, index);
         }
     }
 
@@ -219,12 +242,11 @@ public class SpeleoFileReader {
      * <p>This class is designed to be used by two classes, the first is {@link ImportTable} which will populate this
      * class with user information, the second is {@link SpeleoFileReader} which will use it to parse the file fast.</p>
      *
-     * @see java.io.Serializable This class is serializable to be saved in case we have to reuse it.
-     *
      * @author Philippe VIENNE
+     * @see java.io.Serializable This class is serializable to be saved in case we have to reuse it.
      * @since 1.0
      */
-    public static class HeaderInformation implements Serializable{
+    public static class HeaderInformation implements Serializable {
 
         /**
          * Serial Version UID.
@@ -234,6 +256,7 @@ public class SpeleoFileReader {
 
         /**
          * Number format is used to parse numbers in columns.
+         *
          * @todo Can improve HeaderInformation to allow number reading on multiple columns ?
          */
         private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
@@ -254,9 +277,9 @@ public class SpeleoFileReader {
          * Columns array, contains the columns id to read for a Series.
          * <p>Each entry in this array is designed as the following rules :
          * <ul>
-         *     <li>{@code [int]}: is a single column data and series admit only a value per item</li>
-         *     <li>{@code [int,int]}: each item has a minimal value (first index) and maximal value(second index)</li>
-         *     <li>{@code [int,int,int]}: 0 is a value, 1 a minimal value and 2 a maximal value</li>
+         * <li>{@code [int]}: is a single column data and series admit only a value per item</li>
+         * <li>{@code [int, int]}: each item has a minimal value (first index) and maximal value(second index)</li>
+         * <li>{@code [int, int, int]}: 0 is a value, 1 a minimal value and 2 a maximal value</li>
          * </ul>
          * each entry in this array which has null length or length gather than 3 will be ignored.
          */
@@ -280,6 +303,7 @@ public class SpeleoFileReader {
 
         /**
          * Get the value of the line in the file where we will start to read data.
+         *
          * @return An integer if not it will be a RuntimeError.
          */
         public int getFirstLineOfData() {
@@ -288,17 +312,19 @@ public class SpeleoFileReader {
 
         /**
          * Set the value of the line in the file where we will start to read data.
+         *
          * @param firstLineOfData A non-negative integer
          * @throws IllegalArgumentException if the argument is not an integer or a negative integer.
          */
         public void setFirstLineOfData(int firstLineOfData) {
-            Validate.notNull(firstLineOfData,"The argument should not be null.");
-            Validate.isTrue(firstLineOfData>=0,"The argument should be positive");
+            Validate.notNull(firstLineOfData, "The argument should not be null.");
+            Validate.isTrue(firstLineOfData >= 0, "The argument should be positive");
             this.firstLineOfData = firstLineOfData;
         }
 
         /**
          * Set the date information for the current file.
+         *
          * @param dateInformation A non null object which represent the date information.
          */
         public void setDateInformation(DateInformation dateInformation) {
@@ -312,32 +338,46 @@ public class SpeleoFileReader {
          * @return true if a Series exist for this column.
          */
         public boolean hasSeriesForColumn(int index) {
-            for (Integer[] cols : columns) {
-                for (Integer col : cols) {
-                    if (col == index) return true;
-                }
-            }
+            for (Integer[] cols : columns) if (ArrayUtils.contains(cols, index)) return true;
             return false;
         }
 
         /**
          * Get a series for an index.
+         *
          * @param index The series index
          */
-        public Series getSeries(int index){
-            Validate.validIndex(series,index,"The index should correspond to a series entry");
+        public Series getSeries(int index) {
+            Validate.validIndex(series, index, "The index should correspond to a series entry");
             return series[index];
         }
 
         /**
+         * Get a series for a column.
+         *
+         * @param column The column index
+         */
+        public Series getSeriesForColumn(int column) {
+            int index = -1;
+            for (int i = 0; i < columns.length; i++) {
+                if (ArrayUtils.contains(columns, column)) {
+                    index = i;
+                    break;
+                }
+            }
+            return index == -1 ? new Series(null) : getSeries(index);
+        }
+
+        /**
          * Get column information for a series.
+         *
          * @param series The series
          * @return The column information or null if series is not found in this header.
          */
-        public Integer[] getColumnInformation(Series series){
-            final int index = ArrayUtils.indexOf(this.series,series);
-            if(index == ArrayUtils.INDEX_NOT_FOUND) return null;
-            Validate.validIndex(columns,index,"No column data for the index %d",index);
+        public Integer[] getColumnInformation(Series series) {
+            final int index = ArrayUtils.indexOf(this.series, series);
+            if (index == ArrayUtils.INDEX_NOT_FOUND) return null;
+            Validate.validIndex(columns, index, "No column data for the index %d", index);
             return columns[index];
         }
 
@@ -346,29 +386,34 @@ public class SpeleoFileReader {
          *
          * @param series The series to add (should be not null)
          * @param column The column information with this format: <ul>
-         *     <li>{@code [int]}: is a single column data and series admit only a value per item</li>
-         *     <li>{@code [int,int]}: each item has a minimal value (first index) and maximal value(second index)</li>
-         *     <li>{@code [int,int,int]}: 0 is a value, 1 a minimal value and 2 a maximal value</li>
-         * </ul>
-         *
+         *               <li>{@code [int]}: is a single column data and series admit only a value per item</li>
+         *               <li>{@code [int, int]}: each item has a minimal value (first index) and maximal value(second index)</li>
+         *               <li>{@code [int, int, int]}: 0 is a value, 1 a minimal value and 2 a maximal value</li>
+         *               </ul>
          * @return 0 if it creates a new entry, 1 if it update one, -1 in case of error.
          */
-        public int set(Series series, Integer[] column){
+        public int set(Series series, Integer... column) {
             Validate.notNull(series);
             Validate.notEmpty(column);
-            Validate.isTrue(column.length < 4,"Column array should have a length between 1 and 3 (see documentation)");
-            int index = ArrayUtils.indexOf(this.series,series);
+            Validate.isTrue(column.length < 4, "Column array should have a length between 1 and 3 (see documentation)");
+            int index = ArrayUtils.indexOf(this.series, series);
             boolean isCreated = false;
-            if(index == ArrayUtils.INDEX_NOT_FOUND) {
+            if (index == ArrayUtils.INDEX_NOT_FOUND) {
+                // Must remove other attached series to columns
+                for (int col : column) {
+                    if (hasSeriesForColumn(col)) {
+                        remove(col);
+                    }
+                }
                 index = this.series.length;
-                this.series = Arrays.copyOf(this.series,index + 1);
-                this.columns = Arrays.copyOf(this.columns,index + 1);
+                this.series = Arrays.copyOf(this.series, index + 1);
+                this.columns = Arrays.copyOf(this.columns, index + 1);
                 this.numberOfSeriesToParse = this.series.length;
                 isCreated = true;
             }
             this.series[index] = series;
             this.columns[index] = column;
-            return isCreated?0:1;
+            return isCreated ? 0 : 1;
         }
 
         /**
@@ -377,7 +422,7 @@ public class SpeleoFileReader {
          * @param line The array of columns. Should not be null.
          * @return 0 if parse is full correct, 1 otherwise.
          */
-        public int read(String[] line){
+        public int read(String[] line) {
             try {
                 final Date date = dateInformation.parse(line);
                 for (int i = 0; i < numberOfSeriesToParse; i++) {
@@ -397,7 +442,7 @@ public class SpeleoFileReader {
                 }
                 return 0;
             } catch (ParseException e) {
-                LoggerFactory.getLogger(SpeleoFileReader.class).error("Can not read an entry",e);
+                LoggerFactory.getLogger(SpeleoFileReader.class).error("Can not read an entry", e);
                 return 1;
             }
         }
@@ -408,6 +453,17 @@ public class SpeleoFileReader {
 
         public void setColumnSeparator(char columnSeparator) {
             this.columnSeparator = columnSeparator;
+        }
+
+        public void remove(int index) {
+            for (int i = 0; i < columns.length; i++) {
+                for (int c : columns[i]) {
+                    if (c == index) {
+                        columns = ArrayUtils.remove(columns, i);
+                        series = ArrayUtils.remove(series, i);
+                    }
+                }
+            }
         }
     }
 }

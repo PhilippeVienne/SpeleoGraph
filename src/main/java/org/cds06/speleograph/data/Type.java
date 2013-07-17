@@ -14,7 +14,13 @@ import java.util.List;
  */
 public class Type implements Comparable<Type>, Cloneable {
 
-    public static final Type UNKNOWN = new Type(DataType.OTHER,"","Donnée");
+    private static final ArrayList<Type> instances = new ArrayList<>(5);
+
+    public static ArrayList<Type> getInstances() {
+        return instances;
+    }
+
+    public static final Type UNKNOWN = new Type(DataType.OTHER, "", "Donnée");
     public static final Type PRESSURE = new Type(DataType.PRESSURE);
     public static final Type TEMPERATURE = new Type(DataType.TEMPERATURE);
     public static final Type TEMPERATURE_MIN_MAX = new Type(DataType.TEMPERATURE_MIN_MAX);
@@ -103,8 +109,8 @@ public class Type implements Comparable<Type>, Cloneable {
 
     private DataType type;
     private List<DataSet> sets = new ArrayList<>();
-    private String unit;
-    private String name;
+    private String unit = "";
+    private String name = "Inconnu";
     private NumberAxis axis;
     private NumberFormat formatter = new NumberFormat() {
 
@@ -139,23 +145,25 @@ public class Type implements Comparable<Type>, Cloneable {
         return sets.toArray(new DataSet[sets.size()]);
     }
 
-    public void registerToDataSet(DataSet set){
+    public void registerToDataSet(DataSet set) {
         sets.add(set);
     }
 
-    public void unlinkFromDataSet(DataSet set){
+    public void unlinkFromDataSet(DataSet set) {
         sets.remove(set);
     }
 
     public Type(DataType type) {
         setUpDefaults(type);
         this.type = type;
+        instances.add(this);
     }
 
     public Type(DataType type, String unit) {
         if (type != DataType.OTHER) setUpDefaults(type);
         this.type = type;
         if (unit != null) this.unit = unit;
+        instances.add(this);
     }
 
     public Type(DataType type, String unit, String name) {
@@ -194,4 +202,8 @@ public class Type implements Comparable<Type>, Cloneable {
         }
     }
 
+    @Override
+    public String toString() {
+        return name + (unit.isEmpty() ? "" : " (" + unit + ")");
+    }
 }
