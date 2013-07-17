@@ -21,7 +21,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -118,7 +117,7 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
         setContentPane(panel);
         setSize(800, 500);
         splitPane.setResizeWeight(1.0);
-        //splitPane.setDividerLocation(0.8);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     public void openFile(SpeleoFileReader.HeaderInformation information, File file) {
@@ -172,7 +171,6 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
             int result = fileChooser.showOpenDialog(panel);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                File openedFile = file;
 //                if (openedFiles.contains(file)) {
 //                    if (JOptionPane.showConfirmDialog(
 //                            SpeleoGraphApp.this,
