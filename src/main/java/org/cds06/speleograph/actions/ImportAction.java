@@ -22,7 +22,7 @@
 
 package org.cds06.speleograph.actions;
 
-import org.cds06.speleograph.data.ReefnetFileConverter;
+import org.cds06.speleograph.data.ReefnetFileReader;
 import org.cds06.speleograph.data.ImportTable;
 import org.cds06.speleograph.utils.AcceptedFileFilter;
 import org.jetbrains.annotations.NonNls;
@@ -71,9 +71,9 @@ public class ImportAction extends AbstractAction {
         int result = fileChooser.showOpenDialog(parent);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
-            if (ReefnetFileConverter.isReefnetFile(file)) { // We must convert it before using
+            if (ReefnetFileReader.isReefnetFile(file)) { // We must convert it before using
                 try {
-                    ReefnetFileConverter converter = new ReefnetFileConverter(file);
+                    ReefnetFileReader converter = new ReefnetFileReader(file);
                     converter.convert();
                     file = converter.getCsvTempFile();
                 } catch (IOException e) {

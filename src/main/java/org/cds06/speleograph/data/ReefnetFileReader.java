@@ -58,10 +58,10 @@ import java.util.List;
  * @author Philippe VIENNE
  * @since 1.0
  */
-public class ReefnetFileConverter {
+public class ReefnetFileReader implements DataFileReader {
 
     @NonNls
-    private static Logger log = LoggerFactory.getLogger(ReefnetFileConverter.class);
+    private static Logger log = LoggerFactory.getLogger(ReefnetFileReader.class);
 
     /**
      * Detect if a file is a ReefNet CSV format.
@@ -76,7 +76,7 @@ public class ReefnetFileConverter {
      */
     public static boolean isReefnetFile(File file) {
         try {
-            ReefnetFileConverter converter = new ReefnetFileConverter(file);
+            ReefnetFileReader converter = new ReefnetFileReader(file);
             CSVReader csvReader = converter.getReader();
             String[] line = csvReader.readNext();
             return line.length == 13 && line[1].startsWith("SU-");
@@ -113,7 +113,7 @@ public class ReefnetFileConverter {
      * @param file The file to convert to SpeleoGraph format
      * @throws IOException when can not read the file or create the temporary file
      */
-    public ReefnetFileConverter(File file) throws IOException {
+    public ReefnetFileReader(File file) throws IOException {
         this(file, File.createTempFile("ReefnetToSpeleoGraph", ".cvs"));
     }
 
@@ -124,7 +124,7 @@ public class ReefnetFileConverter {
      * @param speleographFile The file to write with the new data (it will be erased)
      * @throws IOException when can not read ReefNet File or write the new File.
      */
-    public ReefnetFileConverter(File reefnetFile, File speleographFile) throws IOException {
+    public ReefnetFileReader(File reefnetFile, File speleographFile) throws IOException {
         setReefnetFile(reefnetFile);
         setCsvTempFile(speleographFile);
     }
@@ -252,19 +252,28 @@ public class ReefnetFileConverter {
         this.writer = writer;
     }
 
-//    public static void main(String[] args){
-//        try {
-//            ReefnetFileConverter converter=new ReefnetFileConverter(
-//                    new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Reefnets Beget\\reefnet_beget_2013.txt"),
-//                    new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Reefnets Beget\\speleograph_beget_2013.csv")
-//            );
-//            converter.convert();
-//            DataSetReader dataSetReader=new DataSetReader(new File("C:\\Users\\PhilippeGeek\\Dropbox\\CDS06 Comm Scientifique\\Releves-Instruments\\Reefnets Beget\\speleograph_beget_2013.csv"));
-//            dataSetReader.read();
-//            for(Data d:dataSetReader.getDataFor(Data.Type.TEMPERATURE))
-//                System.out.println(d);
-//        } catch (IOException e) {
-//            log.error("Something went wrong",e);
-//        }
-//    }
+    @Override
+    public void readFile(File file) throws FileReadingError {
+
+    }
+
+    /**
+     * Get the name of file read by this class.
+     *
+     * @return The localized name of file.
+     */
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    /**
+     * Get the text for buttons or menus.
+     *
+     * @return The localized text.
+     */
+    @Override
+    public String getButtonText() {
+        return null;
+    }
 }

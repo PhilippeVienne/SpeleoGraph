@@ -26,7 +26,9 @@ import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.cds06.speleograph.I18nSupport;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,24 +36,24 @@ import java.io.*;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 /**
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class SpeleoFileReader {
+public class SpeleoDataFileReader implements DataFileReader {
 
     @SuppressWarnings("UnusedDeclaration")
-    private static final Logger log = LoggerFactory.getLogger(SpeleoFileReader.class);
+    @NonNls
+    private static final Logger log = LoggerFactory.getLogger(SpeleoDataFileReader.class);
 
     /**
      * This exception is thrown when try to read a non-speleoGraph file.
      */
     @NonNls
-    public static final IOException NOT_SPELEO_FILE = new IOException("This file is not a SpeleoGraph File");
+    public static final FileReadingError NOT_SPELEO_FILE =
+            new FileReadingError("This file is not a SpeleoGraph File", FileReadingError.Part.HEAD);
 
     /**
      * This string must match to the first line of any SpeleoGraph File.
@@ -59,41 +61,168 @@ public class SpeleoFileReader {
     @NonNls
     public static final String SPELEOGRAPH_FILE_HEADER = "SpeleoGraph File";
 
+    private static final int READING_HEADERS = 0;
+    private static final int FINDING_HEADERS = -1;
+    private static final int READING_DATA = 1;
+    private static final int CHECKING = 2;
+
+    private static final String SERIES_WITH_INTERNAL_TYPE = "sgt"; //NON-NLS
+    private static final String SERIES_WITH_USER_TYPE = "ut"; //NON-NLS
+    private static DataFileReader instance = new SpeleoDataFileReader();
+
+    public static DataFileReader getInstance() {
+        return instance;
+    }
+
     /**
      * Read a file with SpeleoGraph File Format.
      *
      * @param file The file to read
-     * @throws IOException    On error while reading the file
-     * @throws ParseException On date or time parse error
+     * @throws FileReadingError    On error while reading the file
      */
-    public static void readFile(File file) throws IOException, ParseException {
-        CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), "UTF-8"), ';', '"'); //NON-NLS
+    @Override
+    public void readFile(File file) throws FileReadingError {
+        InputStreamReader streamReader;
+        try {
+            streamReader = new InputStreamReader(new FileInputStream(file), "UTF-8"); // NON-NLS
+        } catch (UnsupportedEncodingException|FileNotFoundException e) {
+            log.error("Can not access to file",e);
+            throw new FileReadingError(
+                    I18nSupport.translate("errors.canNotOpenFile", file.getName()), FileReadingError.Part.HEAD, e);
+        }
+        CSVReader reader = new CSVReader(streamReader, ';', '"');
         String[] line;
-        boolean hasCheckFile = false, hasReadHeader = false;
-        while ((line=reader.readNext())!=null){
-            if(!hasCheckFile){
-                if(line.length==0 || !line[0].equals(SPELEOGRAPH_FILE_HEADER)) throw NOT_SPELEO_FILE;
-                hasCheckFile = true;
-            } else if(!hasReadHeader&&hasCheckFile){ // Read headers
-                if(line.length==0) continue;
-                if(line[0].equals("date")){
-
-                } else {
-                    int column = Integer.parseInt(line[0]);
-                    String type = line[1];
-                    if("sgt".equals(line[1])){
-
-                    } else if("ut".equals(line[1])){
-
-                    } else {
-
+        try {
+            line = reader.readNext();
+        } catch (IOException e) {
+            throw new FileReadingError(
+                    I18nSupport.translate("errors.canNotReadFileOrEmpty"), FileReadingError.Part.HEAD,e);
+        }
+        int size, state = CHECKING;
+        HeaderInformation headers = new HeaderInformation();
+        DateInformation date = new DateInformation();
+        headers.setDateInformation(date);
+        while (line!=null) {
+            size = line.length;
+            if (size == 0) {
+                log.info("Empty line while reading file, just continue our walk.");
+                continue;
+            }
+            String firstLineElement = line[0];
+            switch (state) {
+                case CHECKING:
+                    if (!SPELEOGRAPH_FILE_HEADER.equals(firstLineElement)) throw NOT_SPELEO_FILE;
+                    state = FINDING_HEADERS;
+                    break;
+                case FINDING_HEADERS:
+                    if ("headers".equals(firstLineElement)) state = READING_HEADERS; // NON-NLS
+                    break;
+                case READING_HEADERS:
+                    if ("data".equals(firstLineElement)) { // NON-NLS
+                        state = READING_DATA;
+                        break;
                     }
-                }
-            } else { // Read Data
-
+                    if ("date".equals(firstLineElement)) { // NON-NLS
+                        readDateHeaderLine(date, line);
+                    } else {
+                        readSeriesHeaderLine(file, line, headers);
+                        break;
+                    }
+                    break;
+                case READING_DATA:
+                    headers.read(line);
+                    break;
+                default:
+                    log.info("State error in reading");
+            }
+            try {
+                line = reader.readNext();
+            } catch (IOException e) {
+                log.debug("None next lines", e);
             }
         }
+        log.info("File reading is ended");
+    }
 
+    @NonNls
+    @Override
+    public String getName() {
+        return "SpeleoGraph";
+    }
+
+    @Override
+    public String getButtonText() {
+        return I18nSupport.translate("actions.openFile");
+    }
+
+    /**
+     * Read a header line to add series in headers information.
+     * <p>I must write to you the english doc for series lines</p>
+     * @param file The file used to extract the data
+     * @param line The parsed line
+     * @param headers The object which represent the headers
+     */
+    private static void readSeriesHeaderLine(File file, String[] line, HeaderInformation headers) {
+        int size = line.length, column = Integer.parseInt(line[0]);
+        if (size < 3) { // A series line must have a length gather than 2
+            log.info("Invalid header : " + StringUtils.join(line, ' '));
+            return;
+        }
+        String headerType = line[1];
+        Series series = null;
+        Type t = Type.UNKNOWN;
+        switch (headerType){
+            case SERIES_WITH_INTERNAL_TYPE:
+                String type = line[2];
+                for(Type ty:Type.internalTypes)
+                    if(ty.getType().toString().equals(type)) t=ty;
+                series = new Series(file,t);
+                break;
+            case SERIES_WITH_USER_TYPE:
+                if (size < 4) {
+                    log.info("Invalid header : " + StringUtils.join(line, ' '));
+                    break;
+                }
+                t = Type.getType(line[2],line[3]);
+                series = new Series(file,t);
+                break;
+            default:
+                log.info("Invalid header : " + StringUtils.join(line, ';'));
+                throw new IllegalStateException("Invalid series entry");
+        }
+        Properties p = new Properties(line);
+
+        // TODO : Add here code to setup series
+
+        if(t.isHighLowType()||p.getBoolean("min-max")){ // NON-NLS
+            Integer min = p.getNumber("min"), max = p.getNumber("max"); // NON-NLS
+            if(min==null||max==null) return;
+            if(headers.hasSeriesForColumn(min)&&headers.hasSeriesForColumn(max)) {
+                DataSet.getDataSet(t).remove(series);
+            }
+            t.setHighLowType(true);
+            headers.set(series,min,max);
+        } else {
+            headers.set(series,column);
+        }
+    }
+
+    /**
+     * Read a header line as a date line.
+     * @param date The date information where add the date parsing information
+     * @param line The parsed line from the CSV
+     */
+    private static void readDateHeaderLine(DateInformation date, String[] line) {
+        int size = line.length;
+        if (size < 4) {
+            log.info("Invalid header : " + StringUtils.join(line, ' '));
+            throw new IllegalStateException("Invalid date entry");
+        }
+        String time = line[1];
+        if (!time.isEmpty())
+            date.setTimeZone(TimeZone.getTimeZone(time));
+        for (int i = 2; i < (size - 1); i = i + 2)
+            date.set(Integer.parseInt(line[i]), line[i + 1]);
     }
 
     /**
@@ -110,7 +239,7 @@ public class SpeleoFileReader {
     public static void read(File file, HeaderInformation headers) throws IOException {
         Validate.notNull(file);
         Validate.notNull(headers);
-        final CSVReader reader = new CSVReader(new FileReader(file), headers.getColumnSeparator(), '"');
+        final CSVReader reader = new CSVReader(new java.io.FileReader(file), headers.getColumnSeparator(), '"');
         int lineId = -1;
         String[] line;
         while ((line = reader.readNext()) != null) {
@@ -142,10 +271,13 @@ public class SpeleoFileReader {
         private String dateFormat = "dd/MM/yyyy HH:mm:ss";
 
         private SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+        private TimeZone timeZone;
 
         protected String computeDateFormat() {
             dateFormat = StringUtils.join(dateFormats, ' ');
             format = new SimpleDateFormat(dateFormat);
+            if(timeZone!=null)
+                format.setTimeZone(timeZone);
             return dateFormat;
         }
 
@@ -220,6 +352,10 @@ public class SpeleoFileReader {
             dateFormats = ArrayUtils.removeElement(dateFormats, getForColumn(index));
             columns = ArrayUtils.removeElement(columns, index);
         }
+
+        public void setTimeZone(TimeZone timeZone) {
+            this.timeZone = timeZone;
+        }
     }
 
     /**
@@ -227,7 +363,7 @@ public class SpeleoFileReader {
      * <p>A file header is a pack of information which are which series we will read, which columns are liked to a
      * series, what are the date columns, how to parse the date ...</p>
      * <p>This class is designed to be used by two classes, the first is {@link ImportTable} which will populate this
-     * class with user information, the second is {@link SpeleoFileReader} which will use it to parse the file fast.</p>
+     * class with user information, the second is {@link SpeleoDataFileReader} which will use it to parse the file fast.</p>
      *
      * @author Philippe VIENNE
      * @see java.io.Serializable This class is serializable to be saved in case we have to reuse it.
@@ -244,7 +380,6 @@ public class SpeleoFileReader {
         /**
          * Number format is used to parse numbers in columns.
          *
-         * @todo Can improve HeaderInformation to allow number reading on multiple columns ?
          */
         private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
@@ -344,6 +479,7 @@ public class SpeleoFileReader {
          *
          * @param column The column index
          */
+        @Nullable
         public Series getSeriesForColumn(int column) {
             int index = -1;
             for (int i = 0; i < columns.length; i++) {
@@ -352,7 +488,7 @@ public class SpeleoFileReader {
                     break;
                 }
             }
-            return index == -1 ? new Series(null) : getSeries(index);
+            return index == -1 ? null : getSeries(index);
         }
 
         /**
@@ -429,7 +565,7 @@ public class SpeleoFileReader {
                 }
                 return 0;
             } catch (ParseException e) {
-                LoggerFactory.getLogger(SpeleoFileReader.class).error("Can not read an entry", e);
+                log.error("Can not read an entry", e);
                 return 1;
             }
         }
@@ -452,5 +588,71 @@ public class SpeleoFileReader {
                 }
             }
         }
+    }
+
+    /**
+     * Class used to parse and represent properties read from a SpeleoGraph File.
+     *
+     * @author Philippe VIENNE
+     * @since 1.0
+     */
+    private static class Properties {
+
+        /**
+         * Store properties.
+         */
+        private HashMap<String,String> properties = new HashMap<>();
+
+        /**
+         * Create properties from an array.
+         * @param properties Each value in the array is a [key]:[value].
+         */
+        public Properties(String[] properties){
+            for(String p:properties){
+                final String[] strings = StringUtils.split(p, ":", 2);
+                if(strings.length!=2) continue;
+                this.properties.put(strings[0].toLowerCase(),strings[1]);
+            }
+        }
+
+        /**
+         * Get a value as a boolean.
+         * "0", false, null are considered as false, all other values are true
+         * @param key The key to find
+         * @return the value corresponding to the key as a boolean.
+         */
+        public boolean getBoolean(String key){
+            @NonNls String v = properties.get(key);
+            return
+                    v != null
+                            &&
+                    !(v.equals("0") || v.equals("false") || v.equals("non") || v.equals("N") || v.equals("F"));
+        }
+
+        /**
+         * Get a value as an Integer
+         *
+         * @param key The key to find
+         * @return the numerical value
+         * @see Integer#parseInt(String)
+         */
+        public Integer getNumber(String key){
+            try{
+                return Integer.parseInt(properties.get(key));
+            } catch (Throwable throwable){
+                return null;
+            }
+        }
+
+        /**
+         * Get a value.
+         *
+         * @param key The key to find
+         * @return the value in properties
+         */
+        public String get(String key){
+            return properties.get(key);
+        }
+
     }
 }

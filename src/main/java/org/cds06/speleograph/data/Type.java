@@ -1,5 +1,29 @@
+/*
+ * Copyright (c) 2013 Philippe VIENNE
+ *
+ * This file is a part of SpeleoGraph
+ *
+ * SpeleoGraph is free software: you can redistribute
+ * it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * SpeleoGraph is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with SpeleoGraph.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.cds06.speleograph.data;
 
+import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.axis.NumberAxis;
 
 import java.text.FieldPosition;
@@ -20,11 +44,37 @@ public class Type implements Comparable<Type>, Cloneable {
         return instances;
     }
 
+    /**
+     * Get Type by name and unit.
+     * Find a Type instance using its name and unit. If no type are found we return a new Type.
+     * @param name Name of this type (not null)
+     * @param unit Unit of this type (not null)
+     * @return Type instance which correspond to parameters.
+     */
+    public static Type getType(@NotNull String name, @NotNull String unit){
+        Validate.notBlank(name,"Type name can not be blank"); // NON-NLS
+        Validate.notNull(unit,"Unit can not be null"); // NON-NLS
+        for(Type type:instances){
+            if(type.name.equals(name)&&type.unit.equals(unit)){
+                return type;
+            }
+        }
+        return new Type(DataType.OTHER,unit,name);
+    }
+
     public static final Type UNKNOWN = new Type(DataType.OTHER, "", "Donnée");
     public static final Type PRESSURE = new Type(DataType.PRESSURE);
     public static final Type TEMPERATURE = new Type(DataType.TEMPERATURE);
     public static final Type TEMPERATURE_MIN_MAX = new Type(DataType.TEMPERATURE_MIN_MAX);
     public static final Type WATER = new Type(DataType.WATER);
+
+    public static final Type[] internalTypes = new Type[]{
+            PRESSURE,
+            TEMPERATURE,
+            TEMPERATURE_MIN_MAX,
+            WATER
+    };
+
     private boolean highLow = false;
 
     public boolean isSteppedType() {
@@ -95,10 +145,6 @@ public class Type implements Comparable<Type>, Cloneable {
         return formatter;
     }
 
-    public void setFormatter(NumberFormat formatter) {
-        this.formatter = formatter;
-    }
-
     public NumberAxis getAxis() {
         if (axis == null) {
             axis = new NumberAxis(name + " (" + unit + ")");
@@ -112,7 +158,7 @@ public class Type implements Comparable<Type>, Cloneable {
     private String unit = "";
     private String name = "Inconnu";
     private NumberAxis axis;
-    private NumberFormat formatter = new NumberFormat() {
+    private final NumberFormat formatter = new NumberFormat() {
 
         @Override
         public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
@@ -139,6 +185,10 @@ public class Type implements Comparable<Type>, Cloneable {
 
     public boolean isHighLowType() {
         return highLow;
+    }
+
+    public void setHighLowType(boolean v) {
+        highLow = v;
     }
 
     public DataSet[] getSets() {
@@ -171,11 +221,6 @@ public class Type implements Comparable<Type>, Cloneable {
         this.name = name;
     }
 
-    public Type(DataType type, String unit, String name, NumberFormat format) {
-        this(type, unit, name);
-        if (format != null) this.formatter = format;
-    }
-
     private void setUpDefaults(DataType type) {
         if (type == null) throw new NullPointerException("Type can not be null");
         if (type == DataType.OTHER) throw new IllegalArgumentException("Type can not be OTHER with this constructor");
@@ -205,5 +250,27 @@ public class Type implements Comparable<Type>, Cloneable {
     @Override
     public String toString() {
         return name + (unit.isEmpty() ? "" : " (" + unit + ")");
+    }
+
+    /**
+     * Determine if two Type are equals.
+     * Type are equals if :
+     * <ul>
+     *     <li>They has got the same name</li>
+     *     <li>They has got the same units</li>
+     *     <li>Properties like isMinMax, isSampled are equals</li>
+     * </ul>
+     * @return true if the type are equals.
+     */
+    @Override
+    public boolean equals(Object o){
+        if(!(o instanceof Type)) return false;
+        Type typeToCompare = (Type) o;
+        return
+                        getName().equals(typeToCompare.getName()) &&
+                        name.equals(typeToCompare.name) &&
+                        unit.equals(typeToCompare.unit) &&
+                        isSteppedType == typeToCompare.isSteppedType &&
+                        highLow == typeToCompare.highLow;
     }
 }

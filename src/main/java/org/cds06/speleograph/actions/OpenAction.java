@@ -24,7 +24,6 @@ package org.cds06.speleograph.actions;
 
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
-import org.cds06.speleograph.data.ReefnetFileReader;
 import org.cds06.speleograph.utils.AcceptedFileFilter;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
@@ -37,9 +36,10 @@ import java.io.IOException;
 import java.text.ParseException;
 
 /**
- * Action for opening a Reefnet File.
+ * This file is created by PhilippeGeek.
+ * Distributed on licence GNU GPL V3.
  */
-public class OpenReefnetFileAction extends AbstractAction {
+public class OpenAction extends AbstractAction {
 
     /**
      * Logger for info and errors.
@@ -65,12 +65,12 @@ public class OpenReefnetFileAction extends AbstractAction {
      * Construct the import action.
      * @param component The parent component used to display dialogs.
      */
-    public OpenReefnetFileAction(JComponent component) {
-        super(I18nSupport.translate("actions.openReefNetFile"));
+    public OpenAction(JComponent component) {
+        super(I18nSupport.translate("actions.openFile"));
         parent = component;
         fileFilter = new AcceptedFileFilter();
-        fileFilter.acceptAllCSVAndTxt=false;
-        fileFilter.acceptReefnet = true;
+        fileFilter.acceptAllCSVAndTxt=true;
+        fileFilter.acceptReefnet = false;
         fileFilter.acceptHobo = false;
         fileFilter.acceptFolders = true;
         chooser = new JFileChooser();
@@ -94,10 +94,9 @@ public class OpenReefnetFileAction extends AbstractAction {
                 return;
         }
         try {
-            file = new ReefnetFileReader(file).convert();
             SpeleoGraphApp.openFile(file);
-        } catch (IOException|ParseException e1) {
-            log.error("Error when try to read a ReefNet File", e1);
+        } catch (IOException |ParseException e1) {
+            log.error("Error when try to read a SpeleoGraph File", e1);
         }
     }
 }

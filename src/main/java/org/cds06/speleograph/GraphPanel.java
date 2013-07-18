@@ -167,6 +167,6 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
      */
     @Override
     public void chartMouseMoved(ChartMouseEvent event) {
-        log.info("Received a mouse event");
+//        log.info("Received a mouse event");
     }
 }

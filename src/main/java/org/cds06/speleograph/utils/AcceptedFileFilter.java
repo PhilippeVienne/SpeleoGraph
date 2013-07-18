@@ -23,7 +23,7 @@
 package org.cds06.speleograph.utils;
 
 import org.cds06.speleograph.I18nSupport;
-import org.cds06.speleograph.data.ReefnetFileConverter;
+import org.cds06.speleograph.data.ReefnetFileReader;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.filechooser.FileFilter;
@@ -46,7 +46,7 @@ public class AcceptedFileFilter extends FileFilter {
     public boolean accept(File f) {
         if(f.getName().endsWith(".txt") || f.getName().endsWith(".csv")){ //NON-NLS
             if(acceptAllCSVAndTxt) return true;
-            if(acceptReefnet && ReefnetFileConverter.isReefnetFile(f)){
+            if(acceptReefnet && ReefnetFileReader.isReefnetFile(f)){
                 return true;
             }
         } else return f.isDirectory() && acceptFolders;

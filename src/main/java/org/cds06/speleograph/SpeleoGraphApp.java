@@ -22,8 +22,10 @@
 
 package org.cds06.speleograph;
 
-import org.cds06.speleograph.actions.ImportAction;
-import org.cds06.speleograph.data.SpeleoFileReader;
+import org.cds06.speleograph.actions.OpenAction;
+import org.cds06.speleograph.actions.OpenReefnetFileAction;
+import org.cds06.speleograph.data.FileReadingError;
+import org.cds06.speleograph.data.SpeleoDataFileReader;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +47,7 @@ public class SpeleoGraphApp extends JFrame {
     /**
      * Instance of SpeleoGraph in the current JVM.
      */
-    private static final SpeleoGraphApp instance = new SpeleoGraphApp();
+    private static SpeleoGraphApp instance;
 
     /**
      * Logger for errors and info.
@@ -103,7 +105,8 @@ public class SpeleoGraphApp extends JFrame {
      * Setup buttons for the toolBar.
      */
     private void addToolBarButtons() {
-        toolBar.add(new ImportAction(panel));
+        toolBar.add(new OpenAction(panel));
+        toolBar.add(new OpenReefnetFileAction(panel));
     }
 
     public JSplitPane getSplitPane() {
@@ -136,6 +139,8 @@ public class SpeleoGraphApp extends JFrame {
             }
         }
 
+        instance = new SpeleoGraphApp();
+
         // Start application
         instance.setVisible(true);
     }
@@ -145,6 +150,10 @@ public class SpeleoGraphApp extends JFrame {
      * @param file The file to open.
      */
     public static void openFile(File file) throws IOException, ParseException {
-        SpeleoFileReader.readFile(file);
+        try {
+            SpeleoDataFileReader.getInstance().readFile(file);
+        } catch (FileReadingError fileReadingError) {
+            log.error("Error on file reading",fileReadingError);
+        }
     }
 }

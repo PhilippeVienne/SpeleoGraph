@@ -73,6 +73,18 @@ public class Series implements Comparable{
     }
 
     /**
+     * Create a new Series opened from a file with a default Type.
+     * @param origin The file where this series has been read.
+     * @param type The type for this series
+     */
+    public Series(@NotNull File origin, @NotNull Type type) {
+        this(origin);
+        Validate.notNull(type,"Type can not be null");// NON-NLS
+        this.set = DataSet.getDataSet(type);
+        this.set.add(this);
+    }
+
+    /**
      * Flag to define if we must show this series on chart.
      */
     private boolean show = false;
@@ -143,8 +155,9 @@ public class Series implements Comparable{
     /**
      * Getter for the series Type.
      * If this series is not attached to a DataSet, then we suppose that Type is {@link Type#UNKNOWN}
-     * @return The type for this series (never null)
+     * @return The type for this series
      */
+    @NotNull
     public Type getType() {
         if(set == null) return Type.UNKNOWN;
         return set.getType();
