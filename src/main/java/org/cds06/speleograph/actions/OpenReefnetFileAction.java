@@ -23,12 +23,18 @@
 package org.cds06.speleograph.actions;
 
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.SpeleoGraphApp;
+import org.cds06.speleograph.data.ReefnetFileConverter;
+import org.cds06.speleograph.utils.AcceptedFileFilter;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * Action for opening a Reefnet File.
@@ -39,6 +45,16 @@ public class OpenReefnetFileAction extends AbstractAction {
      * Logger for info and errors.
      */ @NonNls
     private static final Logger log = LoggerFactory.getLogger(OpenReefnetFileAction.class);
+
+    /**
+     * FileFilter for ReefNet files.
+     */
+    private final AcceptedFileFilter fileFilter;
+
+    /**
+     * File chooser for this action.
+     */
+    private final JFileChooser chooser;
 
     /**
      * Parent component for dialog display.
@@ -52,6 +68,13 @@ public class OpenReefnetFileAction extends AbstractAction {
     public OpenReefnetFileAction(JComponent component) {
         super(I18nSupport.translate("actions.openReefNetFile"));
         parent = component;
+        fileFilter = new AcceptedFileFilter();
+        fileFilter.acceptAllCSVAndTxt=false;
+        fileFilter.acceptReefnet = true;
+        fileFilter.acceptHobo = false;
+        fileFilter.acceptFolders = true;
+        chooser = new JFileChooser();
+        chooser.setFileFilter(fileFilter);
     }
 
     /**
@@ -59,7 +82,22 @@ public class OpenReefnetFileAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        log.info("Not implemented");
-        parent.getDropTarget();
+        int result=chooser.showOpenDialog(parent);
+        File file;
+        switch (result){
+            case JFileChooser.APPROVE_OPTION:
+                file = chooser.getSelectedFile();
+                if(file.isDirectory()) return;
+                break;
+            case JFileChooser.CANCEL_OPTION:
+            default:
+                return;
+        }
+        try {
+            file = new ReefnetFileConverter(file).convert();
+            SpeleoGraphApp.openFile(file);
+        } catch (IOException|ParseException e1) {
+            log.error("Error when try to read a ReefNet File", e1);
+        }
     }
 }

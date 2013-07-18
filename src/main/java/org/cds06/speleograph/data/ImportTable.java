@@ -374,7 +374,7 @@ public class ImportTable extends JPanel {
                                     Validate.inclusiveBetween(0, numberOfColumns, col, "Le numéro de colonne n'est pas valable");
                                 }
                                 Series series = new Series(sourceFile);
-                                series.setSet(DataSet.getDataSet(t));
+                                series.setDataSet(DataSet.getDataSet(t));
                                 headerInformation.set(series, columns);
                             } catch (NumberFormatException e) {
                                 showError("Merci de bien saisir des nombres");
@@ -385,7 +385,7 @@ public class ImportTable extends JPanel {
                             }
                         } else {
                             Series series = new Series(sourceFile);
-                            series.setSet(DataSet.getDataSet(t));
+                            series.setDataSet(DataSet.getDataSet(t));
                             headerInformation.set(series, editedColumn);
                         }
                     } else {

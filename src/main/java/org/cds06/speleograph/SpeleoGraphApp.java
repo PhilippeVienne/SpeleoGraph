@@ -23,12 +23,16 @@
 package org.cds06.speleograph;
 
 import org.cds06.speleograph.actions.ImportAction;
+import org.cds06.speleograph.data.SpeleoFileReader;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * SpeleoGraph Main Frame. This class is the enter point for a graphical utilisation and is the JFrame show. It create
@@ -37,6 +41,11 @@ import java.awt.*;
  * @author Philippe VIENNE
  */
 public class SpeleoGraphApp extends JFrame {
+
+    /**
+     * Instance of SpeleoGraph in the current JVM.
+     */
+    private static final SpeleoGraphApp instance = new SpeleoGraphApp();
 
     /**
      * Logger for errors and info.
@@ -128,6 +137,14 @@ public class SpeleoGraphApp extends JFrame {
         }
 
         // Start application
-        new SpeleoGraphApp().setVisible(true);
+        instance.setVisible(true);
+    }
+
+    /**
+     * Open a SpeleoGraph file.
+     * @param file The file to open.
+     */
+    public static void openFile(File file) throws IOException, ParseException {
+        SpeleoFileReader.readFile(file);
     }
 }

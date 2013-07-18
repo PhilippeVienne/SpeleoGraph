@@ -160,7 +160,7 @@ public class CheckBoxList extends JList<Series> {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (JOptionPane.showConfirmDialog(CheckBoxList.this, "Etes-vous sur de vouloir supprimer cette série", "Confirmation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
-                        series.getSet().remove(series);
+                        series.getDataSet().remove(series);
                     }
                 }
             });

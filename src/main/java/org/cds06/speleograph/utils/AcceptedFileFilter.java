@@ -23,6 +23,7 @@
 package org.cds06.speleograph.utils;
 
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.data.ReefnetFileConverter;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.filechooser.FileFilter;
@@ -35,6 +36,7 @@ import java.io.File;
  * @since 1.0
  */
 public class AcceptedFileFilter extends FileFilter {
+
     /**
      * Whether the given file is accepted by this filter.
      * @return true if it's accepted
@@ -42,8 +44,31 @@ public class AcceptedFileFilter extends FileFilter {
     @Override
     @NonNls
     public boolean accept(File f) {
-        return f.getName().endsWith(".txt") || f.getName().endsWith(".csv") || f.isDirectory();
+        if(f.getName().endsWith(".txt") || f.getName().endsWith(".csv")){ //NON-NLS
+            if(acceptAllCSVAndTxt) return true;
+            if(acceptReefnet && ReefnetFileConverter.isReefnetFile(f)){
+                return true;
+            }
+        } else return f.isDirectory() && acceptFolders;
+        return false;
     }
+
+    /**
+     * Accept only CSV and TXT which match to a ReefNet file format.
+     */
+    public boolean acceptReefnet = true;
+    /**
+     * Accept only CSV and TXT which match to the Hobo file format.
+     */
+    public boolean acceptHobo;
+    /**
+     * Accept all CSV and TXT files.
+     */
+    public boolean acceptAllCSVAndTxt = true;
+    /**
+     * Accept folders (leave it to true).
+     */
+    public boolean acceptFolders = true;
 
     /**
      * The description of this filter. For example: "JPG and GIF Images"

@@ -24,6 +24,7 @@ package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,11 +60,8 @@ import java.util.List;
  */
 public class ReefnetFileConverter {
 
-    private static Logger logger = LoggerFactory.getLogger(ReefnetFileConverter.class);
-
-    public ReefnetFileConverter() {
-
-    }
+    @NonNls
+    private static Logger log = LoggerFactory.getLogger(ReefnetFileConverter.class);
 
     /**
      * Detect if a file is a ReefNet CSV format.
@@ -83,7 +81,7 @@ public class ReefnetFileConverter {
             String[] line = csvReader.readNext();
             return line.length == 13 && line[1].startsWith("SU-");
         } catch (IOException e) {
-            logger.error("Can not test if it's a ReefFile, continuing as if it's not one", e);
+            log.error("Can not test if it's a ReefFile, continuing as if it's not one", e); // NON-NLS
         }
         return false;
     }
@@ -142,10 +140,12 @@ public class ReefnetFileConverter {
      * </ul>
      * </p>
      *
+     * @return The converted file
+     *
      * @throws IOException when can not read or write a piece of information.
      */
-    public void convert() throws IOException {
-        logger.info("Start the conversion of " + getReefnetFile().getName() + " is ended");
+    public File convert() throws IOException {
+        log.info("Start the conversion of " + getReefnetFile().getName());
         List<String[]> lines = getReader().readAll();
         getWriter().writeNext(new String[]{lines.get(0)[1]});
         getWriter().writeNext(new String[]{"Date", "Heure", "Pression", "Moy. : Température, °C"});
@@ -182,7 +182,8 @@ public class ReefnetFileConverter {
             getWriter().writeNext(new String[]{date, hour, pressure, temperature});
         }
         getWriter().close();
-        logger.info("Conversion of " + getReefnetFile().getName() + " is ended");
+        log.info("Conversion of " + getReefnetFile().getName() + " is ended");
+        return getCsvTempFile();
     }
 
     /**
@@ -263,7 +264,7 @@ public class ReefnetFileConverter {
 //            for(Data d:dataSetReader.getDataFor(Data.Type.TEMPERATURE))
 //                System.out.println(d);
 //        } catch (IOException e) {
-//            logger.error("Something went wrong",e);
+//            log.error("Something went wrong",e);
 //        }
 //    }
 }

@@ -1,9 +1,32 @@
+/*
+ * Copyright (c) 2013 Philippe VIENNE
+ *
+ * This file is a part of SpeleoGraph
+ *
+ * SpeleoGraph is free software: you can redistribute
+ * it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * SpeleoGraph is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with SpeleoGraph.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * This file is created by PhilippeGeek.
@@ -22,31 +44,56 @@ import java.util.HashMap;
  */
 public class SpeleoFileReader {
 
+    @SuppressWarnings("UnusedDeclaration")
     private static final Logger log = LoggerFactory.getLogger(SpeleoFileReader.class);
 
-    @Deprecated
+    /**
+     * This exception is thrown when try to read a non-speleoGraph file.
+     */
+    @NonNls
+    public static final IOException NOT_SPELEO_FILE = new IOException("This file is not a SpeleoGraph File");
+
+    /**
+     * This string must match to the first line of any SpeleoGraph File.
+     */
+    @NonNls
+    public static final String SPELEOGRAPH_FILE_HEADER = "SpeleoGraph File";
+
+    /**
+     * Read a file with SpeleoGraph File Format.
+     *
+     * @param file The file to read
+     * @throws IOException    On error while reading the file
+     * @throws ParseException On date or time parse error
+     */
     public static void readFile(File file) throws IOException, ParseException {
-        CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), "UTF-8"), ';', '"');
-        int lineToStart = 0;
+        CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(file), "UTF-8"), ';', '"'); //NON-NLS
         String[] line;
-        while ((line = reader.readNext()) != null) {
-            if (line.length > 1) {
-                lineToStart++;
-                break;
+        boolean hasCheckFile = false, hasReadHeader = false;
+        while ((line=reader.readNext())!=null){
+            if(!hasCheckFile){
+                if(line.length==0 || !line[0].equals(SPELEOGRAPH_FILE_HEADER)) throw NOT_SPELEO_FILE;
+                hasCheckFile = true;
+            } else if(!hasReadHeader&&hasCheckFile){ // Read headers
+                if(line.length==0) continue;
+                if(line[0].equals("date")){
+
+                } else {
+                    int column = Integer.parseInt(line[0]);
+                    String type = line[1];
+                    if("sgt".equals(line[1])){
+
+                    } else if("ut".equals(line[1])){
+
+                    } else {
+
+                    }
+                }
+            } else { // Read Data
+
             }
-            lineToStart++;
         }
-        final HashMap<Type, Integer[]> map = readHeaders(line);
-        final HeaderInformation information = new HeaderInformation();
-        for (Type t : map.keySet()) {
-            Series s = new Series(file);
-            s.setSet(DataSet.getDataSet(t));
-            information.set(s, map.get(t));
-            log.debug("Read " + t.getName());
-        }
-        information.setFirstLineOfData(lineToStart);
-        information.setDateInformation(readDateHeaders(line));
-        read(file, information);
+
     }
 
     /**
@@ -71,66 +118,6 @@ public class SpeleoFileReader {
             if (lineId < headers.getFirstLineOfData()) continue;
             headers.read(line);
         }
-    }
-
-    /**
-     * Define conditions to determine if a column contains a type of data.
-     * <p>Conditions are an array of strings. On index 0, the condition for value column, on index 1 and 2
-     * conditions for min and max column. An null entry define that the value or min, max is not available fo
-     * this Type of data.</p>
-     */
-    private static HashMap<Type, String[]> headerConditions = new HashMap<>();
-
-    static {   // Write conditions for each type
-        headerConditions.put(Type.PRESSURE, new String[]{"Pression"});
-        headerConditions.put(Type.TEMPERATURE, new String[]{"Moy. : Température, °C"});
-        headerConditions.put(
-                Type.TEMPERATURE_MIN_MAX,
-                new String[]{"Min. : Température, °C", "Max. : Température, °C"}
-        );
-        headerConditions.put(Type.WATER, new String[]{"Pluvio"});
-    }
-
-    @Deprecated
-    private static HashMap<Type, Integer[]> readHeaders(String[] line) {
-        HashMap<Type, Integer[]> typeAndColumns = new HashMap<>();
-        for (int i = 0; i < line.length; i++) {
-            String columnName = line[i];
-
-            log.debug("Column: " + columnName);
-            for (Type t : headerConditions.keySet()) {
-                String[] conditions = headerConditions.get(t);
-                for (int j = 0, conditionsLength = conditions.length; j < conditionsLength; j++) {
-                    String s = conditions[j];
-                    if (columnName.contains(s)) {
-                        Integer[] values;
-                        if (typeAndColumns.get(t) == null)
-                            values = new Integer[headerConditions.get(t).length];
-                        else values = typeAndColumns.get(t);
-                        values[j] = i;
-                        typeAndColumns.put(t, values);
-                    }
-                }
-            }
-        }
-        return typeAndColumns;
-    }
-
-    @Deprecated
-    private static DateInformation readDateHeaders(String[] line) {
-        Integer[] columnsForDate = new Integer[]{null, null};
-        for (int i = 0; i < line.length; i++) {
-            if (line[i].contains("Date")) columnsForDate[0] = i;
-            else if (line[i].contains("Heure")) columnsForDate[1] = i;
-        }
-        final DateInformation information = new DateInformation();
-        if (columnsForDate[0] != null) {
-            information.set(columnsForDate[0], "dd/MM/yyyy");
-        }
-        if (columnsForDate[1] != null) {
-            information.set(columnsForDate[1], "HH:mm:ss");
-        }
-        return information;
     }
 
     /**
