@@ -23,11 +23,14 @@
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,6 +158,42 @@ public class SpeleoDataFileReader implements DataFileReader {
         return I18nSupport.translate("actions.openFile");
     }
 
+
+    private static final AndFileFilter filter = new AndFileFilter();
+    static {
+        filter.addFileFilter(FileFileFilter.FILE);
+        filter.addFileFilter(CanReadFileFilter.CAN_READ);
+        filter.addFileFilter(CanWriteFileFilter.CAN_WRITE);
+        filter.addFileFilter(EmptyFileFilter.NOT_EMPTY);
+        filter.addFileFilter(new SuffixFileFilter(new String[]{".speleo",".csv",".txt"}, IOCase.INSENSITIVE));// NON-NLS
+    }
+    /**
+     * Get the FileFilter to use.
+     *
+     * @return A file filter
+     */
+    @NotNull
+    @Override
+    public javax.swing.filechooser.FileFilter getFileFilter() {
+        return new javax.swing.filechooser.FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if(filter.accept(f)){
+                    try{
+                        return new Scanner(f).nextLine().equals(SPELEOGRAPH_FILE_HEADER);
+                    } catch(Exception e){log.error("Error:",e);return false;}
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public String getDescription() {
+                return getName();
+            }
+        };
+    }
+
     /**
      * Read a header line to add series in headers information.
      * <p>I must write to you the english doc for series lines</p>
@@ -251,7 +290,7 @@ public class SpeleoDataFileReader implements DataFileReader {
 
     /**
      * Store date-column link information for a file.
-     * <p>Each column can be link to a java date format sheme. When we read an entry, we join all columns for date and
+     * <p>Each column can be link to a java date format scheme. When we read an entry, we join all columns for date and
      * all date formats and ask to Java to parse it. If we got an error on parse, just return the actual date.</p>
      */
     public static class DateInformation {

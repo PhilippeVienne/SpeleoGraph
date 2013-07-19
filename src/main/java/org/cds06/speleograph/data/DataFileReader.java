@@ -22,6 +22,8 @@
 
 package org.cds06.speleograph.data;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 
 /**
@@ -29,6 +31,11 @@ import java.io.File;
  */
 public interface DataFileReader {
 
+    /**
+     * Open a file with the class format.
+     * @param file The file to open
+     * @throws FileReadingError When an error makes file read impossible.
+     */
     public void readFile(File file) throws FileReadingError;
 
     /**
@@ -42,5 +49,12 @@ public interface DataFileReader {
      * @return The localized text.
      */
     public String getButtonText();
+
+    /**
+     * Get the FileFilter to use.
+     * @return A file filter
+     */
+    @NotNull
+    public javax.swing.filechooser.FileFilter getFileFilter();
 
 }

@@ -23,8 +23,8 @@
 package org.cds06.speleograph;
 
 import org.cds06.speleograph.actions.OpenAction;
-import org.cds06.speleograph.actions.OpenReefnetFileAction;
 import org.cds06.speleograph.data.FileReadingError;
+import org.cds06.speleograph.data.ReefnetFileReader;
 import org.cds06.speleograph.data.SpeleoDataFileReader;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
@@ -105,8 +105,8 @@ public class SpeleoGraphApp extends JFrame {
      * Setup buttons for the toolBar.
      */
     private void addToolBarButtons() {
-        toolBar.add(new OpenAction(panel));
-        toolBar.add(new OpenReefnetFileAction(panel));
+        toolBar.add(new OpenAction(panel, SpeleoDataFileReader.class));
+        toolBar.add(new OpenAction(panel, ReefnetFileReader.class));
     }
 
     public JSplitPane getSplitPane() {

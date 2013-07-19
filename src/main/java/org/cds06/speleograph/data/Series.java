@@ -290,6 +290,15 @@ public class Series implements Comparable{
     }
 
     /**
+     * Add an item to this series.
+     * @param item The item to add.
+     */
+    public void add(Item item) {
+        Validate.notNull(item);
+        items.add(item);
+    }
+
+    /**
      * Define an interface for Listener with only one function as a callBack.
      */
     public interface SeriesChangeListener {
@@ -300,7 +309,7 @@ public class Series implements Comparable{
      * All properties which can be updated and passed to ChangeListener.
      */
     public enum PropertyName {
-        NAME, SHOWN
+        NAME, SHOWN, COLOR
     }
 
     /**

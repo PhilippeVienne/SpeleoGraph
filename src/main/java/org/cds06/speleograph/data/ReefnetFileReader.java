@@ -23,15 +23,23 @@
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
+import org.apache.commons.lang3.StringUtils;
+import org.cds06.speleograph.I18nSupport;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Date;
 
 /**
  * Open a CSV Reefnet file and transform it to a CSV for SpeleoGraph.
@@ -39,8 +47,8 @@ import java.util.List;
  * An Reefnet is a comma-separated CSV file with this column :
  * <ol>
  * <li>Index (not used here)</li>
- * <li>Device ID (not used here)</li>
- * <li>File ID (not used here)</li>
+ * <li>Device ID</li>
+ * <li>ReefNet Series ID</li>
  * <li>Year</li>
  * <li>Month</li>
  * <li>Day</li>
@@ -60,14 +68,22 @@ import java.util.List;
  */
 public class ReefnetFileReader implements DataFileReader {
 
+    /**
+     * Logger for errors and information.
+     */
     @NonNls
-    private static Logger log = LoggerFactory.getLogger(ReefnetFileReader.class);
+    private static final Logger log = LoggerFactory.getLogger(ReefnetFileReader.class);
+
+    /**
+     * When test if a CSV file is a ReefNet File, Maximal not ReefNet lines allowed before.
+     */
+    private static final int MAX_ALLOWED_HEADERS = 30;
 
     /**
      * Detect if a file is a ReefNet CSV format.
      * <p>Open the file as a csv, read the first line, we check that :
      * <ul>
-     * <li>has got 13 elements</li>
+     * <li>has got 12 or 13 elements</li>
      * <li>the second column contains a ReefNet Device ID starting with "RU-"</li>
      * </ul></p>
      *
@@ -76,10 +92,15 @@ public class ReefnetFileReader implements DataFileReader {
      */
     public static boolean isReefnetFile(File file) {
         try {
-            ReefnetFileReader converter = new ReefnetFileReader(file);
-            CSVReader csvReader = converter.getReader();
-            String[] line = csvReader.readNext();
-            return line.length == 13 && line[1].startsWith("SU-");
+            CSVReader csvReader = new CSVReader(new FileReader(file),',');
+            String[] line;
+            for(int i=0;i<MAX_ALLOWED_HEADERS&&(line=csvReader.readNext())!=null;i++){
+                int size = line.length;
+                if(11< size && size <14 && line[1].startsWith("SU-")) // NON-NLS
+                    return true;
+                if(size > 1)
+                    return false;
+            }
         } catch (IOException e) {
             log.error("Can not test if it's a ReefFile, continuing as if it's not one", e); // NON-NLS
         }
@@ -87,174 +108,118 @@ public class ReefnetFileReader implements DataFileReader {
     }
 
     /**
-     * The reefnetFile.
+     * Date format used to parse date in ReefNet entries.
+     * This variable must not be altered without editing {@link #readDate(String[], java.util.Calendar)}
      */
-    private File reefnetFile;
-    /**
-     * The new CSV file with SpeleoGraph format.
-     */
-    private File csvTempFile;
-    /**
-     * CVS Parser for ReefNet file.
-     *
-     * @see #reefnetFile
-     */
-    private CSVReader reader;
-    /**
-     * CVS Writer for the new file.
-     *
-     * @see #csvTempFile
-     */
-    private CSVWriter writer;
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("y:M:d:H:m:s");
 
     /**
-     * Create a new converter for ReefNet file to a temporary file.
-     *
-     * @param file The file to convert to SpeleoGraph format
-     * @throws IOException when can not read the file or create the temporary file
+     * Read a ReefNet File.
+     * @param file The file to read.
+     * @throws FileReadingError  When an error occurs when read the file.
+     * @see #readReefnetEntry(String[], Series, Series, String, java.util.Calendar)
+     * @see #readDate(String[], java.util.Calendar)
      */
-    public ReefnetFileReader(File file) throws IOException {
-        this(file, File.createTempFile("ReefnetToSpeleoGraph", ".cvs"));
-    }
-
-    /**
-     * Create a new converter for ReefNet file to a File
-     *
-     * @param reefnetFile     The ReefNet file (CSV Data)
-     * @param speleographFile The file to write with the new data (it will be erased)
-     * @throws IOException when can not read ReefNet File or write the new File.
-     */
-    public ReefnetFileReader(File reefnetFile, File speleographFile) throws IOException {
-        setReefnetFile(reefnetFile);
-        setCsvTempFile(speleographFile);
-    }
-
-    /**
-     * Convert the Reefnet file.
-     * <p>
-     * This function read all lines from Reefnet files. For each line it does the following :
-     * <ul>
-     * <li>Convert the temperature from Kelvin to Celsius</li>
-     * <li>Calculate the measure's date with date and offset</li>
-     * <li>Add all information to the new CSV File</li>
-     * </ul>
-     * </p>
-     *
-     * @return The converted file
-     *
-     * @throws IOException when can not read or write a piece of information.
-     */
-    public File convert() throws IOException {
-        log.info("Start the conversion of " + getReefnetFile().getName());
-        List<String[]> lines = getReader().readAll();
-        getWriter().writeNext(new String[]{lines.get(0)[1]});
-        getWriter().writeNext(new String[]{"Date", "Heure", "Pression", "Moy. : Température, °C"});
-//        String[] line;
-        for (String[] line : lines) {
-            String temperature;
-            {
-                Integer tempEnt = Integer.parseInt(line[11]), tempDec = Integer.parseInt(line[12]);
-                tempDec = tempDec - 15;
-                if (tempDec < 0) {
-                    tempDec = 100 + tempDec;
-                    tempEnt = tempEnt - 274;
-                } else {
-                    tempEnt = tempEnt - 273;
-                }
-                temperature = tempEnt + "." + tempDec;
-            }
-            String pressure = line[10];
-            int offset = Integer.parseInt(line[9]);
-            Calendar moment = Calendar.getInstance();
-            //noinspection MagicConstant
-            moment.set(
-                    Integer.parseInt(line[3]),
-                    Integer.parseInt(line[4]) - 1,
-                    Integer.parseInt(line[5]),
-                    Integer.parseInt(line[6]),
-                    Integer.parseInt(line[7]),
-                    Integer.parseInt(line[8])
-            );
-            moment.add(Calendar.SECOND, offset); // Add the offset to the reference date
-            String date = new SimpleDateFormat("dd/MM/yyyy").format(moment.getTime());
-            String hour = new SimpleDateFormat("HH:mm:ss").format(moment.getTime());
-            // Write all into the file
-            getWriter().writeNext(new String[]{date, hour, pressure, temperature});
-        }
-        getWriter().close();
-        log.info("Conversion of " + getReefnetFile().getName() + " is ended");
-        return getCsvTempFile();
-    }
-
-    /**
-     * Getter for ReefNet File
-     *
-     * @return The ReefNet file currently read by the program
-     */
-    public File getReefnetFile() {
-        return reefnetFile;
-    }
-
-    /**
-     * Set the ReefNet File to convert.
-     * It will set the class variable and create the CSVReader for this file.
-     *
-     * @param reefnetFile The ReefNet file to read
-     * @throws IOException when can not read the ReefNet File.
-     */
-    private void setReefnetFile(File reefnetFile) throws IOException {
-        this.reefnetFile = reefnetFile;
-        try {
-            setReader(new CSVReader(new FileReader(getReefnetFile()), ','));
-        } catch (FileNotFoundException e) {
-            throw new IOException("Unable to read file " + reefnetFile.getName());
-        }
-    }
-
-    /**
-     * Getter for the new CSV file.
-     *
-     * @return The File object which represent the targeted file for conversion.
-     */
-    public File getCsvTempFile() {
-        return csvTempFile;
-    }
-
-    /**
-     * Set the destination file.
-     * This file will be cleared and replaced with the converted data after call on #convert
-     *
-     * @param csvTempFile The destination file to write
-     * @throws IOException when can not wright the new file.
-     */
-    private void setCsvTempFile(File csvTempFile) throws IOException {
-        this.csvTempFile = csvTempFile;
-        try {
-            setWriter(new CSVWriter(new FileWriter(getCsvTempFile()), ';', (char) 0));
-        } catch (IOException e) {
-            throw new IOException("Unable to write file " + getCsvTempFile().getName(), e);
-        }
-    }
-
-    private CSVReader getReader() {
-        return reader;
-    }
-
-    private void setReader(CSVReader reader) {
-        this.reader = reader;
-    }
-
-    private CSVWriter getWriter() {
-        return writer;
-    }
-
-    private void setWriter(CSVWriter writer) {
-        this.writer = writer;
-    }
-
     @Override
     public void readFile(File file) throws FileReadingError {
+        log.info("Start reading file: "+file);
+        FileReader fileReader;
+        try {
+            fileReader = new FileReader(file);
+        } catch (FileNotFoundException e) {
+            throw new FileReadingError(
+                    I18nSupport.translate("errors.canNotOpenFile",file.getName()),
+                    FileReadingError.Part.HEAD,
+                    e
+            );
+        }
+        CSVReader reader = new CSVReader(fileReader,',');
+        String[] line;
+        try {
+            line = reader.readNext();
+        } catch (IOException e) {
+            throw new FileReadingError(
+                    I18nSupport.translate("errors.canNotReadFileOrEmpty"),
+                    FileReadingError.Part.HEAD,
+                    e
+            );
+        }
+        Series     pressureSeries = new Series(file,Type.PRESSURE),
+                temperatureSeries = new Series(file,Type.TEMPERATURE);
+        String seriesId = "";
+        final Calendar calendar = Calendar.getInstance();
+        while(line!=null){
+            if(11<line.length&&line.length<14){
+                seriesId = readReefnetEntry(line, pressureSeries, temperatureSeries, seriesId, calendar);
+            }else{
+                log.info("Not a Reefnet line: "+ StringUtils.join(line,','));
+            }
+            try {
+                line = reader.readNext();
+            } catch (IOException e) {
+                line = null;
+            }
+        }
+        log.info("Reefnet File ("+file.getName()+") has been read.");
+    }
 
+    /**
+     * Read an entry from a Reefnet File.
+     * @param line The line extracted from the file (length must be 12 or 13)
+     * @param pressureSeries The series where add pressure data
+     * @param temperatureSeries The series where add temperature data
+     * @param seriesId The ReefNet's Series ID
+     * @param calendar The calendar which contains the start date of the current series.
+     * @return The modified ReefNet's Series ID.
+     * @throws FileReadingError When can not parse the date.
+     * @see #readDate(String[], java.util.Calendar)
+     * @see #readFile(java.io.File)
+     */
+    private String readReefnetEntry(
+            String[] line, Series pressureSeries, Series temperatureSeries, String seriesId, Calendar calendar)
+            throws FileReadingError {
+        double temperature = 0;
+        if(line.length==12){
+            temperature = Double.parseDouble(line[11])-273.15;
+        } else if(line.length==13){
+            temperature = Double.parseDouble(line[11] + '.' + line[12])-273.15;
+        }
+        int pressure = Integer.parseInt(line[10]);
+        if(!seriesId.equals(line[2])){
+            seriesId = readDate(line, calendar);
+        }
+        Calendar clone = (Calendar) calendar.clone();
+        clone.add(Calendar.SECOND, Integer.parseInt(line[9]));
+        temperatureSeries.add(new Item(clone.getTime(),temperature));
+        pressureSeries.add(new Item(clone.getTime(),pressure));
+        return seriesId;
+    }
+
+    /**
+     * Read a date from a Reefnet entry.
+     * @param line The line where the date is stored
+     * @param calendar The calendar to update with the read date
+     * @return The new ReefNet series ID which comes with this date.
+     * @throws FileReadingError
+     * @see #readFile(java.io.File)
+     * @see #readReefnetEntry(String[], Series, Series, String, java.util.Calendar)
+     */
+    private String readDate(String[] line, Calendar calendar) throws FileReadingError {
+        String seriesId;
+        seriesId = line[2];
+        Date d;
+        try {
+            d = dateFormat.parse(StringUtils.join(Arrays.copyOfRange(line, 3, 9), ':'));
+        } catch (ParseException e) {
+            log.error("Can not parse a date",e);
+            throw new FileReadingError(
+                    I18nSupport.translate("errors.canNotReadDate"),
+                    FileReadingError.Part.DATA,
+                    e
+            );
+        }
+        calendar.setTime(d);
+        return seriesId;
     }
 
     /**
@@ -264,7 +229,7 @@ public class ReefnetFileReader implements DataFileReader {
      */
     @Override
     public String getName() {
-        return null;
+        return "ReefNet File"; // NON-NLS
     }
 
     /**
@@ -274,6 +239,36 @@ public class ReefnetFileReader implements DataFileReader {
      */
     @Override
     public String getButtonText() {
-        return null;
+        return I18nSupport.translate("actions.openReefNetFile");
+    }
+
+    /**
+     * Get the FileFilter to use.
+     *
+     * @return A file filter
+     */
+    @NotNull
+    @Override
+    public FileFilter getFileFilter() {
+        return new FileFilter() {
+            @SuppressWarnings("HardCodedStringLiteral")
+            @Override
+            public boolean accept(File file) {
+                return
+                        !file.isDirectory() &&
+                                (file.getName().endsWith(".csv") || file.getName().endsWith(".txt"))
+                                        && (isReefnetFile(file));
+            }
+
+            /**
+             * The description of this filter. For example: "JPG and GIF Images"
+             *
+             * @see javax.swing.filechooser.FileView#getName
+             */
+            @Override
+            public String getDescription() {
+                return getName();
+            }
+        };
     }
 }

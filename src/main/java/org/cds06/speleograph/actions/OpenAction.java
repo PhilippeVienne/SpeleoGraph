@@ -23,7 +23,8 @@
 package org.cds06.speleograph.actions;
 
 import org.cds06.speleograph.I18nSupport;
-import org.cds06.speleograph.SpeleoGraphApp;
+import org.cds06.speleograph.data.DataFileReader;
+import org.cds06.speleograph.data.FileReadingError;
 import org.cds06.speleograph.utils.AcceptedFileFilter;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
@@ -32,8 +33,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
 
 /**
  * This file is created by PhilippeGeek.
@@ -44,7 +43,7 @@ public class OpenAction extends AbstractAction {
     /**
      * Logger for info and errors.
      */ @NonNls
-    private static final Logger log = LoggerFactory.getLogger(OpenReefnetFileAction.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenAction.class);
 
     /**
      * FileFilter for ReefNet files.
@@ -62,11 +61,22 @@ public class OpenAction extends AbstractAction {
     private final JComponent parent;
 
     /**
+     * Data reader.
+     */
+    private final DataFileReader reader;
+
+    /**
      * Construct the import action.
      * @param component The parent component used to display dialogs.
      */
-    public OpenAction(JComponent component) {
+    public OpenAction(JComponent component, Class<? extends DataFileReader> reader) {
         super(I18nSupport.translate("actions.openFile"));
+        try {
+            this.reader = reader.newInstance();
+        } catch (InstantiationException|IllegalAccessException e) {
+            log.info("Can not create action for reader "+reader.getName());
+            throw new IllegalArgumentException(e);
+        }
         parent = component;
         fileFilter = new AcceptedFileFilter();
         fileFilter.acceptAllCSVAndTxt=true;
@@ -94,8 +104,8 @@ public class OpenAction extends AbstractAction {
                 return;
         }
         try {
-            SpeleoGraphApp.openFile(file);
-        } catch (IOException |ParseException e1) {
+            reader.readFile(file);
+        } catch (FileReadingError e1) {
             log.error("Error when try to read a SpeleoGraph File", e1);
         }
     }
