@@ -44,6 +44,11 @@ import java.io.File;
 public class OpenAction extends AbstractAction {
 
     /**
+     * Working directory for the current User.
+     */
+    private static File pwd;
+
+    /**
      * Logger for info and errors.
      */
     @NonNls
@@ -108,6 +113,10 @@ public class OpenAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (pwd == null) {
+            pwd = new File(OpenAction.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        }
+        chooser.setCurrentDirectory(pwd);
         int result = chooser.showOpenDialog(parent);
         File file;
         switch (result) {
@@ -120,6 +129,7 @@ public class OpenAction extends AbstractAction {
                 return;
         }
         try {
+            pwd = file.getParentFile();
             reader.readFile(file);
         } catch (FileReadingError e1) {
             log.error("Error when try to read a SpeleoGraph File", e1);
