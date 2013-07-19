@@ -27,6 +27,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.DataFileReader;
+import org.cds06.speleograph.data.DataSet;
 import org.cds06.speleograph.data.FileReadingError;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
@@ -119,6 +120,7 @@ public class OpenAction extends AbstractAction {
         }
         try {
             reader.readFile(file);
+            DataSet.refreshAll();
         } catch (FileReadingError e1) {
             log.error("Error when try to read a SpeleoGraph File", e1);
         }

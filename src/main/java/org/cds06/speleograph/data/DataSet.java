@@ -68,6 +68,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
     public static DataSet getDataSet(Type type) {
         if (dataSets.containsKey(type)) return dataSets.get(type);
         dataSets.put(type, new DataSet(type));
+
         return getDataSet(type);
     }
 
@@ -75,7 +76,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
         for (Series s : series) {
             DataSet set = getDataSet(t);
             s.addListener(set);
-            set.series.add(s);
+            set.add(s);
         }
     }
 
@@ -157,7 +158,7 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     @Override
     public int getItemCount(int series) {
-        if (series < getShownSeries().size()) {
+        if (0 <= series && series < getShownSeries().size()) {
             return getShownSeries().get(series).getItems().size();
         }
         throw new IndexOutOfBoundsException();
@@ -246,10 +247,10 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
 
     private void notifyChangeListeners(Series changed) {
         DatasetChangeEvent event = new DatasetChangeEvent(changed, this);
-        for (DatasetChangeListener listener : new ArrayList<>(listeners)) {
+        for (DatasetChangeListener listener : new ArrayList<>(STATIC_LISTENERS)) {
             listener.datasetChanged(event);
         }
-        for (DatasetChangeListener listener : new ArrayList<>(STATIC_LISTENERS)) {
+        for (DatasetChangeListener listener : new ArrayList<>(listeners)) {
             listener.datasetChanged(event);
         }
     }
@@ -271,6 +272,11 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
         notifyChangeListeners();
     }
 
+    public static void refreshAll(){
+        for(DataSet s:getInstances())
+            s.refreshShownList();
+    }
+
     public void refresh() {
         refreshShownList();
     }
@@ -282,10 +288,10 @@ public class DataSet implements OHLCDataset, Series.SeriesChangeListener {
      */
     protected void notifyChangeListeners() {
         DatasetChangeEvent event = new DatasetChangeEvent(this, this);
-        for (DatasetChangeListener listener : new ArrayList<>(listeners)) {
+        for (DatasetChangeListener listener : new ArrayList<>(STATIC_LISTENERS)) {
             listener.datasetChanged(event);
         }
-        for (DatasetChangeListener listener : new ArrayList<>(STATIC_LISTENERS)) {
+        for (DatasetChangeListener listener : new ArrayList<>(listeners)) {
             listener.datasetChanged(event);
         }
     }

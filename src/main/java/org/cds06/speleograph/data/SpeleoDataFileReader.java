@@ -172,7 +172,7 @@ public class SpeleoDataFileReader implements DataFileReader {
             public boolean accept(File file) {
                 try{
                     return new Scanner(file).nextLine().equals(SPELEOGRAPH_FILE_HEADER);
-                } catch(Exception e){log.error("Error:",e);return false;}
+                } catch(Exception e){return false;}
             }
 
             @Override

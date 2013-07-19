@@ -50,23 +50,10 @@ public class Series implements Comparable{
     private static final Logger log = LoggerFactory.getLogger(Series.class);
 
     /**
-     * Create a new Series with programmatic.
-     * @param name The name of the Series
-     * @param type The type of the Series
-     * @throws IOException if can not create a temp file for this series.
-     */
-    public Series(@NonNls @NotNull String name, @NotNull Type type) throws IOException {
-        Validate.notBlank(name,"Name can not be null or blank"); //NON-NLS
-        Validate.notNull(type,"Type can not be null"); // NON-NLS
-        this.origin = File.createTempFile("FakeSpeleoGraphFile",".speleo");
-        this.name = name;
-        this.set = DataSet.getDataSet(type);
-    }
-
-    /**
      * Create a new Series opened from a file.
      * @param origin The file where this series has been read.
      */
+    @Deprecated
     public Series(@NotNull File origin) {
         Validate.notNull(origin);
         this.origin = origin;
@@ -78,10 +65,10 @@ public class Series implements Comparable{
      * @param type The type for this series
      */
     public Series(@NotNull File origin, @NotNull Type type) {
-        this(origin);
         Validate.notNull(type,"Type can not be null");// NON-NLS
-        this.set = DataSet.getDataSet(type);
-        this.set.add(this);
+        Validate.notNull(origin);
+        this.origin = origin;
+        setDataSet(DataSet.getDataSet(type));
     }
 
     /**

@@ -22,6 +22,7 @@
 
 package org.cds06.speleograph;
 
+import org.cds06.speleograph.actions.ImportAction;
 import org.cds06.speleograph.actions.OpenAction;
 import org.cds06.speleograph.data.FileReadingError;
 import org.cds06.speleograph.data.HoboFileReader;
@@ -127,6 +128,8 @@ public class SpeleoGraphApp extends JFrame {
         JMenu importMenu = new JMenu(I18nSupport.translate("menus.import"));
         importMenu.add(new OpenAction(panel, ReefnetFileReader.class));
         importMenu.add(new OpenAction(panel, HoboFileReader.class));
+        importMenu.addSeparator();
+        importMenu.add(new ImportAction(panel));
         fileMenu.add(importMenu);
         fileMenu.addSeparator();
         fileMenu.add(new AbstractAction() {
