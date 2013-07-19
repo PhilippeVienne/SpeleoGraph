@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2013 Philippe VIENNE
+ *
+ * This file is a part of SpeleoGraph
+ *
+ * SpeleoGraph is free software: you can redistribute
+ * it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * SpeleoGraph is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with SpeleoGraph.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -24,7 +46,7 @@ import java.util.ResourceBundle;
  * Table to managing file imports into SpeleoGraph.
  * <p>This table show to the user the first ten lines from the file. If only one column is detected we ask if the column
  * separator is not another thing than ';'. After on the each column header on the table, the user can choose what is
- * the data in the current column. In the end, this class call the {@link SpeleoFileReader} to end file reading and push
+ * the data in the current column. In the end, this class call the {@link SpeleoDataFileReader} to end file reading and push
  * the series into the DataSets which are automatically bidden with the list and the graph.</p>
  */
 public class ImportTable extends JPanel {
@@ -75,8 +97,8 @@ public class ImportTable extends JPanel {
      */
     private String[][] lines = new String[10][];
 
-    private final SpeleoFileReader.HeaderInformation headerInformation = new SpeleoFileReader.HeaderInformation();
-    private final SpeleoFileReader.DateInformation dateInformation = new SpeleoFileReader.DateInformation();
+    private final SpeleoDataFileReader.HeaderInformation headerInformation = new SpeleoDataFileReader.HeaderInformation();
+    private final SpeleoDataFileReader.DateInformation dateInformation = new SpeleoDataFileReader.DateInformation();
     private static final Logger log = LoggerFactory.getLogger(ImportTable.class);
 
     public ImportTable(final File sourceFile, char columnSeparator) throws IOException {
@@ -113,7 +135,7 @@ public class ImportTable extends JPanel {
                 JDialog dialog = (JDialog) SwingUtilities.windowForComponent(ImportTable.this);
                 dialog.setVisible(false);
                 try {
-                    SpeleoFileReader.read(sourceFile, headerInformation);
+                    SpeleoDataFileReader.read(sourceFile, headerInformation);
                 } catch (Exception e1) {
                     showError("Impossible de lire le fichier");
                     log.error("Read file error:", e1); // NON-NLS
@@ -142,8 +164,8 @@ public class ImportTable extends JPanel {
         });
     }
 
-    public static void openImportWizardFor(Frame parentFrame, File file) throws IOException {
-        JDialog frame = new JDialog(parentFrame, true);
+    public static void openImportWizardFor(JComponent parentFrame, File file) throws IOException {
+        JDialog frame = new JDialog((Frame) SwingUtilities.windowForComponent(parentFrame), true);
         boolean stopWhile = false;
         char separator = DEFAULT_SEPARATOR;
         ImportTable table = null;
@@ -351,8 +373,7 @@ public class ImportTable extends JPanel {
                                     Validate.notNull(col, "Il manque un numéro de colonne");
                                     Validate.inclusiveBetween(0, numberOfColumns, col, "Le numéro de colonne n'est pas valable");
                                 }
-                                Series series = new Series(sourceFile);
-                                series.setSet(DataSet.getDataSet(t));
+                                Series series = new Series(sourceFile, t);
                                 headerInformation.set(series, columns);
                             } catch (NumberFormatException e) {
                                 showError("Merci de bien saisir des nombres");
@@ -362,8 +383,7 @@ public class ImportTable extends JPanel {
                                 log.error("Runtime error:", e); // NON-NLS
                             }
                         } else {
-                            Series series = new Series(sourceFile);
-                            series.setSet(DataSet.getDataSet(t));
+                            Series series = new Series(sourceFile, t);
                             headerInformation.set(series, editedColumn);
                         }
                     } else {
@@ -390,7 +410,8 @@ public class ImportTable extends JPanel {
             } else if (headerInformation.hasSeriesForColumn(index)) {
                 showPane(MEASURE_COLUMN);
                 try {
-                    typeSelection.setSelectedItem(headerInformation.getSeriesForColumn(index).getType());
+                    Series series = headerInformation.getSeriesForColumn(index);
+                    typeSelection.setSelectedItem(series == null ? Type.UNKNOWN : series.getType());
                 } catch (Exception e) {
                     log.error("Error when try to retrive existing type", e); // NON-NLS
                 }

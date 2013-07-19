@@ -1,6 +1,27 @@
+/*
+ * Copyright (c) 2013 Philippe VIENNE
+ *
+ * This file is a part of SpeleoGraph
+ *
+ * SpeleoGraph is free software: you can redistribute
+ * it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * SpeleoGraph is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with SpeleoGraph.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.cds06.speleograph;
 
-import org.cds06.speleograph.data.Sampling;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.Type;
 import org.slf4j.LoggerFactory;
@@ -49,7 +70,8 @@ public class CheckBoxList extends JList<Series> {
         });
 
         addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 int index = locationToIndex(e.getPoint());
 
                 if (index != -1) {
@@ -122,7 +144,7 @@ public class CheckBoxList extends JList<Series> {
                             } catch (Exception e1) {
                                 hasAName = false;
                             }
-                        Sampling.sampling(series, 1000 * duration).setName(name);
+                        series.generateSampledSeries(1000 * duration).setName(name);
                     } catch (Exception e1) {
                         LoggerFactory.getLogger(CheckBoxList.class).error("Erreur lors de l'échantillonage", e1);
                     }
@@ -137,7 +159,7 @@ public class CheckBoxList extends JList<Series> {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (JOptionPane.showConfirmDialog(CheckBoxList.this, "Etes-vous sur de vouloir supprimer cette série", "Confirmation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
-                        series.getSet().remove(series);
+                        series.delete();
                     }
                 }
             });
