@@ -22,16 +22,15 @@
 
 package org.cds06.speleograph;
 
-import org.cds06.speleograph.data.DataSet;
 import org.cds06.speleograph.data.Series;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
 
 import javax.swing.*;
-import java.util.Collection;
+import java.util.List;
 
 /**
- * Model to retrieve series opened in the global {@link org.cds06.speleograph.data.DataSet}.
+ * Model to retrieve series opened in the global.
  *
  * @author Philippe VIENNE
  * @since 1.0
@@ -40,42 +39,20 @@ public class SpeleoSeriesListModel extends AbstractListModel<Series> implements 
 
     private static final long serialVersionUID = 1L;
 
-    private Collection<DataSet> sets = DataSet.getInstances();
+    private List<Series> sets = Series.getInstances();
 
     {
-        DataSet.addListener(this);
-    }
-
-    public int indexOf(Series s) {
-        int i = 0;
-        for (DataSet set : sets) {
-            for (Series ser : set.getSeries()) {
-                if (ser == s) return i;
-                i++;
-            }
-        }
-        return 0;
+        Series.addListener(this);
     }
 
     @Override
     public int getSize() {
-        int size = 0;
-        for (DataSet set : sets) {
-            size += set.getSeries().size();
-        }
-        return size;
+        return sets.size();
     }
 
     @Override
     public Series getElementAt(int index) {
-        int i = 0;
-        for (DataSet set : sets) {
-            for (Series s : set.getSeries()) {
-                if (index == i) return s;
-                i++;
-            }
-        }
-        throw new IndexOutOfBoundsException("Can not find your index");
+        return sets.get(index);
     }
 
     /**

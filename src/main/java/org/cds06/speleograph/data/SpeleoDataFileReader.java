@@ -82,15 +82,15 @@ public class SpeleoDataFileReader implements DataFileReader {
      * Read a file with SpeleoGraph File Format.
      *
      * @param file The file to read
-     * @throws FileReadingError    On error while reading the file
+     * @throws FileReadingError On error while reading the file
      */
     @Override
     public void readFile(File file) throws FileReadingError {
         InputStreamReader streamReader;
         try {
             streamReader = new InputStreamReader(new FileInputStream(file), "UTF-8"); // NON-NLS
-        } catch (UnsupportedEncodingException|FileNotFoundException e) {
-            log.error("Can not access to file",e);
+        } catch (UnsupportedEncodingException | FileNotFoundException e) {
+            log.error("Can not access to file", e);
             throw new FileReadingError(
                     I18nSupport.translate("errors.canNotOpenFile", file.getName()), FileReadingError.Part.HEAD, e);
         }
@@ -100,13 +100,13 @@ public class SpeleoDataFileReader implements DataFileReader {
             line = reader.readNext();
         } catch (IOException e) {
             throw new FileReadingError(
-                    I18nSupport.translate("errors.canNotReadFileOrEmpty"), FileReadingError.Part.HEAD,e);
+                    I18nSupport.translate("errors.canNotReadFileOrEmpty"), FileReadingError.Part.HEAD, e);
         }
         int size, state = CHECKING;
         HeaderInformation headers = new HeaderInformation();
         DateInformation date = new DateInformation();
         headers.setDateInformation(date);
-        while (line!=null) {
+        while (line != null) {
             size = line.length;
             if (size == 0) {
                 log.info("Empty line while reading file, just continue our walk.");
@@ -161,26 +161,30 @@ public class SpeleoDataFileReader implements DataFileReader {
 
 
     private static final AndFileFilter filter = new AndFileFilter();
+
     static {
         filter.addFileFilter(FileFileFilter.FILE);
         filter.addFileFilter(CanReadFileFilter.CAN_READ);
         filter.addFileFilter(CanWriteFileFilter.CAN_WRITE);
         filter.addFileFilter(EmptyFileFilter.NOT_EMPTY);
-        filter.addFileFilter(new SuffixFileFilter(new String[]{".speleo",".csv",".txt"}, IOCase.INSENSITIVE));// NON-NLS
+        filter.addFileFilter(new SuffixFileFilter(new String[]{".speleo", ".csv", ".txt"}, IOCase.INSENSITIVE));// NON-NLS
         filter.addFileFilter(new IOFileFilter() {
             @Override
             public boolean accept(File file) {
-                try{
+                try {
                     return new Scanner(file).nextLine().equals(SPELEOGRAPH_FILE_HEADER);
-                } catch(Exception e){return false;}
+                } catch (Exception e) {
+                    return false;
+                }
             }
 
             @Override
             public boolean accept(File dir, String name) {
-                return accept(FileUtils.getFile(dir,name));
+                return accept(FileUtils.getFile(dir, name));
             }
         });
     }
+
     /**
      * Get the FileFilter to use.
      *
@@ -195,8 +199,9 @@ public class SpeleoDataFileReader implements DataFileReader {
     /**
      * Read a header line to add series in headers information.
      * <p>I must write to you the english doc for series lines</p>
-     * @param file The file used to extract the data
-     * @param line The parsed line
+     *
+     * @param file    The file used to extract the data
+     * @param line    The parsed line
      * @param headers The object which represent the headers
      */
     private static void readSeriesHeaderLine(File file, String[] line, HeaderInformation headers) {
@@ -208,20 +213,20 @@ public class SpeleoDataFileReader implements DataFileReader {
         String headerType = line[1];
         Series series = null;
         Type t = Type.UNKNOWN;
-        switch (headerType){
+        switch (headerType) {
             case SERIES_WITH_INTERNAL_TYPE:
                 String type = line[2];
-                for(Type ty:Type.internalTypes)
-                    if(ty.getType().toString().equals(type)) t=ty;
-                series = new Series(file,t);
+                for (Type ty : Type.internalTypes)
+                    if (ty.getType().toString().equals(type)) t = ty;
+                series = new Series(file, t);
                 break;
             case SERIES_WITH_USER_TYPE:
                 if (size < 4) {
                     log.info("Invalid header : " + StringUtils.join(line, ' '));
                     break;
                 }
-                t = Type.getType(line[2],line[3]);
-                series = new Series(file,t);
+                t = Type.getType(line[2], line[3]);
+                series = new Series(file, t);
                 break;
             default:
                 log.info("Invalid header : " + StringUtils.join(line, ';'));
@@ -231,21 +236,23 @@ public class SpeleoDataFileReader implements DataFileReader {
 
         // TODO : Add here code to setup series
 
-        if(t.isHighLowType()||p.getBoolean("min-max")){ // NON-NLS
+        if (t.isHighLowType() || p.getBoolean("min-max")) { // NON-NLS
             Integer min = p.getNumber("min"), max = p.getNumber("max"); // NON-NLS
-            if(min==null||max==null) return;
-            if(headers.hasSeriesForColumn(min)&&headers.hasSeriesForColumn(max)) {
-                DataSet.getDataSet(t).remove(series);
+            if (min == null || max == null) return;
+            if (headers.hasSeriesForColumn(min) && headers.hasSeriesForColumn(max)) {
+                if (series != null)
+                    series.delete();
             }
             t.setHighLowType(true);
-            headers.set(series,min,max);
+            headers.set(series, min, max);
         } else {
-            headers.set(series,column);
+            headers.set(series, column);
         }
     }
 
     /**
      * Read a header line as a date line.
+     *
      * @param date The date information where add the date parsing information
      * @param line The parsed line from the CSV
      */
@@ -313,7 +320,7 @@ public class SpeleoDataFileReader implements DataFileReader {
         protected String computeDateFormat() {
             dateFormat = StringUtils.join(dateFormats, ' ');
             format = new SimpleDateFormat(dateFormat);
-            if(timeZone!=null)
+            if (timeZone != null)
                 format.setTimeZone(timeZone);
             return dateFormat;
         }
@@ -416,7 +423,6 @@ public class SpeleoDataFileReader implements DataFileReader {
 
         /**
          * Number format is used to parse numbers in columns.
-         *
          */
         private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
@@ -598,7 +604,7 @@ public class SpeleoDataFileReader implements DataFileReader {
                     } else {
                         continue;
                     }
-                    series[i].getItems().add(item);
+                    series[i].add(item);
                 }
                 return 0;
             } catch (ParseException e) {
@@ -638,32 +644,34 @@ public class SpeleoDataFileReader implements DataFileReader {
         /**
          * Store properties.
          */
-        private HashMap<String,String> properties = new HashMap<>();
+        private HashMap<String, String> properties = new HashMap<>();
 
         /**
          * Create properties from an array.
+         *
          * @param properties Each value in the array is a [key]:[value].
          */
-        public Properties(String[] properties){
-            for(String p:properties){
+        public Properties(String[] properties) {
+            for (String p : properties) {
                 final String[] strings = StringUtils.split(p, ":", 2);
-                if(strings.length!=2) continue;
-                this.properties.put(strings[0].toLowerCase(),strings[1]);
+                if (strings.length != 2) continue;
+                this.properties.put(strings[0].toLowerCase(), strings[1]);
             }
         }
 
         /**
          * Get a value as a boolean.
          * "0", false, null are considered as false, all other values are true
+         *
          * @param key The key to find
          * @return the value corresponding to the key as a boolean.
          */
-        public boolean getBoolean(String key){
+        public boolean getBoolean(String key) {
             @NonNls String v = properties.get(key);
             return
                     v != null
                             &&
-                    !(v.equals("0") || v.equals("false") || v.equals("non") || v.equals("N") || v.equals("F"));
+                            !(v.equals("0") || v.equals("false") || v.equals("non") || v.equals("N") || v.equals("F"));
         }
 
         /**
@@ -673,10 +681,10 @@ public class SpeleoDataFileReader implements DataFileReader {
          * @return the numerical value
          * @see Integer#parseInt(String)
          */
-        public Integer getNumber(String key){
-            try{
+        public Integer getNumber(String key) {
+            try {
                 return Integer.parseInt(properties.get(key));
-            } catch (Throwable throwable){
+            } catch (Throwable throwable) {
                 return null;
             }
         }
@@ -687,7 +695,7 @@ public class SpeleoDataFileReader implements DataFileReader {
          * @param key The key to find
          * @return the value in properties
          */
-        public String get(String key){
+        public String get(String key) {
             return properties.get(key);
         }
 

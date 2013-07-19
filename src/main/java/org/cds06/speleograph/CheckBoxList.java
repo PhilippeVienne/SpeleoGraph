@@ -22,7 +22,6 @@
 
 package org.cds06.speleograph;
 
-import org.cds06.speleograph.data.Sampling;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.Type;
 import org.slf4j.LoggerFactory;
@@ -145,7 +144,7 @@ public class CheckBoxList extends JList<Series> {
                             } catch (Exception e1) {
                                 hasAName = false;
                             }
-                        Sampling.sampling(series, 1000 * duration).setName(name);
+                        series.generateSampledSeries(1000 * duration).setName(name);
                     } catch (Exception e1) {
                         LoggerFactory.getLogger(CheckBoxList.class).error("Erreur lors de l'échantillonage", e1);
                     }
@@ -160,7 +159,7 @@ public class CheckBoxList extends JList<Series> {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (JOptionPane.showConfirmDialog(CheckBoxList.this, "Etes-vous sur de vouloir supprimer cette série", "Confirmation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
-                        series.getDataSet().remove(series);
+                        series.delete();
                     }
                 }
             });

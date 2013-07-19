@@ -27,7 +27,6 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.DataFileReader;
-import org.cds06.speleograph.data.DataSet;
 import org.cds06.speleograph.data.FileReadingError;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
@@ -46,7 +45,8 @@ public class OpenAction extends AbstractAction {
 
     /**
      * Logger for info and errors.
-     */ @NonNls
+     */
+    @NonNls
     private static final Logger log = LoggerFactory.getLogger(OpenAction.class);
 
     /**
@@ -71,19 +71,20 @@ public class OpenAction extends AbstractAction {
 
     /**
      * Construct the import action.
+     *
      * @param component The parent component used to display dialogs.
      */
     public OpenAction(JComponent component, Class<? extends DataFileReader> reader) {
         super(I18nSupport.translate("actions.openFile"));
         try {
             this.reader = reader.newInstance();
-        } catch (InstantiationException|IllegalAccessException e) {
-            log.info("Can not create action for reader "+reader.getName());
+        } catch (InstantiationException | IllegalAccessException e) {
+            log.info("Can not create action for reader " + reader.getName());
             throw new IllegalArgumentException(e);
         }
-        putValue(NAME,this.reader.getButtonText());
+        putValue(NAME, this.reader.getButtonText());
         parent = component;
-        fileFilter = new OrFileFilter(DirectoryFileFilter.DIRECTORY,this.reader.getFileFilter());
+        fileFilter = new OrFileFilter(DirectoryFileFilter.DIRECTORY, this.reader.getFileFilter());
         chooser = new JFileChooser();
         chooser.setFileFilter(new FileFilter() {
             @Override
@@ -107,12 +108,12 @@ public class OpenAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        int result=chooser.showOpenDialog(parent);
+        int result = chooser.showOpenDialog(parent);
         File file;
-        switch (result){
+        switch (result) {
             case JFileChooser.APPROVE_OPTION:
                 file = chooser.getSelectedFile();
-                if(file.isDirectory()) return;
+                if (file.isDirectory()) return;
                 break;
             case JFileChooser.CANCEL_OPTION:
             default:
@@ -120,7 +121,6 @@ public class OpenAction extends AbstractAction {
         }
         try {
             reader.readFile(file);
-            DataSet.refreshAll();
         } catch (FileReadingError e1) {
             log.error("Error when try to read a SpeleoGraph File", e1);
         }

@@ -373,8 +373,7 @@ public class ImportTable extends JPanel {
                                     Validate.notNull(col, "Il manque un numéro de colonne");
                                     Validate.inclusiveBetween(0, numberOfColumns, col, "Le numéro de colonne n'est pas valable");
                                 }
-                                Series series = new Series(sourceFile);
-                                series.setDataSet(DataSet.getDataSet(t));
+                                Series series = new Series(sourceFile, t);
                                 headerInformation.set(series, columns);
                             } catch (NumberFormatException e) {
                                 showError("Merci de bien saisir des nombres");
@@ -384,8 +383,7 @@ public class ImportTable extends JPanel {
                                 log.error("Runtime error:", e); // NON-NLS
                             }
                         } else {
-                            Series series = new Series(sourceFile);
-                            series.setDataSet(DataSet.getDataSet(t));
+                            Series series = new Series(sourceFile, t);
                             headerInformation.set(series, editedColumn);
                         }
                     } else {
@@ -413,7 +411,7 @@ public class ImportTable extends JPanel {
                 showPane(MEASURE_COLUMN);
                 try {
                     Series series = headerInformation.getSeriesForColumn(index);
-                    typeSelection.setSelectedItem(series==null?Type.UNKNOWN:series.getType());
+                    typeSelection.setSelectedItem(series == null ? Type.UNKNOWN : series.getType());
                 } catch (Exception e) {
                     log.error("Error when try to retrive existing type", e); // NON-NLS
                 }

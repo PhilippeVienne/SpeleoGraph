@@ -25,18 +25,18 @@ package org.cds06.speleograph.data;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.data.general.DatasetGroup;
 
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class Type implements Comparable<Type>, Cloneable {
+public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
 
     private static final ArrayList<Type> instances = new ArrayList<>(5);
 
@@ -47,19 +47,20 @@ public class Type implements Comparable<Type>, Cloneable {
     /**
      * Get Type by name and unit.
      * Find a Type instance using its name and unit. If no type are found we return a new Type.
+     *
      * @param name Name of this type (not null)
      * @param unit Unit of this type (not null)
      * @return Type instance which correspond to parameters.
      */
-    public static Type getType(@NotNull String name, @NotNull String unit){
-        Validate.notBlank(name,"Type name can not be blank"); // NON-NLS
-        Validate.notNull(unit,"Unit can not be null"); // NON-NLS
-        for(Type type:instances){
-            if(type.name.equals(name)&&type.unit.equals(unit)){
+    public static Type getType(@NotNull String name, @NotNull String unit) {
+        Validate.notBlank(name, "Type name can not be blank"); // NON-NLS
+        Validate.notNull(unit, "Unit can not be null"); // NON-NLS
+        for (Type type : instances) {
+            if (type.name.equals(name) && type.unit.equals(unit)) {
                 return type;
             }
         }
-        return new Type(DataType.OTHER,unit,name);
+        return new Type(DataType.OTHER, unit, name);
     }
 
     public static final Type UNKNOWN = new Type(DataType.OTHER, "", "Donnée");
@@ -154,7 +155,6 @@ public class Type implements Comparable<Type>, Cloneable {
     }
 
     private DataType type;
-    private List<DataSet> sets = new ArrayList<>();
     private String unit = "";
     private String name = "Inconnu";
     private NumberAxis axis;
@@ -189,18 +189,6 @@ public class Type implements Comparable<Type>, Cloneable {
 
     public void setHighLowType(boolean v) {
         highLow = v;
-    }
-
-    public DataSet[] getSets() {
-        return sets.toArray(new DataSet[sets.size()]);
-    }
-
-    public void registerToDataSet(DataSet set) {
-        sets.add(set);
-    }
-
-    public void unlinkFromDataSet(DataSet set) {
-        sets.remove(set);
     }
 
     public Type(DataType type) {
@@ -256,21 +244,32 @@ public class Type implements Comparable<Type>, Cloneable {
      * Determine if two Type are equals.
      * Type are equals if :
      * <ul>
-     *     <li>They has got the same name</li>
-     *     <li>They has got the same units</li>
-     *     <li>Properties like isMinMax, isSampled are equals</li>
+     * <li>They has got the same name</li>
+     * <li>They has got the same units</li>
+     * <li>Properties like isMinMax, isSampled are equals</li>
      * </ul>
+     *
      * @return true if the type are equals.
      */
     @Override
-    public boolean equals(Object o){
-        if(!(o instanceof Type)) return false;
+    public boolean equals(Object o) {
+        if (!(o instanceof Type)) return false;
         Type typeToCompare = (Type) o;
         return
-                        getName().equals(typeToCompare.getName()) &&
+                getName().equals(typeToCompare.getName()) &&
                         name.equals(typeToCompare.name) &&
                         unit.equals(typeToCompare.unit) &&
                         isSteppedType == typeToCompare.isSteppedType &&
                         highLow == typeToCompare.highLow;
+    }
+
+    /**
+     * Returns the identification string for this group.
+     *
+     * @return The identification string.
+     */
+    @Override
+    public String getID() {
+        return getName();
     }
 }

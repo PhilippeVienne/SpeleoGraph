@@ -33,7 +33,10 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -97,7 +100,7 @@ public class HoboFileReader implements DataFileReader {
                     e
             );
         }
-        CSVReader csvReader = new CSVReader(fileReader,';');
+        CSVReader csvReader = new CSVReader(fileReader, ';');
         String[] line;
         try {
             line = csvReader.readNext();
@@ -115,52 +118,51 @@ public class HoboFileReader implements DataFileReader {
         while (line != null) {
             if (line.length <= 1) { // Title Line (just skip it)
                 log.info("Head line", line);
-            }else if (headers==null) { // The first line is headers
-                headers = Headers.parseHeaderLine(file,line);
+            } else if (headers == null) { // The first line is headers
+                headers = Headers.parseHeaderLine(file, line);
                 availableSeries = headers.availableSeries;
                 columns = headers.typeColumns;
                 dateColumn = headers.dateColumns[0];
                 timeColumn = headers.dateColumns[1];
-                if(!(dateColumn!=-1&&timeColumn!=-1&&availableSeries.length>0)){
-                    headers=null;
+                if (!(dateColumn != -1 && timeColumn != -1 && availableSeries.length > 0)) {
+                    headers = null;
                     log.error("Error while parsing", line);
                 }
             } else {
 
-            // Now, this is a data line
-            Date day;
-            try {
-                day = dateFormat.parse(line[dateColumn] + " " + line[timeColumn]);
-            } catch (ParseException e) {
-                day = Calendar.getInstance().getTime();
-            }
-            for (int i = 0; i < availableSeries.length; i++) {
-                if (line[columns[i][0]].length() > 0) {
-                    Item item=null;
-                    switch(columns[i].length){
-                        case 1:
-                            item=new Item(
-                                    day,
-                                    Double.valueOf(line[columns[i][0]].replace(',', '.'))
-                            );
-                            break;
-                        case 2:
-                            if(!(line[columns[i][1]].length() > 0))break;
-                            item=new Item(
-                                    day,
-                                    Double.valueOf(line[columns[i][0]].replace(',', '.')),
-                                    Double.valueOf(line[columns[i][1]].replace(',', '.'))
-                            );
-                            break;
-                        default:
-                            log.error("Strange things happened");
-                    }
-                    if(item!=null){
-                        log.info("Has read an item");
-                        availableSeries[i].add(item);
+                // Now, this is a data line
+                Date day;
+                try {
+                    day = dateFormat.parse(line[dateColumn] + " " + line[timeColumn]);
+                } catch (ParseException e) {
+                    day = Calendar.getInstance().getTime();
+                }
+                for (int i = 0; i < availableSeries.length; i++) {
+                    if (line[columns[i][0]].length() > 0) {
+                        Item item = null;
+                        switch (columns[i].length) {
+                            case 1:
+                                item = new Item(
+                                        day,
+                                        Double.valueOf(line[columns[i][0]].replace(',', '.'))
+                                );
+                                break;
+                            case 2:
+                                if (!(line[columns[i][1]].length() > 0)) break;
+                                item = new Item(
+                                        day,
+                                        Double.valueOf(line[columns[i][0]].replace(',', '.')),
+                                        Double.valueOf(line[columns[i][1]].replace(',', '.'))
+                                );
+                                break;
+                            default:
+                                log.error("Strange things happened");
+                        }
+                        if (item != null) {
+                            availableSeries[i].add(item);
+                        }
                     }
                 }
-            }
             }
             try {
                 line = csvReader.readNext();
@@ -191,13 +193,15 @@ public class HoboFileReader implements DataFileReader {
     }
 
     private static final AndFileFilter filter = new AndFileFilter();
+
     static {
         filter.addFileFilter(FileFileFilter.FILE);
         filter.addFileFilter(CanReadFileFilter.CAN_READ);
         filter.addFileFilter(CanWriteFileFilter.CAN_WRITE);
         filter.addFileFilter(EmptyFileFilter.NOT_EMPTY);
-        filter.addFileFilter(new SuffixFileFilter(new String[]{".csv",".txt"}, IOCase.INSENSITIVE));// NON-NLS
+        filter.addFileFilter(new SuffixFileFilter(new String[]{".csv", ".txt"}, IOCase.INSENSITIVE));// NON-NLS
     }
+
     /**
      * Get the FileFilter to use.
      *
@@ -244,18 +248,19 @@ public class HoboFileReader implements DataFileReader {
 
         /**
          * Parse all data into a header line.
+         *
          * @return Header Data in an object
          */
-        public static Headers parseHeaderLine(File f,String[] line){
+        public static Headers parseHeaderLine(File f, String[] line) {
             Headers headers = new Headers();
-            ArrayList<Series> availableSeries=new ArrayList<>();
-            ArrayList<int[]> columns=new ArrayList<>();
-            for(Type t:headerConditions.keySet()){
+            ArrayList<Series> availableSeries = new ArrayList<>();
+            ArrayList<int[]> columns = new ArrayList<>();
+            for (Type t : headerConditions.keySet()) {
                 findHeader(f, line, t, availableSeries, columns);
             }
-            headers.availableSeries=availableSeries.toArray(new Series[availableSeries.size()]);
-            headers.typeColumns=columns.toArray(new int[availableSeries.size()][2]);
-            headers.dateColumns=new int[]{-1,-1};
+            headers.availableSeries = availableSeries.toArray(new Series[availableSeries.size()]);
+            headers.typeColumns = columns.toArray(new int[availableSeries.size()][2]);
+            headers.dateColumns = new int[]{-1, -1};
             findDate(line, headers);
             return headers;
         }
@@ -263,29 +268,29 @@ public class HoboFileReader implements DataFileReader {
         private static void findDate(String[] line, Headers headers) {
             for (int i = 0, lineLength = line.length; i < lineLength; i++) {
                 String l = line[i];
-                if(l.contains(dateColumn)) headers.dateColumns[0]=i;
-                if(l.contains(timeColumn)) headers.dateColumns[1]=i;
+                if (l.contains(dateColumn)) headers.dateColumns[0] = i;
+                if (l.contains(timeColumn)) headers.dateColumns[1] = i;
             }
         }
 
         private static void findHeader(File file, String[] line, Type type, ArrayList<Series> availableSeries, ArrayList<int[]> columns) {
             String[] conditions = headerConditions.get(type);
-            switch (conditions.length){
+            switch (conditions.length) {
                 case 1:
                     int col = ArrayUtils.indexOf(line, conditions[0]);
-                    if(col==ArrayUtils.INDEX_NOT_FOUND)break;
+                    if (col == ArrayUtils.INDEX_NOT_FOUND) break;
                     columns.add(new int[]{col});
                     availableSeries.add(new Series(file, type));
                     break;
                 case 2:
                     int min = ArrayUtils.indexOf(line, conditions[0]);
                     int max = ArrayUtils.indexOf(line, conditions[1]);
-                    if(min == ArrayUtils.INDEX_NOT_FOUND||max == ArrayUtils.INDEX_NOT_FOUND)break;
-                    columns.add(new int[]{min,max});
+                    if (min == ArrayUtils.INDEX_NOT_FOUND || max == ArrayUtils.INDEX_NOT_FOUND) break;
+                    columns.add(new int[]{min, max});
                     availableSeries.add(new Series(file, type));
                     break;
                 default:
-                    log.error("Unknown conditions: "+ StringUtils.join(conditions, ','));
+                    log.error("Unknown conditions: " + StringUtils.join(conditions, ','));
             }
         }
 

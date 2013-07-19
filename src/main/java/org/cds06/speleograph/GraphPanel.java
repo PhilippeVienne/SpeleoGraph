@@ -22,7 +22,7 @@
 package org.cds06.speleograph;
 
 import org.apache.commons.lang3.Validate;
-import org.cds06.speleograph.data.DataSet;
+import org.cds06.speleograph.data.Series;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.AxisLocation;
@@ -38,7 +38,7 @@ import java.awt.*;
 
 /**
  * Panel for SpeleoGraph Charts.
- * <p>This class interact with {@link DataSet} to draw visible data into a {@link JFreeChart}.<br/>In add, this class
+ * <p>This class interact with {@link Series} to draw visible data into a {@link JFreeChart}.<br/>In add, this class
  * controls user interaction with the graph, like click on axes ...</p>
  * <p>This is the most important graphical class in SpeleoGraph.</p>
  *
@@ -77,25 +77,29 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
 
     /**
      * Getter for the linked application instance
+     *
      * @return The instance
      */
-    public SpeleoGraphApp getApplication(){return application;}
+    public SpeleoGraphApp getApplication() {
+        return application;
+    }
 
     /**
      * Construct a new GraphPanel for an application instance.
+     *
      * @param app The instance which should be linked with this Chart.
      */
-    public GraphPanel(SpeleoGraphApp app){
+    public GraphPanel(SpeleoGraphApp app) {
         Validate.notNull(app);
-        application=app;
+        application = app;
         setLayout(new BorderLayout());
-        chart = ChartFactory.createTimeSeriesChart(null,null,null,null,true,true,false);
+        chart = ChartFactory.createTimeSeriesChart(null, null, null, null, true, true, false);
         plot = chart.getXYPlot();
         dateAxis = (DateAxis) plot.getDomainAxis();
-        chartPanel = new ChartPanel(chart,false,true,false,true,true);
+        chartPanel = new ChartPanel(chart, false, true, false, true, true);
         chartPanel.addChartMouseListener(this);
         setupEmptyChart();
-        DataSet.addListener(this);
+        Series.setGraphPanel(this);
         add(chartPanel);
         log.info("GraphPanel is initialized");
     }
@@ -104,14 +108,14 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
      * Configure the plot with no data.
      * We should hide axes and display a little message to explain that we have no data.
      */
-    private void setupEmptyChart(){
+    private void setupEmptyChart() {
         plot.setDomainAxis(null);
         plot.setRangeAxis(null);
         plot.setNoDataMessage(I18nSupport.translate("error.graphPanel.noData"));
     }
 
     /**
-     * Method called when a DataSet has changed in the application.
+     * Method called when a Series has changed in the application.
      *
      * @param event information about the event.
      */
@@ -123,7 +127,7 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
             plot.setRenderer(i, null);
         }
         int axisIndex = 0;
-        for (final DataSet set : DataSet.getInstances()) {
+        for (final Series set : Series.getInstances()) {
             if (set == null) continue;
             if (set.getSeriesCount() > 0) {
                 boolean show = false;
@@ -136,7 +140,7 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
                 if (show) {
                     plot.setDomainAxis(dateAxis);
                     plot.setDataset(axisIndex, set);
-                    plot.setRangeAxis(axisIndex, set.getValueAxis(), false);
+                    plot.setRangeAxis(axisIndex, set.getAxis(), false);
                     plot.setRenderer(axisIndex, set.getRenderer(), false);
                     plot.mapDatasetToRangeAxis(axisIndex, axisIndex);
                     plot.setRangeAxisLocation(axisIndex, AxisLocation.BOTTOM_OR_LEFT);
