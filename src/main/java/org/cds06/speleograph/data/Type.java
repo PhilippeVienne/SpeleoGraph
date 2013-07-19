@@ -149,7 +149,6 @@ public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
     public NumberAxis getAxis() {
         if (axis == null) {
             axis = new NumberAxis(name + " (" + unit + ")");
-
         }
         return axis;
     }

@@ -23,10 +23,12 @@ package org.cds06.speleograph;
 
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.data.Series;
+import org.cds06.speleograph.graph.SpeleoXYPlot;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
@@ -35,6 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Panel for SpeleoGraph Charts.
@@ -65,7 +69,7 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
     /**
      * Store the {@link XYPlot} linked to the current {@link #chart}.
      */
-    private final XYPlot plot;
+    private final SpeleoXYPlot plot;
     /**
      * Used to save the dateAxis when no axis are shown.
      */
@@ -93,9 +97,10 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
         Validate.notNull(app);
         application = app;
         setLayout(new BorderLayout());
-        chart = ChartFactory.createTimeSeriesChart(null, null, null, null, true, true, false);
-        plot = chart.getXYPlot();
-        dateAxis = (DateAxis) plot.getDomainAxis();
+        dateAxis = new DateAxis();
+        plot = new SpeleoXYPlot();
+        chart = new JFreeChart(plot);
+        new StandardChartTheme("JFree").apply(chart); // NON-NLS
         chartPanel = new ChartPanel(chart, false, true, false, true, true);
         chartPanel.addChartMouseListener(this);
         setupEmptyChart();
@@ -114,6 +119,8 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
         plot.setNoDataMessage(I18nSupport.translate("error.graphPanel.noData"));
     }
 
+    private static List<Series> series = Series.getInstances();
+
     /**
      * Method called when a Series has changed in the application.
      *
@@ -126,31 +133,30 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
             plot.setRangeAxis(i, null);
             plot.setRenderer(i, null);
         }
-        int axisIndex = 0;
-        for (final Series set : Series.getInstances()) {
+        final ArrayList<NumberAxis> shownAxis = new ArrayList<>(series.size());
+        for (final Series set : series) {
             if (set == null) continue;
-            if (set.getSeriesCount() > 0) {
-                boolean show = false;
-                for (int j = 0; j < set.getSeriesCount(); j++) {
-                    if (set.getItemCount(j) > 0) {
-                        show = true;
-                        break;
-                    }
+            NumberAxis rangeAxis = set.getAxis();
+            if (set.isShow()) {
+                int id = series.indexOf(set);
+                plot.setDataset(id, set);
+                plot.setRenderer(id, set.getRenderer(), false);
+                int index = shownAxis.indexOf(rangeAxis);
+                if (index == -1) {
+                    shownAxis.add(rangeAxis);
+                    index = shownAxis.indexOf(rangeAxis);
+                    plot.setRangeAxis(index, rangeAxis, false);
+                    plot.setRangeAxisLocation(index, AxisLocation.BOTTOM_OR_LEFT);
                 }
-                if (show) {
-                    plot.setDomainAxis(dateAxis);
-                    plot.setDataset(axisIndex, set);
-                    plot.setRangeAxis(axisIndex, set.getAxis(), false);
-                    plot.setRenderer(axisIndex, set.getRenderer(), false);
-                    plot.mapDatasetToRangeAxis(axisIndex, axisIndex);
-                    plot.setRangeAxisLocation(axisIndex, AxisLocation.BOTTOM_OR_LEFT);
-                    plot.datasetChanged(new DatasetChangeEvent(this, set));
-                    axisIndex++;
-                }
+                plot.mapDatasetToRangeAxis(id, index);
+                plot.datasetChanged(new DatasetChangeEvent(this, set));
             }
         }
-        if (axisIndex == 0) {
+        if (shownAxis.size() == 0) {
             setupEmptyChart();
+        } else {
+            plot.setDomainAxis(dateAxis);
+
         }
     }
 
