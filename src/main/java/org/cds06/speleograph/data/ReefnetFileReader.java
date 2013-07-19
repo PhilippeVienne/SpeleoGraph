@@ -23,6 +23,8 @@
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.*;
 import org.apache.commons.lang3.StringUtils;
 import org.cds06.speleograph.I18nSupport;
 import org.jetbrains.annotations.NonNls;
@@ -30,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -249,26 +250,26 @@ public class ReefnetFileReader implements DataFileReader {
      */
     @NotNull
     @Override
-    public FileFilter getFileFilter() {
-        return new FileFilter() {
-            @SuppressWarnings("HardCodedStringLiteral")
-            @Override
-            public boolean accept(File file) {
-                return
-                        !file.isDirectory() &&
-                                (file.getName().endsWith(".csv") || file.getName().endsWith(".txt"))
-                                        && (isReefnetFile(file));
-            }
-
-            /**
-             * The description of this filter. For example: "JPG and GIF Images"
-             *
-             * @see javax.swing.filechooser.FileView#getName
-             */
-            @Override
-            public String getDescription() {
-                return getName();
-            }
-        };
+    public IOFileFilter getFileFilter() {
+        return filter;
     }
+
+
+    private static final AndFileFilter filter = new AndFileFilter(
+            FileFileFilter.FILE,
+            new AndFileFilter(
+                    new SuffixFileFilter(new String[]{".csv", ".txt"}), // NON-NLS
+                    new AbstractFileFilter() {
+                /**
+                 * Checks to see if the File should be accepted by this filter.
+                 *
+                 * @param dir  the directory File to check
+                 * @param name the filename within the directory to check
+                 * @return true if this file matches the test
+                 */
+                @Override
+                public boolean accept(File dir, String name) {
+                    return isReefnetFile(FileUtils.getFile(dir, name));
+                }
+            }));
 }

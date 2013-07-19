@@ -24,6 +24,7 @@ package org.cds06.speleograph;
 
 import org.cds06.speleograph.actions.OpenAction;
 import org.cds06.speleograph.data.FileReadingError;
+import org.cds06.speleograph.data.HoboFileReader;
 import org.cds06.speleograph.data.ReefnetFileReader;
 import org.cds06.speleograph.data.SpeleoDataFileReader;
 import org.jetbrains.annotations.NonNls;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -63,7 +65,7 @@ public class SpeleoGraphApp extends JFrame {
     /**
      * Main upper Toolbar.
      */
-    private final JToolBar toolBar;
+//    private final JToolBar toolBar;
     /**
      * The splitPane to divide space between Graph and Series' List.
      */
@@ -73,7 +75,7 @@ public class SpeleoGraphApp extends JFrame {
         super("SpeleoGraph"); // NON-NLS
 
         // Initialize Graphic elements
-        toolBar = new JToolBar();
+//        toolBar = new JToolBar();
         panel = new JPanel(new BorderLayout(2, 2));
         SpeleoSeriesListModel listModel = new SpeleoSeriesListModel();
         CheckBoxList list = new CheckBoxList(listModel);
@@ -82,8 +84,8 @@ public class SpeleoGraphApp extends JFrame {
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,true, graphPanel,scrollPane);
 
         // Setup the toolbar
-        panel.add(toolBar, BorderLayout.NORTH);
-        addToolBarButtons();
+//        panel.add(toolBar, BorderLayout.NORTH);
+//        addToolBarButtons();
 
         // Configure and add the splitPane
         splitPane.setResizeWeight(1.0);
@@ -91,6 +93,7 @@ public class SpeleoGraphApp extends JFrame {
 
         // Configure the frame
         setContentPane(panel);
+        setJMenuBar(createMenus());
         // Positioning
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         screenSize.height = screenSize.height - 100;
@@ -104,13 +107,50 @@ public class SpeleoGraphApp extends JFrame {
     /**
      * Setup buttons for the toolBar.
      */
-    private void addToolBarButtons() {
-        toolBar.add(new OpenAction(panel, SpeleoDataFileReader.class));
-        toolBar.add(new OpenAction(panel, ReefnetFileReader.class));
-    }
+//    private void addToolBarButtons() {
+////        toolBar.add(new OpenAction(panel, SpeleoDataFileReader.class));
+////        toolBar.add(new OpenAction(panel, ReefnetFileReader.class));
+//    }
 
     public JSplitPane getSplitPane() {
         return splitPane;
+    }
+
+    /**
+     * Create a JMenuBar for this application.
+     */
+    public JMenuBar createMenus(){
+        final JMenuBar bar = new JMenuBar();
+
+        JMenu fileMenu = new JMenu(I18nSupport.translate("menus.file"));
+        fileMenu.add(new OpenAction(panel, SpeleoDataFileReader.class));
+        JMenu importMenu = new JMenu(I18nSupport.translate("menus.import"));
+        importMenu.add(new OpenAction(panel, ReefnetFileReader.class));
+        importMenu.add(new OpenAction(panel, HoboFileReader.class));
+        fileMenu.add(importMenu);
+        fileMenu.addSeparator();
+        fileMenu.add(new AbstractAction() {
+
+            {
+                putValue(Action.NAME, I18nSupport.translate("actions.exit"));
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int result = JOptionPane.showConfirmDialog(
+                        panel,
+                        I18nSupport.translate("actions.exit.confirm.message"),
+                        I18nSupport.translate("actions.exit.confirm.title"),
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+                if(result==JOptionPane.OK_OPTION){
+                    SpeleoGraphApp.this.dispose();
+                }
+            }
+        });
+        bar.add(fileMenu);
+
+        return bar;
     }
 
     /**

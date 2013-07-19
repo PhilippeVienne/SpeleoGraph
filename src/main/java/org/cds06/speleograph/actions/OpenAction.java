@@ -22,15 +22,18 @@
 
 package org.cds06.speleograph.actions;
 
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.OrFileFilter;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.DataFileReader;
 import org.cds06.speleograph.data.FileReadingError;
-import org.cds06.speleograph.utils.AcceptedFileFilter;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
@@ -46,9 +49,9 @@ public class OpenAction extends AbstractAction {
     private static final Logger log = LoggerFactory.getLogger(OpenAction.class);
 
     /**
-     * FileFilter for ReefNet files.
+     * FileFilter for files.
      */
-    private final AcceptedFileFilter fileFilter;
+    private final IOFileFilter fileFilter;
 
     /**
      * File chooser for this action.
@@ -77,14 +80,25 @@ public class OpenAction extends AbstractAction {
             log.info("Can not create action for reader "+reader.getName());
             throw new IllegalArgumentException(e);
         }
+        putValue(NAME,this.reader.getButtonText());
         parent = component;
-        fileFilter = new AcceptedFileFilter();
-        fileFilter.acceptAllCSVAndTxt=true;
-        fileFilter.acceptReefnet = false;
-        fileFilter.acceptHobo = false;
-        fileFilter.acceptFolders = true;
+        fileFilter = new OrFileFilter(DirectoryFileFilter.DIRECTORY,this.reader.getFileFilter());
         chooser = new JFileChooser();
-        chooser.setFileFilter(fileFilter);
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return fileFilter.accept(f);
+            }
+
+            @Override
+            public String getDescription() {
+                return OpenAction.this.getDescription();
+            }
+        });
+    }
+
+    private String getDescription() {
+        return reader.getName();
     }
 
     /**

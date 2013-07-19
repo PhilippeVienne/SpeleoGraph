@@ -22,6 +22,7 @@
 
 package org.cds06.speleograph.data;
 
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -55,6 +56,6 @@ public interface DataFileReader {
      * @return A file filter
      */
     @NotNull
-    public javax.swing.filechooser.FileFilter getFileFilter();
+    public IOFileFilter getFileFilter();
 
 }

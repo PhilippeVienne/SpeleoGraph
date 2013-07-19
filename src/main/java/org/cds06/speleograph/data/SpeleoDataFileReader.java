@@ -23,6 +23,7 @@
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.*;
 import org.apache.commons.lang3.ArrayUtils;
@@ -166,6 +167,19 @@ public class SpeleoDataFileReader implements DataFileReader {
         filter.addFileFilter(CanWriteFileFilter.CAN_WRITE);
         filter.addFileFilter(EmptyFileFilter.NOT_EMPTY);
         filter.addFileFilter(new SuffixFileFilter(new String[]{".speleo",".csv",".txt"}, IOCase.INSENSITIVE));// NON-NLS
+        filter.addFileFilter(new IOFileFilter() {
+            @Override
+            public boolean accept(File file) {
+                try{
+                    return new Scanner(file).nextLine().equals(SPELEOGRAPH_FILE_HEADER);
+                } catch(Exception e){log.error("Error:",e);return false;}
+            }
+
+            @Override
+            public boolean accept(File dir, String name) {
+                return accept(FileUtils.getFile(dir,name));
+            }
+        });
     }
     /**
      * Get the FileFilter to use.
@@ -174,24 +188,8 @@ public class SpeleoDataFileReader implements DataFileReader {
      */
     @NotNull
     @Override
-    public javax.swing.filechooser.FileFilter getFileFilter() {
-        return new javax.swing.filechooser.FileFilter() {
-            @Override
-            public boolean accept(File f) {
-                if(filter.accept(f)){
-                    try{
-                        return new Scanner(f).nextLine().equals(SPELEOGRAPH_FILE_HEADER);
-                    } catch(Exception e){log.error("Error:",e);return false;}
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            public String getDescription() {
-                return getName();
-            }
-        };
+    public IOFileFilter getFileFilter() {
+        return filter;
     }
 
     /**

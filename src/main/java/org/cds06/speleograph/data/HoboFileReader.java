@@ -33,10 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -180,7 +177,7 @@ public class HoboFileReader implements DataFileReader {
      */
     @Override
     public String getName() {
-        return null;
+        return "Hobo File"; // NON-NLS
     }
 
     /**
@@ -190,7 +187,7 @@ public class HoboFileReader implements DataFileReader {
      */
     @Override
     public String getButtonText() {
-        return null;
+        return I18nSupport.translate("actions.openHoboFile");
     }
 
     private static final AndFileFilter filter = new AndFileFilter();
@@ -208,18 +205,8 @@ public class HoboFileReader implements DataFileReader {
      */
     @NotNull
     @Override
-    public javax.swing.filechooser.FileFilter getFileFilter() {
-        return new javax.swing.filechooser.FileFilter() {
-            @Override
-            public boolean accept(File f) {
-                return filter.accept(f);
-            }
-
-            @Override
-            public String getDescription() {
-                return getName();
-            }
-        };
+    public IOFileFilter getFileFilter() {
+        return filter;
     }
 
     /**
