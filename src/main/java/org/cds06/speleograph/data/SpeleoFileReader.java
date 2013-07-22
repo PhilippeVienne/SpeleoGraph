@@ -46,11 +46,11 @@ import java.util.*;
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class SpeleoDataFileReader implements DataFileReader {
+public class SpeleoFileReader implements DataFileReader {
 
     @SuppressWarnings("UnusedDeclaration")
     @NonNls
-    private static final Logger log = LoggerFactory.getLogger(SpeleoDataFileReader.class);
+    private static final Logger log = LoggerFactory.getLogger(SpeleoFileReader.class);
 
     /**
      * This exception is thrown when try to read a non-speleoGraph file.
@@ -72,7 +72,7 @@ public class SpeleoDataFileReader implements DataFileReader {
 
     private static final String SERIES_WITH_INTERNAL_TYPE = "sgt"; //NON-NLS
     private static final String SERIES_WITH_USER_TYPE = "ut"; //NON-NLS
-    private static DataFileReader instance = new SpeleoDataFileReader();
+    private static DataFileReader instance = new SpeleoFileReader();
 
     public static DataFileReader getInstance() {
         return instance;
@@ -210,28 +210,8 @@ public class SpeleoDataFileReader implements DataFileReader {
             log.info("Invalid header : " + StringUtils.join(line, ' '));
             return;
         }
-        String headerType = line[1];
-        Series series = null;
-        Type t = Type.UNKNOWN;
-        switch (headerType) {
-            case SERIES_WITH_INTERNAL_TYPE:
-                String type = line[2];
-                for (Type ty : Type.internalTypes)
-                    if (ty.getType().toString().equals(type)) t = ty;
-                series = new Series(file, t);
-                break;
-            case SERIES_WITH_USER_TYPE:
-                if (size < 4) {
-                    log.info("Invalid header : " + StringUtils.join(line, ' '));
-                    break;
-                }
-                t = Type.getType(line[2], line[3]);
-                series = new Series(file, t);
-                break;
-            default:
-                log.info("Invalid header : " + StringUtils.join(line, ';'));
-                throw new IllegalStateException("Invalid series entry");
-        }
+        Type t = Type.getType(line[1], line[2]);
+        Series series = new Series(file, t);
         Properties p = new Properties(line);
 
         // TODO : Add here code to setup series
@@ -240,8 +220,7 @@ public class SpeleoDataFileReader implements DataFileReader {
             Integer min = p.getNumber("min"), max = p.getNumber("max"); // NON-NLS
             if (min == null || max == null) return;
             if (headers.hasSeriesForColumn(min) && headers.hasSeriesForColumn(max)) {
-                if (series != null)
-                    series.delete();
+                series.delete();
             }
             t.setHighLowType(true);
             headers.set(series, min, max);
@@ -407,7 +386,7 @@ public class SpeleoDataFileReader implements DataFileReader {
      * <p>A file header is a pack of information which are which series we will read, which columns are liked to a
      * series, what are the date columns, how to parse the date ...</p>
      * <p>This class is designed to be used by two classes, the first is {@link ImportTable} which will populate this
-     * class with user information, the second is {@link SpeleoDataFileReader} which will use it to parse the file fast.</p>
+     * class with user information, the second is {@link SpeleoFileReader} which will use it to parse the file fast.</p>
      *
      * @author Philippe VIENNE
      * @see java.io.Serializable This class is serializable to be saved in case we have to reuse it.

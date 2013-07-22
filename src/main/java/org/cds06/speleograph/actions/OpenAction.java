@@ -26,6 +26,7 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.SpeleoGraphApp;
 import org.cds06.speleograph.data.DataFileReader;
 import org.cds06.speleograph.data.FileReadingError;
 import org.jetbrains.annotations.NonNls;
@@ -46,7 +47,7 @@ public class OpenAction extends AbstractAction {
     /**
      * Working directory for the current User.
      */
-    private static File pwd;
+    public static File pwd;
 
     /**
      * Logger for info and errors.
@@ -113,10 +114,7 @@ public class OpenAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (pwd == null) {
-            pwd = new File(OpenAction.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        }
-        chooser.setCurrentDirectory(pwd);
+        chooser.setCurrentDirectory(SpeleoGraphApp.getWorkingDirectory());
         int result = chooser.showOpenDialog(parent);
         File file;
         switch (result) {
@@ -126,10 +124,11 @@ public class OpenAction extends AbstractAction {
                 break;
             case JFileChooser.CANCEL_OPTION:
             default:
+                SpeleoGraphApp.setWorkingDirectory(chooser.getCurrentDirectory());
                 return;
         }
         try {
-            pwd = file.getParentFile();
+            SpeleoGraphApp.setWorkingDirectory(file.getParentFile());
             reader.readFile(file);
         } catch (FileReadingError e1) {
             log.error("Error when try to read a SpeleoGraph File", e1);

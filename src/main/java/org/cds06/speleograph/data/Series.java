@@ -627,4 +627,8 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     public static void addListener(DatasetChangeListener listener) {
         staticListeners.add(listener);
     }
+
+    public List<Item> getItems() {
+        return Collections.unmodifiableList(items);
+    }
 }

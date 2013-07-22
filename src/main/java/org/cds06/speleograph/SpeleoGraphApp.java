@@ -24,10 +24,11 @@ package org.cds06.speleograph;
 
 import org.cds06.speleograph.actions.ImportAction;
 import org.cds06.speleograph.actions.OpenAction;
+import org.cds06.speleograph.actions.SaveAction;
 import org.cds06.speleograph.data.FileReadingError;
 import org.cds06.speleograph.data.HoboFileReader;
 import org.cds06.speleograph.data.ReefnetFileReader;
-import org.cds06.speleograph.data.SpeleoDataFileReader;
+import org.cds06.speleograph.data.SpeleoFileReader;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.prefs.Preferences;
 
 /**
  * SpeleoGraph Main Frame. This class is the enter point for a graphical utilisation and is the JFrame show. It create
@@ -109,7 +111,7 @@ public class SpeleoGraphApp extends JFrame {
      * Setup buttons for the toolBar.
      */
 //    private void addToolBarButtons() {
-////        toolBar.add(new OpenAction(panel, SpeleoDataFileReader.class));
+////        toolBar.add(new OpenAction(panel, SpeleoFileReader.class));
 ////        toolBar.add(new OpenAction(panel, ReefnetFileReader.class));
 //    }
 
@@ -124,13 +126,14 @@ public class SpeleoGraphApp extends JFrame {
         final JMenuBar bar = new JMenuBar();
 
         JMenu fileMenu = new JMenu(I18nSupport.translate("menus.file"));
-        fileMenu.add(new OpenAction(panel, SpeleoDataFileReader.class));
+        fileMenu.add(new OpenAction(panel, SpeleoFileReader.class));
         JMenu importMenu = new JMenu(I18nSupport.translate("menus.import"));
         importMenu.add(new OpenAction(panel, ReefnetFileReader.class));
         importMenu.add(new OpenAction(panel, HoboFileReader.class));
         importMenu.addSeparator();
         importMenu.add(new ImportAction(panel));
         fileMenu.add(importMenu);
+        fileMenu.add(new SaveAction(panel));
         fileMenu.addSeparator();
         fileMenu.add(new AbstractAction() {
 
@@ -194,9 +197,30 @@ public class SpeleoGraphApp extends JFrame {
      */
     public static void openFile(File file) throws IOException, ParseException {
         try {
-            SpeleoDataFileReader.getInstance().readFile(file);
+            SpeleoFileReader.getInstance().readFile(file);
         } catch (FileReadingError fileReadingError) {
             log.error("Error on file reading",fileReadingError);
         }
+    }
+
+    private static Preferences configuration = Preferences.userNodeForPackage(SpeleoGraphApp.class);
+
+    /**
+     * Get the location to open in a FileChooser.
+     *
+     * @return A non-null directory to display to the user.
+     */
+    public static File getWorkingDirectory(){
+        return new File(configuration.get(
+                "workingDirectory",   // NON-NLS
+                OpenAction.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+    }
+
+    /**
+     * Save the working directory.
+     * @param dir The directory to register.
+     */
+    public static void setWorkingDirectory(File dir){
+        configuration.put("workingDirectory", dir.getAbsolutePath()); // NON-NLS
     }
 }
