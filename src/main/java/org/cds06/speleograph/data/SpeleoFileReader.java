@@ -135,7 +135,7 @@ public class SpeleoFileReader implements DataFileReader {
                     }
                     break;
                 case READING_DATA:
-                    if (size <= 1) continue;
+                    if (size <= 1) break;
                     headers.read(line);
                     break;
                 default:
@@ -147,6 +147,7 @@ public class SpeleoFileReader implements DataFileReader {
                 log.debug("None next lines", e);
             }
         }
+        Series.notifyInstanceListeners();
         log.info("File reading is ended");
     }
 
@@ -599,7 +600,7 @@ public class SpeleoFileReader implements DataFileReader {
                     series[i].add(item);
                 }
                 return 0;
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 log.error("Can not read an entry", e);
                 return 1;
             }

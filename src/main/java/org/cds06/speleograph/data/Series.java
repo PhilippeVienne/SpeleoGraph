@@ -740,11 +740,27 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     private Color color;
 
     public Color getColor() {
+        if (color == null && renderer != null) {
+            return (Color) renderer.getSeriesPaint(0);
+        }
         return color;
     }
 
     public void setColor(Color color) {
         this.color = color;
         notifyListeners();
+    }
+
+    /**
+     * Notify all static listeners that an edit occurs.
+     * <p>Note: This function will refresh graphics, so it could occur thread blocking</p>
+     */
+    public static void notifyInstanceListeners() {
+        final DatasetChangeEvent event = new DatasetChangeEvent(Series.class, null);
+        if (graphPanel != null)
+            graphPanel.datasetChanged(event);
+        for (DatasetChangeListener listener : staticListeners) {
+            listener.datasetChanged(event);
+        }
     }
 }

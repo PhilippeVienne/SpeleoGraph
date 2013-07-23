@@ -68,6 +68,7 @@ public class SpeleoFileWriter {
         write("data"); // NON-NLS
         writeSeries(series, columns);
         write("eof"); // NON-NLS
+        writer.close();
         return true;
     }
 

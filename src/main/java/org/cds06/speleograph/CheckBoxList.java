@@ -40,6 +40,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 /**
  * This file is created by PhilippeGeek.
@@ -77,8 +78,7 @@ public class CheckBoxList extends JList<Series> {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int index = locationToIndex(e.getPoint());
-
-                if (index != -1) {
+                if (index != -1 && getCellBounds(index, index).contains(e.getPoint())) {
                     Series value = getModel().getElementAt(index);
                     switch (e.getButton()) {
                         case MouseEvent.BUTTON1:
@@ -95,6 +95,10 @@ public class CheckBoxList extends JList<Series> {
         );
 
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
+
+    private Frame getParentFrame() {
+        return (Frame) SwingUtilities.windowForComponent(this);
     }
 
     private void openPopupMenuFor(final Series series, MouseEvent mouseEvent) {
@@ -133,7 +137,10 @@ public class CheckBoxList extends JList<Series> {
                         int duration = 60 * 60 * 24;
                         while (!hasANumber)
                             try {
-                                String result = JOptionPane.showInputDialog(CheckBoxList.this, "Quel est la longueur de l'échantillonage (en secondes) ?", 60 * 60 * 24);
+                                String result = JOptionPane.showInputDialog(
+                                        getParentFrame(),
+                                        "Quel est la longueur de l'échantillonage (en secondes) ?",
+                                        60 * 60 * 24);
                                 duration = Integer.parseInt(result);
                                 hasANumber = true;
                             } catch (NumberFormatException e1) {
@@ -143,7 +150,10 @@ public class CheckBoxList extends JList<Series> {
                         String name = "";
                         while (!hasAName)
                             try {
-                                name = JOptionPane.showInputDialog(CheckBoxList.this, "Quel est le nom de la nouvelle série ?", series.getName());
+                                name = JOptionPane.showInputDialog(
+                                        getParentFrame(),
+                                        "Quel est le nom de la nouvelle série ?",
+                                        series.getName());
                                 hasAName = !"".equals(name);
                             } catch (Exception e1) {
                                 hasAName = false;
@@ -162,7 +172,11 @@ public class CheckBoxList extends JList<Series> {
             samplingItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (JOptionPane.showConfirmDialog(CheckBoxList.this, "Etes-vous sur de vouloir supprimer cette série", "Confirmation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
+                    if (JOptionPane.showConfirmDialog(
+                            getParentFrame(),
+                            "Etes-vous sur de vouloir supprimer cette série",
+                            "Confirmation",
+                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
                         series.delete();
                     }
                 }
@@ -239,6 +253,28 @@ public class CheckBoxList extends JList<Series> {
             }
             popupMenu.add(plotRenderer);
         }
+        popupMenu.addSeparator();
+        popupMenu.add(new AbstractAction() {
+
+            {
+                putValue(Action.NAME, "Fermer le fichier");
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (JOptionPane.showConfirmDialog(
+                        getParentFrame(),
+                        "Etes-vous sur de vouloir fermer toutes les séries du fichier ?",
+                        "Confirmation",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
+                    final File f = series.getOrigin();
+                    for (final Series s : Series.getInstances().toArray(new Series[Series.getInstances().size()])) {
+                        if (s.getOrigin().equals(f))
+                            s.delete();
+                    }
+                }
+            }
+        });
 
         popupMenu.show(this, mouseEvent.getX(), mouseEvent.getY());
     }
