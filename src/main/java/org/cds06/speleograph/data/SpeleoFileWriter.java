@@ -94,9 +94,9 @@ public class SpeleoFileWriter {
                 allocatedColumns++;
             }
             if (s.isShow())
-                seriesDescriptor = ArrayUtils.add(seriesDescriptor, "show:1");
+                seriesDescriptor = ArrayUtils.add(seriesDescriptor, "show:1"); // NON-NLS
             if (s.getColor() != null)
-                seriesDescriptor = ArrayUtils.add(seriesDescriptor, "color:" + s.getColor().getRGB());
+                seriesDescriptor = ArrayUtils.add(seriesDescriptor, "color:" + s.getColor().getRGB()); // NON-NLS
             if (s.getType().isSteppedType())
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor, "stepped:1"); // NON-NLS
             if (s.getStyle() != null) {

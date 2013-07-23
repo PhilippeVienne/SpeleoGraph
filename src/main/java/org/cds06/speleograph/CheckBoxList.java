@@ -171,6 +171,33 @@ public class CheckBoxList extends JList<Series> {
         }
 
         {
+            final JMenuItem up = new JMenuItem("Remonter dans la liste"),
+                    down = new JMenuItem("Descendre dans la liste");
+            ActionListener listener = new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (e.getSource().equals(up)) {
+                        series.upSeriesInList();
+                    } else {
+                        series.downSeriesInList();
+                    }
+                }
+            };
+            up.addActionListener(listener);
+            down.addActionListener(listener);
+            popupMenu.addSeparator();
+            if (series.isFirst()) {
+                popupMenu.add(down);
+            } else if (series.isLast()) {
+                popupMenu.add(up);
+            } else {
+                popupMenu.add(up);
+                popupMenu.add(down);
+            }
+            popupMenu.addSeparator();
+        }
+
+        {
             JMenuItem colorItem = new JMenuItem("Couleur de la série");
             colorItem.addActionListener(new AbstractAction() {
                 @Override

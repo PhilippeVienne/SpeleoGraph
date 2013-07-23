@@ -99,8 +99,55 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     private static final ArrayList<Series> instances = new ArrayList<>(20);
 
+    /**
+     * Get all series currently in the SpeleoGraph Instance
+     *
+     * @return Unmodifiable list of instances.
+     */
     public static List<Series> getInstances() {
         return Collections.unmodifiableList(instances);
+    }
+
+    /**
+     * Detect if series is the first element of instances list.
+     *
+     * @return true if it's the first element.
+     */
+    public boolean isFirst() {
+        return instances.indexOf(this) == 0;
+    }
+
+    /**
+     * Detect if series is the last element of instances list.
+     *
+     * @return true if it's the last element.
+     */
+    public boolean isLast() {
+        return instances.indexOf(this) == instances.size() - 1;
+    }
+
+    /**
+     * Move the current series to n-1 position.
+     */
+    public void upSeriesInList() {
+        int index = instances.indexOf(this), newIndex = index - 1;
+        if (newIndex < 0) return; // We are already on top.
+        Series buffer = instances.get(newIndex);
+        instances.set(newIndex, instances.get(index));
+        instances.set(index, buffer);
+        notifyListeners();
+    }
+
+    /**
+     * Move the current series to n+1 position.
+     */
+    public void downSeriesInList() {
+        int index = instances.indexOf(this), newIndex = index + 1;
+        if (newIndex >= instances.size()) return; // We are already on top.
+        Series buffer = instances.get(newIndex);
+        instances.set(newIndex, instances.get(index));
+        instances.set(index, buffer);
+        notifyListeners();
     }
 
     public static void setGraphPanel(GraphPanel graphPanel) {
@@ -655,7 +702,9 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     }
 
     public void setStyle(DrawStyle style) {
+        Validate.notNull(style);
         if (type.isHighLowType() && !(style == DrawStyle.AUTO || style == DrawStyle.HIGH_LOW)) return;
+        if (style.equals(this.style)) return;
         this.style = style;
         switch (style) {
             case AUTO:
