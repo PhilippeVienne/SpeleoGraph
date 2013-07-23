@@ -22,12 +22,16 @@
 
 package org.cds06.speleograph.data;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NonNls;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -36,69 +40,82 @@ import java.util.List;
  */
 public class SpeleoFileWriter {
 
+    @NonNls
+    private static final Logger log = LoggerFactory.getLogger(SpeleoFileWriter.class);
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##0.###");
+    private FileWriterWithEncoding writer;
+    private Integer allocatedColumns = 0;
 
     /**
      * Save all SpeleoGraph State in a .speleo File.
+     *
      * @param destination The destination file, if it don't end with ".speleo", the name is edited.
      * @return true On success
      * @throws java.io.IOException On read/write errors.
      */
-    public boolean save(File destination) throws IOException{
-        if(destination.getName().endsWith(".speleo")){// NON-NLS
-            destination = new File(destination.getAbsolutePath()+".speleo");
+    public boolean save(File destination) throws IOException {
+        if (!destination.getName().endsWith(".speleo")) {// NON-NLS
+            destination = new File(destination.getAbsolutePath() + ".speleo");
         }
-        CSVWriter writer = new CSVWriter(new FileWriter(destination),';');
+        writer = new FileWriterWithEncoding(destination, "UTF-8"); //NON-NLS
         List<Series> series = Series.getInstances();
         Integer[][] columns = new Integer[series.size()][];
-        Integer allocatedColumns = 0;
-        writer.writeNext(new String[]{SpeleoFileReader.SPELEOGRAPH_FILE_HEADER});
-        writer.writeNext(new String[]{"headers"}); // NON-NLS
-        writeHeaders(writer, series, columns, allocatedColumns);
-        writer.writeNext(new String[]{"data"}); // NON-NLS
-        writeSeries(writer, series, columns);
-        writer.writeNext(new String[]{""});
+        allocatedColumns = 0;
+        write(SpeleoFileReader.SPELEOGRAPH_FILE_HEADER);
+        write("headers"); // NON-NLS
+        writeHeaders(series, columns);
+        write("data"); // NON-NLS
+        writeSeries(series, columns);
+        write("eof"); // NON-NLS
         return true;
     }
 
-    private Integer writeHeaders(CSVWriter writer, List<Series> series, Integer[][] columns, Integer allocatedColumns) {
-        writer.writeNext(new String[]{"date","",Integer.toString(allocatedColumns), "d/M/y H:m:s"}); // NON-NLS
+    private Integer writeHeaders(List<Series> series, Integer[][] columns) {
+        write("date", "", Integer.toString(allocatedColumns), "d/M/y H:m:s"); // NON-NLS
         allocatedColumns++;
-        for(Series s:series){
+        for (Series s : series) {
             String[] seriesDescriptor = {
                     Integer.toString(allocatedColumns),
                     s.getType().getName(),
                     s.getType().getUnit()
             };
-            if(s.getType().isHighLowType()){
+            if (s.getType().isHighLowType()) {
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor, "min-max:1"); // NON-NLS
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor,
-                        "min:"+Integer.toString(allocatedColumns)); // NON-NLS
+                        "min:" + Integer.toString(allocatedColumns)); // NON-NLS
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor,
-                        "max:"+Integer.toString(allocatedColumns+1)); // NON-NLS
-                columns[series.indexOf(s)] = new Integer[]{allocatedColumns,allocatedColumns+1};
+                        "max:" + Integer.toString(allocatedColumns + 1)); // NON-NLS
+                columns[series.indexOf(s)] = new Integer[]{allocatedColumns, allocatedColumns + 1};
                 allocatedColumns++;
                 allocatedColumns++;
             } else {
                 columns[series.indexOf(s)] = new Integer[]{allocatedColumns};
                 allocatedColumns++;
             }
-            if(s.getType().isSteppedType())
-                seriesDescriptor = ArrayUtils.add(seriesDescriptor,"stepped:1"); // NON-NLS
-            writer.writeNext(seriesDescriptor);
+            if (s.isShow())
+                seriesDescriptor = ArrayUtils.add(seriesDescriptor, "show:1");
+            if (s.getColor() != null)
+                seriesDescriptor = ArrayUtils.add(seriesDescriptor, "color:" + s.getColor().getRGB());
+            if (s.getType().isSteppedType())
+                seriesDescriptor = ArrayUtils.add(seriesDescriptor, "stepped:1"); // NON-NLS
+            if (s.getStyle() != null) {
+                seriesDescriptor = ArrayUtils.add(seriesDescriptor, "style:" + s.getStyle().toString()); // NON-NLS
+            }
+            write(seriesDescriptor);
         }
         return allocatedColumns;
     }
 
-    private void writeSeries(CSVWriter writer, List<Series> series, Integer[][] columns) {
-        for(Series s:series){
+    private void writeSeries(List<Series> series, Integer[][] columns) {
+        for (Series s : series) {
             int seriesId = series.indexOf(s);
-            switch (columns[seriesId].length){
+            switch (columns[seriesId].length) {
                 case 1:
-                    writeColumn(writer, series, columns[seriesId][0], s);
+                    writeColumn(columns[seriesId][0], s);
                     break;
                 case 2:
-                    writeMinMaxColumn(writer, series, columns[seriesId], s);
+                    writeMinMaxColumn(columns[seriesId], s);
                     break;
                 default:
 
@@ -106,29 +123,30 @@ public class SpeleoFileWriter {
         }
     }
 
-    private void writeColumn(CSVWriter writer, List<Series> series, Integer integer, Series s) {
+    private void writeColumn(Integer integer, Series s) {
         int column = integer;
-        for(Item i:s.getItems()){
-            String[] line = new String[series.size()+1];
+        for (Item i : s.getItems()) {
+            String[] line = new String[allocatedColumns];
             line[0] = DATE_FORMAT.format(i.getDate());
-            line[column] = Double.toString(i.getValue());
-            writer.writeNext(resetNotNullArray(line));
+            line[column] = DECIMAL_FORMAT.format(i.getValue());
+            write(resetNotNullArray(line));
         }
     }
 
-    private void writeMinMaxColumn(CSVWriter writer, List<Series> series, Integer[] column, Series s) {
+    private void writeMinMaxColumn(Integer[] column, Series s) {
         int minColumn = column[0], maxColumn = column[1];
-        for(Item i:s.getItems()){
-            String[] line = new String[series.size()+1];
+        for (Item i : s.getItems()) {
+            String[] line = new String[allocatedColumns];
             line[0] = DATE_FORMAT.format(i.getDate());
-            line[minColumn] = Double.toString(i.getLow());
-            line[maxColumn] = Double.toString(i.getHigh());
-            writer.writeNext(resetNotNullArray(line));
+            line[minColumn] = DECIMAL_FORMAT.format(i.getLow());
+            line[maxColumn] = DECIMAL_FORMAT.format(i.getHigh());
+            write(resetNotNullArray(line));
         }
     }
 
     /**
      * Make sure that there is not null element in a String array.
+     *
      * @param line The array which can contains null elements
      * @return A String array without null elements.
      */
@@ -137,6 +155,16 @@ public class SpeleoFileWriter {
             if (line[i1] == null) line[i1] = "";
         }
         return line;
+    }
+
+    private void write(String... line) {
+        final String lineToWrite = StringUtils.join(line, ';');
+        try {
+            writer.write(lineToWrite);
+            writer.write("\n");
+        } catch (IOException e) {
+            log.error("Can not write line '" + lineToWrite + "'", e);
+        }
     }
 
 }

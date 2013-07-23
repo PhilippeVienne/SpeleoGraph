@@ -30,12 +30,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.graph.DrawStyle;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.io.*;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -70,8 +72,6 @@ public class SpeleoFileReader implements DataFileReader {
     private static final int READING_DATA = 1;
     private static final int CHECKING = 2;
 
-    private static final String SERIES_WITH_INTERNAL_TYPE = "sgt"; //NON-NLS
-    private static final String SERIES_WITH_USER_TYPE = "ut"; //NON-NLS
     private static DataFileReader instance = new SpeleoFileReader();
 
     public static DataFileReader getInstance() {
@@ -113,6 +113,7 @@ public class SpeleoFileReader implements DataFileReader {
                 continue;
             }
             String firstLineElement = line[0];
+            if (firstLineElement.equals("eof")) break; // Force end for reading NON-NLS
             switch (state) {
                 case CHECKING:
                     if (!SPELEOGRAPH_FILE_HEADER.equals(firstLineElement)) throw NOT_SPELEO_FILE;
@@ -134,6 +135,7 @@ public class SpeleoFileReader implements DataFileReader {
                     }
                     break;
                 case READING_DATA:
+                    if (size <= 1) continue;
                     headers.read(line);
                     break;
                 default:
@@ -212,9 +214,20 @@ public class SpeleoFileReader implements DataFileReader {
         }
         Type t = Type.getType(line[1], line[2]);
         Series series = new Series(file, t);
-        Properties p = new Properties(line);
+        @NonNls Properties p = new Properties(line);
 
-        // TODO : Add here code to setup series
+        {
+            if (p.getBoolean("show")) series.setShow(true);
+            if (p.getBoolean("stepped")) series.getType().setSteppedType(true);
+            if (p.get("color") != null) series.setColor(new Color(Integer.parseInt(p.get("color"))));
+            if (p.get("style") != null) {
+                String style = p.get("style");
+                for (DrawStyle s : DrawStyle.values()) {
+                    if (s.toString().equals(style))
+                        series.setStyle(s);
+                }
+            }
+        }
 
         if (t.isHighLowType() || p.getBoolean("min-max")) { // NON-NLS
             Integer min = p.getNumber("min"), max = p.getNumber("max"); // NON-NLS
@@ -575,11 +588,11 @@ public class SpeleoFileReader implements DataFileReader {
                     Item item;
                     if (columnIds.length == 1) {
                         if ("".equals(line[columnIds[0]])) continue;
-                        item = new Item(date, numberFormat.parse(line[columnIds[0]]).doubleValue());
+                        item = new Item(series[i], date, numberFormat.parse(line[columnIds[0]]).doubleValue());
                     } else if (columnIds.length == 2) {
                         if ("".equals(line[columnIds[0]])) continue;
                         if ("".equals(line[columnIds[1]])) continue;
-                        item = new Item(date, numberFormat.parse(line[columnIds[0]]).doubleValue(), numberFormat.parse(line[columnIds[1]]).doubleValue());
+                        item = new Item(series[i], date, numberFormat.parse(line[columnIds[0]]).doubleValue(), numberFormat.parse(line[columnIds[1]]).doubleValue());
                     } else {
                         continue;
                     }

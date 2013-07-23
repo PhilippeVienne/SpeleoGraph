@@ -24,11 +24,15 @@ package org.cds06.speleograph;
 
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.Type;
+import org.cds06.speleograph.graph.DrawStyle;
+import org.cds06.speleograph.graph.DrawStyles;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.*;
@@ -164,6 +168,49 @@ public class CheckBoxList extends JList<Series> {
                 }
             });
             popupMenu.add(samplingItem);
+        }
+
+        {
+            JMenuItem colorItem = new JMenuItem("Couleur de la série");
+            colorItem.addActionListener(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    series.setColor(JColorChooser.showDialog(
+                            CheckBoxList.this,
+                            I18nSupport.translate("actions.selectColorForSeries"),
+                            series.getColor()));
+                }
+            });
+            popupMenu.add(colorItem);
+        }
+
+        {
+            JMenu plotRenderer = new JMenu("Affichage de la série");
+            final ButtonGroup modes = new ButtonGroup();
+            java.util.List<DrawStyle> availableStyles;
+            if (series.getType().isHighLowType()) {
+                availableStyles = DrawStyles.getDrawableStylesForHighLow();
+            } else {
+                availableStyles = DrawStyles.getDrawableStyles();
+            }
+            for (final DrawStyle s : availableStyles) {
+                final JRadioButtonMenuItem item = new JRadioButtonMenuItem(
+                        DrawStyles.getHumanCheckboxText(s)
+                );
+                item.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        if (item.isSelected())
+                            series.setStyle(s);
+                    }
+                });
+                modes.add(item);
+                if (s.equals(series.getStyle())) {
+                    modes.setSelected(item.getModel(), true);
+                }
+                plotRenderer.add(item);
+            }
+            popupMenu.add(plotRenderer);
         }
 
         popupMenu.show(this, mouseEvent.getX(), mouseEvent.getY());

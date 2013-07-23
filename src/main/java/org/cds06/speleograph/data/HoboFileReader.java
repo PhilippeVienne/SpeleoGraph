@@ -143,6 +143,7 @@ public class HoboFileReader implements DataFileReader {
                         switch (columns[i].length) {
                             case 1:
                                 item = new Item(
+                                        availableSeries[i],
                                         day,
                                         Double.valueOf(line[columns[i][0]].replace(',', '.'))
                                 );
@@ -150,6 +151,7 @@ public class HoboFileReader implements DataFileReader {
                             case 2:
                                 if (!(line[columns[i][1]].length() > 0)) break;
                                 item = new Item(
+                                        availableSeries[i],
                                         day,
                                         Double.valueOf(line[columns[i][0]].replace(',', '.')),
                                         Double.valueOf(line[columns[i][1]].replace(',', '.'))

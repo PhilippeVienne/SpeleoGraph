@@ -24,10 +24,12 @@ package org.cds06.speleograph.data;
 
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.GraphPanel;
+import org.cds06.speleograph.graph.DrawStyle;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.renderer.xy.HighLowRenderer;
+import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.DomainOrder;
@@ -39,8 +41,10 @@ import org.jfree.data.xy.OHLCDataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.io.File;
 import java.util.*;
+import java.util.List;
 
 /**
  * Represent a Series of Data.
@@ -593,7 +597,16 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     public XYItemRenderer getRenderer() {
         if (renderer == null) {
-            renderer = getType().isHighLowType() ? new HighLowRenderer() : new XYLineAndShapeRenderer(true, false);
+            if (getType().isHighLowType()) {
+                renderer = new HighLowRenderer();
+            } else if (getType().isSteppedType()) {
+                renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
+            } else {
+                renderer = new XYLineAndShapeRenderer(true, false);
+            }
+        }
+        if (color != null) {
+            renderer.setSeriesPaint(0, color);
         }
         return renderer;
     }
@@ -606,19 +619,19 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         double bufferValue = 0D;
         DateRange range = getRange();
         long lastStartBuffer = range.getLowerMillis();
-        newItems.add(new Item(new Date(lastStartBuffer), 0.0));
+        newItems.add(new Item(newSeries, new Date(lastStartBuffer), 0.0));
         for (int i = 1; i < itemsCount; i++) {
             final Item originalItem = items.get(i), previousOriginalItem = items.get(i - 1);
             if (lastStartBuffer + length <= originalItem.getDate().getTime()) {
-                newItems.add(new Item(new Date(lastStartBuffer), bufferValue));
-                newItems.add(new Item(new Date(lastStartBuffer + length), bufferValue));
+                newItems.add(new Item(newSeries, new Date(lastStartBuffer), bufferValue));
+                newItems.add(new Item(newSeries, new Date(lastStartBuffer + length), bufferValue));
                 lastStartBuffer = lastStartBuffer + length;
                 bufferValue = 0D;
             }
             bufferValue = bufferValue + (originalItem.getValue() - previousOriginalItem.getValue());
         }
-        newItems.add(new Item(new Date(lastStartBuffer), bufferValue));
-        newItems.add(new Item(new Date(range.getUpperMillis()), bufferValue));
+        newItems.add(new Item(newSeries, new Date(lastStartBuffer), bufferValue));
+        newItems.add(new Item(newSeries, new Date(range.getUpperMillis()), bufferValue));
         return newSeries;
     }
 
@@ -630,5 +643,59 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     public List<Item> getItems() {
         return Collections.unmodifiableList(items);
+    }
+
+    /**
+     *
+     */
+    private DrawStyle style = DrawStyle.AUTO;
+
+    public DrawStyle getStyle() {
+        return style;
+    }
+
+    public void setStyle(DrawStyle style) {
+        if (type.isHighLowType() && !(style == DrawStyle.AUTO || style == DrawStyle.HIGH_LOW)) return;
+        this.style = style;
+        switch (style) {
+            case AUTO:
+                setupRendererAuto();
+                break;
+            case AREA:
+                renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
+                break;
+            case HIGH_LOW:
+                renderer = new HighLowRenderer();
+                break;
+            default:
+            case LINE:
+                renderer = new XYLineAndShapeRenderer(true, false);
+
+        }
+        notifyListeners();
+    }
+
+    private void setupRendererAuto() {
+        if (getType().isHighLowType()) {
+            renderer = new HighLowRenderer();
+        } else if (getType().isSteppedType()) {
+            renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
+        } else {
+            renderer = new XYLineAndShapeRenderer(true, false);
+        }
+    }
+
+    /**
+     * Color of the series on screen.
+     */
+    private Color color;
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+        notifyListeners();
     }
 }

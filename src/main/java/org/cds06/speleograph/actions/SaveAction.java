@@ -53,7 +53,7 @@ public class SaveAction extends AbstractAction {
      *
      * @param parent The parent component used to display dialogs.
      */
-    public SaveAction(JComponent parent){
+    public SaveAction(JComponent parent) {
         super(I18nSupport.translate("actions.save"));
         Validate.notNull(parent);
         this.parent = parent;
@@ -65,7 +65,6 @@ public class SaveAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         chooser.setCurrentDirectory(SpeleoGraphApp.getWorkingDirectory());
-        chooser.
         int result = chooser.showSaveDialog(parent);
         File file;
         switch (result) {
