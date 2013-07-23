@@ -301,9 +301,16 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * @return The display name for this Series.
      */
     public String getName() {
-        if (name == null)
-            name = getOrigin().getName() + " - " + getType().getName();
-        return name;
+        return name == null ? getOrigin().getName() + " - " + getType().getName() : name;
+    }
+
+    /**
+     * Say if the Series name has been chosen by human or generated.
+     *
+     * @return true if name is set by human
+     */
+    public boolean isNameHumanSet() {
+        return name != null;
     }
 
     /**
@@ -312,7 +319,6 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * @param name The name to set (should not be null)
      */
     public void setName(String name) {
-        Validate.notNull(name, "Series name set by human can not be null");//NON-NLS
         this.name = name;
         notifyListeners();
     }

@@ -103,6 +103,9 @@ public class SpeleoFileWriter {
             if (s.getStyle() != null) {
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor, "style:" + s.getStyle().toString()); // NON-NLS
             }
+            if (s.isNameHumanSet()) {
+                seriesDescriptor = ArrayUtils.add(seriesDescriptor, "name:" + s.getName()); // NON-NLS
+            }
             write(seriesDescriptor);
         }
         return allocatedColumns;

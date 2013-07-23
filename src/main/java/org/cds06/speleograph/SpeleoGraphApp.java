@@ -29,6 +29,7 @@ import org.cds06.speleograph.data.FileReadingError;
 import org.cds06.speleograph.data.HoboFileReader;
 import org.cds06.speleograph.data.ReefnetFileReader;
 import org.cds06.speleograph.data.SpeleoFileReader;
+import org.cds06.speleograph.graph.SeriesMenu;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,10 @@ public class SpeleoGraphApp extends JFrame {
      */
     private static SpeleoGraphApp instance;
 
+    public static SpeleoGraphApp getInstance() {
+        return instance;
+    }
+
     /**
      * Logger for errors and info.
      */
@@ -74,6 +79,15 @@ public class SpeleoGraphApp extends JFrame {
      */
     private final JSplitPane splitPane;
 
+    /**
+     * The class who manages menus for Series.
+     */
+    private final SeriesMenu seriesMenu;
+
+    public SeriesMenu getSeriesMenu() {
+        return seriesMenu;
+    }
+
     public SpeleoGraphApp() {
         super("SpeleoGraph"); // NON-NLS
 
@@ -84,7 +98,7 @@ public class SpeleoGraphApp extends JFrame {
         CheckBoxList list = new CheckBoxList(listModel);
         JScrollPane scrollPane = new JScrollPane(list);
         GraphPanel graphPanel = new GraphPanel(this);
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,true, graphPanel,scrollPane);
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, graphPanel, scrollPane);
 
         // Setup the toolbar
 //        panel.add(toolBar, BorderLayout.NORTH);
@@ -96,13 +110,14 @@ public class SpeleoGraphApp extends JFrame {
 
         // Configure the frame
         setContentPane(panel);
+        seriesMenu = new SeriesMenu(this);
         setJMenuBar(createMenus());
         // Positioning
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         screenSize.height = screenSize.height - 100;
         screenSize.width = screenSize.width - 100;
         setSize(screenSize);
-        setLocation(50,50);
+        setLocation(50, 50);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
@@ -114,7 +129,6 @@ public class SpeleoGraphApp extends JFrame {
 ////        toolBar.add(new OpenAction(panel, SpeleoFileReader.class));
 ////        toolBar.add(new OpenAction(panel, ReefnetFileReader.class));
 //    }
-
     public JSplitPane getSplitPane() {
         return splitPane;
     }
@@ -122,7 +136,7 @@ public class SpeleoGraphApp extends JFrame {
     /**
      * Create a JMenuBar for this application.
      */
-    public JMenuBar createMenus(){
+    public JMenuBar createMenus() {
         final JMenuBar bar = new JMenuBar();
 
         JMenu fileMenu = new JMenu(I18nSupport.translate("menus.file"));
@@ -149,13 +163,13 @@ public class SpeleoGraphApp extends JFrame {
                         I18nSupport.translate("actions.exit.confirm.title"),
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE);
-                if(result==JOptionPane.OK_OPTION){
+                if (result == JOptionPane.OK_OPTION) {
                     SpeleoGraphApp.this.dispose();
                 }
             }
         });
         bar.add(fileMenu);
-
+        bar.add(seriesMenu.getMenu());
         return bar;
     }
 
@@ -163,6 +177,7 @@ public class SpeleoGraphApp extends JFrame {
      * Start the application using this function.
      * No arguments are currently read by the program.
      * This function try to use the Nimbus LaF or System if not found.
+     *
      * @param args Arguments sand to the JVM (not used)
      */
     @NonNls
@@ -179,8 +194,7 @@ public class SpeleoGraphApp extends JFrame {
         } catch (Exception e) {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            }
-            catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e2) {
+            } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e2) {
                 System.out.println("Leave default Java LookAndFeel"); // NON-NLS
             }
         }
@@ -193,13 +207,14 @@ public class SpeleoGraphApp extends JFrame {
 
     /**
      * Open a SpeleoGraph file.
+     *
      * @param file The file to open.
      */
     public static void openFile(File file) throws IOException, ParseException {
         try {
             SpeleoFileReader.getInstance().readFile(file);
         } catch (FileReadingError fileReadingError) {
-            log.error("Error on file reading",fileReadingError);
+            log.error("Error on file reading", fileReadingError);
         }
     }
 
@@ -210,7 +225,7 @@ public class SpeleoGraphApp extends JFrame {
      *
      * @return A non-null directory to display to the user.
      */
-    public static File getWorkingDirectory(){
+    public static File getWorkingDirectory() {
         return new File(configuration.get(
                 "workingDirectory",   // NON-NLS
                 OpenAction.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
@@ -218,9 +233,10 @@ public class SpeleoGraphApp extends JFrame {
 
     /**
      * Save the working directory.
+     *
      * @param dir The directory to register.
      */
-    public static void setWorkingDirectory(File dir){
+    public static void setWorkingDirectory(File dir) {
         configuration.put("workingDirectory", dir.getAbsolutePath()); // NON-NLS
     }
 }

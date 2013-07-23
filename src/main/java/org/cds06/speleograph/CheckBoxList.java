@@ -23,24 +23,15 @@
 package org.cds06.speleograph;
 
 import org.cds06.speleograph.data.Series;
-import org.cds06.speleograph.data.Type;
-import org.cds06.speleograph.graph.DrawStyle;
-import org.cds06.speleograph.graph.DrawStyles;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 
 /**
  * This file is created by PhilippeGeek.
@@ -97,186 +88,9 @@ public class CheckBoxList extends JList<Series> {
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    private Frame getParentFrame() {
-        return (Frame) SwingUtilities.windowForComponent(this);
-    }
-
     private void openPopupMenuFor(final Series series, MouseEvent mouseEvent) {
-        popupMenu.removeAll();
-        final JMenuItem renameItem = new JMenuItem("Renommer la série");
-        renameItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                popupMenu.setVisible(false);
-                String newName = "";
-                while (newName.equals("")) {
-                    newName = (String) JOptionPane.showInputDialog(
-                            CheckBoxList.this,
-                            "Entrez un nouveau nom pour la série",
-                            null,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            null,
-                            series.getName()
-                    );
-                }
-                series.setName(newName);
-
-            }
-        });
-        popupMenu.add(renameItem);
-
-        if (series.getType().equals(Type.WATER)) {
-            JMenuItem samplingItem = new JMenuItem("Créer une série échantillonée");
-            samplingItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        boolean hasANumber = false;
-                        int duration = 60 * 60 * 24;
-                        while (!hasANumber)
-                            try {
-                                String result = JOptionPane.showInputDialog(
-                                        getParentFrame(),
-                                        "Quel est la longueur de l'échantillonage (en secondes) ?",
-                                        60 * 60 * 24);
-                                duration = Integer.parseInt(result);
-                                hasANumber = true;
-                            } catch (NumberFormatException e1) {
-                                hasANumber = false;
-                            }
-                        boolean hasAName = false;
-                        String name = "";
-                        while (!hasAName)
-                            try {
-                                name = JOptionPane.showInputDialog(
-                                        getParentFrame(),
-                                        "Quel est le nom de la nouvelle série ?",
-                                        series.getName());
-                                hasAName = !"".equals(name);
-                            } catch (Exception e1) {
-                                hasAName = false;
-                            }
-                        series.generateSampledSeries(1000 * duration).setName(name);
-                    } catch (Exception e1) {
-                        LoggerFactory.getLogger(CheckBoxList.class).error("Erreur lors de l'échantillonage", e1);
-                    }
-                }
-            });
-            popupMenu.add(samplingItem);
-        }
-
-        {
-            JMenuItem samplingItem = new JMenuItem("Supprimer la série");
-            samplingItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (JOptionPane.showConfirmDialog(
-                            getParentFrame(),
-                            "Etes-vous sur de vouloir supprimer cette série",
-                            "Confirmation",
-                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
-                        series.delete();
-                    }
-                }
-            });
-            popupMenu.add(samplingItem);
-        }
-
-        {
-            final JMenuItem up = new JMenuItem("Remonter dans la liste"),
-                    down = new JMenuItem("Descendre dans la liste");
-            ActionListener listener = new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (e.getSource().equals(up)) {
-                        series.upSeriesInList();
-                    } else {
-                        series.downSeriesInList();
-                    }
-                }
-            };
-            up.addActionListener(listener);
-            down.addActionListener(listener);
-            popupMenu.addSeparator();
-            if (series.isFirst()) {
-                popupMenu.add(down);
-            } else if (series.isLast()) {
-                popupMenu.add(up);
-            } else {
-                popupMenu.add(up);
-                popupMenu.add(down);
-            }
-            popupMenu.addSeparator();
-        }
-
-        {
-            JMenuItem colorItem = new JMenuItem("Couleur de la série");
-            colorItem.addActionListener(new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    series.setColor(JColorChooser.showDialog(
-                            CheckBoxList.this,
-                            I18nSupport.translate("actions.selectColorForSeries"),
-                            series.getColor()));
-                }
-            });
-            popupMenu.add(colorItem);
-        }
-
-        {
-            JMenu plotRenderer = new JMenu("Affichage de la série");
-            final ButtonGroup modes = new ButtonGroup();
-            java.util.List<DrawStyle> availableStyles;
-            if (series.getType().isHighLowType()) {
-                availableStyles = DrawStyles.getDrawableStylesForHighLow();
-            } else {
-                availableStyles = DrawStyles.getDrawableStyles();
-            }
-            for (final DrawStyle s : availableStyles) {
-                final JRadioButtonMenuItem item = new JRadioButtonMenuItem(
-                        DrawStyles.getHumanCheckboxText(s)
-                );
-                item.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        if (item.isSelected())
-                            series.setStyle(s);
-                    }
-                });
-                modes.add(item);
-                if (s.equals(series.getStyle())) {
-                    modes.setSelected(item.getModel(), true);
-                }
-                plotRenderer.add(item);
-            }
-            popupMenu.add(plotRenderer);
-        }
-        popupMenu.addSeparator();
-        popupMenu.add(new AbstractAction() {
-
-            {
-                putValue(Action.NAME, "Fermer le fichier");
-            }
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (JOptionPane.showConfirmDialog(
-                        getParentFrame(),
-                        "Etes-vous sur de vouloir fermer toutes les séries du fichier ?",
-                        "Confirmation",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
-                    final File f = series.getOrigin();
-                    for (final Series s : Series.getInstances().toArray(new Series[Series.getInstances().size()])) {
-                        if (s.getOrigin().equals(f))
-                            s.delete();
-                    }
-                }
-            }
-        });
-
-        popupMenu.show(this, mouseEvent.getX(), mouseEvent.getY());
+        SpeleoGraphApp.getInstance().getSeriesMenu()
+                .getPopupMenu(series).show(this, mouseEvent.getX(), mouseEvent.getY());
     }
 
     protected final class CellRenderer implements ListCellRenderer<Series> {

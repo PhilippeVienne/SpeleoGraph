@@ -228,6 +228,9 @@ public class SpeleoFileReader implements DataFileReader {
                         series.setStyle(s);
                 }
             }
+            if (p.get("name") != null) {
+                series.setName(p.get("name"));
+            }
         }
 
         if (t.isHighLowType() || p.getBoolean("min-max")) { // NON-NLS
