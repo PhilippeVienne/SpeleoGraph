@@ -5,5 +5,5 @@ target
 .eclipse
 *.iws
 *.iml
-
+.DS_Store
 SpeleoGraph.iml

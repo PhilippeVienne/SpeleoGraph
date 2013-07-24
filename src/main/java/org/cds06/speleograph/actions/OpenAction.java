@@ -22,6 +22,7 @@
 
 package org.cds06.speleograph.actions;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
@@ -43,11 +45,6 @@ import java.io.File;
  * Distributed on licence GNU GPL V3.
  */
 public class OpenAction extends AbstractAction {
-
-    /**
-     * Working directory for the current User.
-     */
-    public static File pwd;
 
     /**
      * Logger for info and errors.
@@ -115,17 +112,27 @@ public class OpenAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         chooser.setCurrentDirectory(SpeleoGraphApp.getWorkingDirectory());
-        int result = chooser.showOpenDialog(parent);
         File file;
-        switch (result) {
-            case JFileChooser.APPROVE_OPTION:
-                file = chooser.getSelectedFile();
-                if (file.isDirectory()) return;
-                break;
-            case JFileChooser.CANCEL_OPTION:
-            default:
-                SpeleoGraphApp.setWorkingDirectory(chooser.getCurrentDirectory());
-                return;
+        if(SpeleoGraphApp.isMac()){
+            FileDialog chooserMac = new FileDialog(SpeleoGraphApp.getInstance());
+            chooserMac.setDirectory(SpeleoGraphApp.getWorkingDirectory().getAbsolutePath());
+            chooserMac.setFilenameFilter(fileFilter);
+            chooserMac.setVisible(true);
+            if(chooserMac.getFile()==null) return;
+            file = FileUtils.getFile(chooserMac.getDirectory(),chooserMac.getFile());
+            if (file.isDirectory()) return;
+        } else {
+            int result = chooser.showOpenDialog(parent);
+            switch (result) {
+                case JFileChooser.APPROVE_OPTION:
+                    file = chooser.getSelectedFile();
+                    if (file.isDirectory()) return;
+                    break;
+                case JFileChooser.CANCEL_OPTION:
+                default:
+                    SpeleoGraphApp.setWorkingDirectory(chooser.getCurrentDirectory());
+                    return;
+            }
         }
         try {
             SpeleoGraphApp.setWorkingDirectory(file.getParentFile());

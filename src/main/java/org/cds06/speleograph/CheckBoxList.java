@@ -41,7 +41,7 @@ public class CheckBoxList extends JList<Series> {
     protected static Border noFocusBorder =
             new EmptyBorder(1, 1, 1, 1);
 
-    private JPopupMenu popupMenu = new JPopupMenu();
+    //private JPopupMenu popupMenu = new JPopupMenu();
 
     public CheckBoxList(ListModel<Series> model) {
         super(model);
@@ -89,8 +89,9 @@ public class CheckBoxList extends JList<Series> {
     }
 
     private void openPopupMenuFor(final Series series, MouseEvent mouseEvent) {
-        SpeleoGraphApp.getInstance().getSeriesMenu()
-                .getPopupMenu(series).show(this, mouseEvent.getX(), mouseEvent.getY());
+        JPopupMenu menu = SpeleoGraphApp.getInstance().getSeriesMenu().getPopupMenu(series);
+        menu.show(this, mouseEvent.getX(), mouseEvent.getY());
+        System.out.println("Menu :"+mouseEvent+"\n"+menu);
     }
 
     protected final class CellRenderer implements ListCellRenderer<Series> {
@@ -102,17 +103,17 @@ public class CheckBoxList extends JList<Series> {
                 boolean isSelected, boolean cellHasFocus) {
             box.setSelected(value.isShow());
             box.setText(value.getName());
-//            box.setBackground(isSelected ?
-//                    getSelectionBackground() : getBackground());
-//            box.setForeground(isSelected ?
-//                    getSelectionForeground() : getForeground());
+            box.setBackground(isSelected ?
+                    getSelectionBackground() : getBackground());
+            box.setForeground(isSelected ?
+                    getSelectionForeground() : getForeground());
             box.setEnabled(isEnabled());
             box.setFont(getFont());
             box.setFocusPainted(false);
             box.setBorderPainted(true);
-//            box.setBorder(isSelected ?
-//                    UIManager.getBorder(
-//                            "List.focusCellHighlightBorder") : noFocusBorder);
+            box.setBorder(isSelected ?
+                    UIManager.getBorder(
+                            "List.focusCellHighlightBorder") : noFocusBorder);
             return box;
         }
     }

@@ -129,6 +129,7 @@ public class SpeleoGraphApp extends JFrame {
 ////        toolBar.add(new OpenAction(panel, SpeleoFileReader.class));
 ////        toolBar.add(new OpenAction(panel, ReefnetFileReader.class));
 //    }
+    @SuppressWarnings("UnusedDeclaration")
     public JSplitPane getSplitPane() {
         return splitPane;
     }
@@ -174,6 +175,13 @@ public class SpeleoGraphApp extends JFrame {
     }
 
     /**
+     * Detect if we are on a Mac OS X.
+     */
+    public static boolean isMac(){
+        return System.getProperty("os.name").contains("Mac");
+    }
+
+    /**
      * Start the application using this function.
      * No arguments are currently read by the program.
      * This function try to use the Nimbus LaF or System if not found.
@@ -183,20 +191,34 @@ public class SpeleoGraphApp extends JFrame {
     @NonNls
     public static void main(String... args) {
 
-        // Setup Look and Feels
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) { // NON-NLS
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
+        if (System.getProperty("os.name").contains("Mac")) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e2) {
+            } catch (
+                    UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
+                            IllegalAccessException e2) {
                 System.out.println("Leave default Java LookAndFeel"); // NON-NLS
             }
+        } else {
+
+            // Setup Look and Feels
+            try {
+                for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) { // NON-NLS
+                        UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
+                        IllegalAccessException e2) {
+                    System.out.println("Leave default Java LookAndFeel"); // NON-NLS
+                }
+            }
+
         }
 
         instance = new SpeleoGraphApp();
