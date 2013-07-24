@@ -48,6 +48,10 @@ public class GraphEditor extends JDialog {
         super((Frame) SwingUtilities.windowForComponent(panel), true);
         Validate.notNull(panel);
         this.graphPanel = panel;
+        JPanel configuration = new JPanel(new GridBagLayout());
+        JPanel dateAxis = new JPanel(new GridBagLayout());
+
+
     }
 
     /**

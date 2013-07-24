@@ -90,8 +90,9 @@ public class CheckBoxList extends JList<Series> {
 
     private void openPopupMenuFor(final Series series, MouseEvent mouseEvent) {
         JPopupMenu menu = SpeleoGraphApp.getInstance().getSeriesMenu().getPopupMenu(series);
+        System.out.println("Menu entries: " + menu.getComponentCount());
         menu.show(this, mouseEvent.getX(), mouseEvent.getY());
-        System.out.println("Menu :"+mouseEvent+"\n"+menu);
+        System.out.println("Menu :" + mouseEvent + "\n" + menu);
     }
 
     protected final class CellRenderer implements ListCellRenderer<Series> {

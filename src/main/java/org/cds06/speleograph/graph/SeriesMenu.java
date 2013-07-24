@@ -71,10 +71,9 @@ public class SeriesMenu implements DatasetChangeListener {
     public void datasetChanged(DatasetChangeEvent event) {
         menu.removeAll();
         for (Series s : series.toArray(new Series[series.size()])) {
-            createPopupMenuForSeries(s);
-            JPopupMenu m = menus.get(s);
+            this.menus.put(s, createPopupMenuForSeries(s));
             JMenu jMenu = new JMenu(s.getName());
-            for (Component item : m.getComponents()) {
+            for (Component item : createPopupMenuForSeries(s).getComponents()) {
                 if (item instanceof JMenuItem || item instanceof JSeparator) {
                     jMenu.add(item);
                 }
@@ -84,9 +83,9 @@ public class SeriesMenu implements DatasetChangeListener {
         menu.setVisible(menu.getMenuComponentCount() > 0);
     }
 
-    private void createPopupMenuForSeries(final Series series) {
+    private JPopupMenu createPopupMenuForSeries(final Series series) {
 
-        if (series == null) return;
+        if (series == null) return new JPopupMenu();
 
         final JPopupMenu menu = new JPopupMenu(series.getName());
 
@@ -264,7 +263,7 @@ public class SeriesMenu implements DatasetChangeListener {
             }
         });
 
-        this.menus.put(series, menu);
+        return menu;
     }
 
     public JMenu getMenu() {
