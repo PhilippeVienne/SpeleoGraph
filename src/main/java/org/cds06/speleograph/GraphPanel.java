@@ -179,4 +179,8 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
     public void chartMouseMoved(ChartMouseEvent event) {
 //        log.info("Received a mouse event");
     }
+
+    public JFreeChart getChart() {
+        return chart;
+    }
 }

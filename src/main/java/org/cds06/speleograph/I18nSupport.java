@@ -22,6 +22,7 @@
 
 package org.cds06.speleograph;
 
+import com.jgoodies.common.internal.StringLocalizer;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.PropertyKey;
 
@@ -32,14 +33,26 @@ import java.util.ResourceBundle;
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class I18nSupport {
+public class I18nSupport implements StringLocalizer {
     @NonNls
-    private static final ResourceBundle bundle = ResourceBundle.getBundle ("org.cds06.speleograph.Messages");
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("org.cds06.speleograph.Messages");
+
     public static String translate
-            (@PropertyKey(resourceBundle ="org.cds06.speleograph.Messages")
-             String key,Object... params){
-        String value =bundle.getString(key);
-        if (params.length >0) return MessageFormat.format(value, params);
+            (@PropertyKey(resourceBundle = "org.cds06.speleograph.Messages")
+             String key, Object... params) {
+        String value = bundle.getString(key);
+        if (params.length > 0) return MessageFormat.format(value, params);
         return value;
+    }
+
+    /**
+     * Returns a localized String for the given key.
+     *
+     * @param key the key used to look up the localized String
+     * @return the localized String
+     */
+    @Override
+    public String getString(@PropertyKey(resourceBundle = "org.cds06.speleograph.Messages") String key) {
+        return translate(key);
     }
 }

@@ -43,7 +43,9 @@
             <name>Philippe VIENNE</name>
             <email>PhilippeGeek@gmail.com</email>
             <id>PhilippeGeek</id>
-            <roles><role>Developer</role></roles>
+            <roles>
+                <role>Developer</role>
+            </roles>
         </developer>
     </developers>
 
@@ -171,6 +173,12 @@
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>jgoodies-forms</artifactId>
+            <version>1.6.0</version>
+        </dependency>
 
         <!-- IDEA Annotations -->
         <dependency>

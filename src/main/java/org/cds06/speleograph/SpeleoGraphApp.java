@@ -29,6 +29,7 @@ import org.cds06.speleograph.data.FileReadingError;
 import org.cds06.speleograph.data.HoboFileReader;
 import org.cds06.speleograph.data.ReefnetFileReader;
 import org.cds06.speleograph.data.SpeleoFileReader;
+import org.cds06.speleograph.graph.GraphEditor;
 import org.cds06.speleograph.graph.SeriesMenu;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
@@ -170,14 +171,37 @@ public class SpeleoGraphApp extends JFrame {
             }
         });
         bar.add(fileMenu);
+
+        {
+            JMenu menu = new JMenu("Graphique");
+
+            menu.add(new AbstractAction() {
+                final GraphEditor editor = new GraphEditor((GraphPanel) getSplitPane().getLeftComponent());
+                ;
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    editor.setVisible(true);
+                }
+
+                {
+                    putValue(NAME, "Paramètres du graphique");
+                }
+            });
+
+            bar.add(menu);
+        }
+
         bar.add(seriesMenu.getMenu());
+
+
         return bar;
     }
 
     /**
      * Detect if we are on a Mac OS X.
      */
-    public static boolean isMac(){
+    public static boolean isMac() {
         return System.getProperty("os.name").contains("Mac");
     }
 
