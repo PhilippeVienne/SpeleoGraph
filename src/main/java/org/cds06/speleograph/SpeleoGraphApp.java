@@ -177,10 +177,13 @@ public class SpeleoGraphApp extends JFrame {
 
             menu.add(new AbstractAction() {
                 final GraphEditor editor = new GraphEditor((GraphPanel) getSplitPane().getLeftComponent());
-                ;
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    editor.setLocation(
+                            SpeleoGraphApp.this.getX() + (SpeleoGraphApp.this.getWidth() / 2 - editor.getWidth() / 2),
+                            SpeleoGraphApp.this.getY() + (SpeleoGraphApp.this.getHeight() / 2 - editor.getHeight() / 2)
+                    );
                     editor.setVisible(true);
                 }
 

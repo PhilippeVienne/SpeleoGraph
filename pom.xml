@@ -139,34 +139,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>webstart-maven-plugin</artifactId>
-                <version>1.0-beta-3</version>
-                <!-- do not bind to install phase
-                 <executions>
-                  <execution>
-                    <goals>
-                      <goal>report</goal>
-                    </goals>
-                  </execution>
-                 </executions>
-                 -->
-                <configuration>
-                    <jnlp>
-                        <mainClass>org.cds06.speleograph.SpeleoGraphApp</mainClass>
-                    </jnlp>
-                    <sign>
-                        <keystore>${project.basedir}/SpeleoGraph.jks</keystore>
-                        <keypass>${keystore.password}</keypass>
-                        <storepass>${keystore.password}</storepass>
-                        <storetype>jks</storetype>
-                        <alias>speleograph</alias>
-                        <verify>true</verify>
-                    </sign>
-                    <verbose>true</verbose>
-                </configuration>
-            </plugin>
 
         </plugins>
     </build>
