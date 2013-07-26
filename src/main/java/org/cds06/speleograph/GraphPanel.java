@@ -23,12 +23,15 @@ package org.cds06.speleograph;
 
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.data.Series;
+import org.cds06.speleograph.graph.DateAxisEditor;
 import org.cds06.speleograph.graph.SpeleoXYPlot;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.entity.AxisEntity;
+import org.jfree.chart.entity.PlotEntity;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
@@ -37,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,7 +171,28 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
      */
     @Override
     public void chartMouseClicked(ChartMouseEvent event) {
-        log.info("Received a mouse click");
+        if (event.getEntity() instanceof AxisEntity) {
+            AxisEntity entity = (AxisEntity) event.getEntity();
+            if (entity.getAxis().equals(dateAxis)) {
+                // User clicked on DateAxis
+                if (event.getTrigger().getButton() == MouseEvent.BUTTON1 && event.getTrigger().getClickCount() == 2) {
+                    editDateAxis();
+                }
+            }
+
+        } else if (event.getEntity() instanceof PlotEntity) {
+            System.out.println(((PlotEntity) event.getEntity()).getPlot());
+        }
+    }
+
+    private void editDateAxis() {
+        JDialog dialog = (new DateAxisEditor(dateAxis));
+        dialog.setSize(400, 500);
+        dialog.setLocation(
+                getX() + (getWidth() / 2 - dialog.getWidth() / 2),
+                getY() + (getHeight() / 2 - dialog.getHeight() / 2)
+        );
+        dialog.setVisible(true);
     }
 
     /**

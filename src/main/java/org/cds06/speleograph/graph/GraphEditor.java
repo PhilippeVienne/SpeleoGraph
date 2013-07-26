@@ -154,35 +154,7 @@ public class GraphEditor extends JDialog {
             mainPanel.add(buttonBarBuilder.build(), BorderLayout.SOUTH);
         }
 
-//        {
-//            GridBagConstraints constraints = new GridBagConstraints();
-//
-//            JLabel label = new JLabel("Couleur du fond :");
-//
-//            final JTextField field = new JTextField();
-//            field.setEnabled(false);
-//            field.setBackground((Color) graphPanel.getChart().getBackgroundPaint());
-//
-//            final JButton select = new JButton("Selectionner");
-//            select.addActionListener(new ActionListener() {
-//                @Override
-//                public void actionPerformed(ActionEvent e) {
-//                    Color c = JColorChooser.showDialog(GraphEditor.this,"Selectinnez la couleur",select.getBackground());
-//                    if(c!=null){
-//                        select.setBackground(c);
-//                        graphPanel.getChart().setBackgroundPaint(c);
-//                    }
-//                }
-//            });
-//
-//            CellConstraints cc = new CellConstraints();
-//
-//            mainPanel.add(label,cc.xy(1,1));
-//            mainPanel.add(select,cc.xyw(3, 1, 2));
-//        }
-
         setSize(300, 200);
-
     }
 
     /**

@@ -112,15 +112,21 @@ public class OpenAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         chooser.setCurrentDirectory(SpeleoGraphApp.getWorkingDirectory());
-        File file;
-        if(SpeleoGraphApp.isMac()){
-            FileDialog chooserMac = new FileDialog(SpeleoGraphApp.getInstance());
-            chooserMac.setDirectory(SpeleoGraphApp.getWorkingDirectory().getAbsolutePath());
-            chooserMac.setFilenameFilter(fileFilter);
-            chooserMac.setVisible(true);
-            if(chooserMac.getFile()==null) return;
-            file = FileUtils.getFile(chooserMac.getDirectory(),chooserMac.getFile());
-            if (file.isDirectory()) return;
+        File file = null;
+        if (SpeleoGraphApp.isMac()) {
+            do {
+                if (file != null && !fileFilter.accept(file)) {
+                    JOptionPane.showMessageDialog(SpeleoGraphApp.getInstance(),
+                            "Le fichier sélectionné n'est pas au bon format.\nMerci de ressayer.",
+                            "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+                FileDialog chooserMac = new FileDialog(SpeleoGraphApp.getInstance());
+                chooserMac.setDirectory(SpeleoGraphApp.getWorkingDirectory().getAbsolutePath());
+                chooserMac.setVisible(true);
+                if (chooserMac.getFile() == null) return;
+                file = FileUtils.getFile(chooserMac.getDirectory(), chooserMac.getFile());
+                if (file.isDirectory()) return;
+            } while (!fileFilter.accept(file));
         } else {
             int result = chooser.showOpenDialog(parent);
             switch (result) {
