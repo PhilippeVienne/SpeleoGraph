@@ -22,21 +22,78 @@
 
 package org.cds06.speleograph.graph;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.cds06.speleograph.utils.FormDialog;
+import org.jfree.chart.axis.ValueAxis;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class ValueAxisEditor extends FormDialog{
+public class ValueAxisEditor extends FormDialog {
 
-    public ValueAxisEditor() {
+    private final ValueAxis axis;
+
+    public ValueAxisEditor(ValueAxis axis) {
         super();
-
-        setupMainPanel();
-
-        centerOnScreen();
+        this.axis = axis;
     }
 
-    private void setupMainPanel() {
-        //To change body of created methods use File | Settings | File Templates.
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setup() {
+        PanelBuilder builder = new PanelBuilder((FormLayout) getPanel().getLayout(), getPanel());
+        CellConstraints cc = new CellConstraints();
+
+        {
+            builder.add(new JLabel("Titre de l'axe :"), cc.rc(1, 1));
+            final JTextField axisTitleField = new JTextField();
+            axisTitleField.setText(axis.getLabel());
+            builder.add(axisTitleField, cc.rc(1, 3));
+            addListenerOnSuccess(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    axis.setLabel(axisTitleField.getText());
+                }
+            });
+        }
+
+        {
+            builder.add(new JLabel("Valeur min. :"), cc.rc(2, 1));
+            final JSpinner spinner = new JSpinner();
+            spinner.setValue(axis.getRange().getLowerBound());
+            builder.add(spinner, cc.rc(2, 3));
+            addListenerOnSuccess(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    axis.setLowerBound((Double) spinner.getValue());
+                }
+            });
+        }
+
+        {
+            builder.add(new JLabel("Valeur max. :"), cc.rc(3, 1));
+            final JSpinner spinner = new JSpinner();
+            spinner.setValue(axis.getRange().getUpperBound());
+            builder.add(spinner, cc.rc(3, 3));
+            addListenerOnSuccess(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    axis.setUpperBound((Double) spinner.getValue());
+                }
+            });
+        }
+
+        {
+
+        }
+
+        builder.build();
     }
+
+
 }

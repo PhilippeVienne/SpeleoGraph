@@ -24,45 +24,66 @@ package org.cds06.speleograph.utils;
 
 import com.jgoodies.forms.layout.FormLayout;
 import org.cds06.speleograph.SpeleoGraphApp;
+import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: PhilippeGeek
- * Date: 26/07/13
- * Time: 05:37
- * To change this template use File | Settings | File Templates.
+ * Dialog usable to display a Panel.
  */
-public class FormDialog extends JDialog{
+public abstract class FormDialog extends JDialog {
 
+    @NonNls
     protected static final String LAYOUT_COLUMNS = "l:p,4dlu,p:grow";
     protected static final String LAYOUT_LINES = "";
+    protected static final String FORM_VALIDATED_PROPERTY = "formValidated"; // NON-NLS
 
     protected final JPanel contentPane = new JPanel();
 
     {
-        contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setLayout(new FormLayout(LAYOUT_COLUMNS,LAYOUT_LINES));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        contentPane.setLayout(new FormLayout(LAYOUT_COLUMNS, LAYOUT_LINES));
     }
 
-    public JPanel getPanel(){
+    public JPanel getPanel() {
         return contentPane;
     }
 
-    public FormDialog(){
-        super(SpeleoGraphApp.getInstance(),true);
+    public FormDialog() {
+        super(SpeleoGraphApp.getInstance(), true);
         setContentPane(contentPane);
-        setSize(400,300);
+        setSize(400, 300);
+        centerOnScreen();
+        setup();
     }
 
     /**
      * Center the dialog on screen.
      */
-    protected void centerOnScreen(){
-        int x = SpeleoGraphApp.getInstance().getX() + (SpeleoGraphApp.getInstance().getWidth()/2-getWidth()/2);
-        int y = SpeleoGraphApp.getInstance().getY() + (SpeleoGraphApp.getInstance().getHeight()/2-getHeight()/2);
-        setLocation(x,y);
+    protected void centerOnScreen() {
+        int x = SpeleoGraphApp.getInstance().getX() + (SpeleoGraphApp.getInstance().getWidth() / 2 - getWidth() / 2);
+        int y = SpeleoGraphApp.getInstance().getY() + (SpeleoGraphApp.getInstance().getHeight() / 2 - getHeight() / 2);
+        setLocation(x, y);
     }
+
+    protected void addListenerOnSuccess(final ActionListener listener) {
+        addPropertyChangeListener(FORM_VALIDATED_PROPERTY, new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                ActionEvent e = new ActionEvent(FormDialog.this, 0, FORM_VALIDATED_PROPERTY);
+                listener.actionPerformed(e);
+            }
+        });
+    }
+
+    /**
+     * This function add component to the main panel.
+     * <p>You have to override this function to add and setup your dialog</p>
+     */
+    protected abstract void setup();
 
 }
