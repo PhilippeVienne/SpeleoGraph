@@ -47,7 +47,7 @@ import java.util.ResourceBundle;
  * the data in the current column. In the end, this class call the {@link SpeleoFileReader} to end file reading and push
  * the series into the DataSets which are automatically bidden with the list and the graph.</p>
  */
-public class ImportTable extends JPanel {
+public class ImportTableOld extends JPanel {
 
     private static final char DEFAULT_SEPARATOR = ';';
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("org.cds06.speleograph.Messages"); // NON-NLS
@@ -97,9 +97,9 @@ public class ImportTable extends JPanel {
 
     private final SpeleoFileReader.HeaderInformation headerInformation = new SpeleoFileReader.HeaderInformation();
     private final SpeleoFileReader.DateInformation dateInformation = new SpeleoFileReader.DateInformation();
-    private static final Logger log = LoggerFactory.getLogger(ImportTable.class);
+    private static final Logger log = LoggerFactory.getLogger(ImportTableOld.class);
 
-    public ImportTable(final File sourceFile, char columnSeparator) throws IOException {
+    public ImportTableOld(final File sourceFile, char columnSeparator) throws IOException {
         super();
         Validate.notNull(sourceFile, "Can not use a null file."); // NON-NLS
         Validate.notNull(columnSeparator, "Column separator should be set"); // NON-NLS
@@ -130,7 +130,7 @@ public class ImportTable extends JPanel {
         read.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JDialog dialog = (JDialog) SwingUtilities.windowForComponent(ImportTable.this);
+                JDialog dialog = (JDialog) SwingUtilities.windowForComponent(ImportTableOld.this);
                 dialog.setVisible(false);
                 try {
                     SpeleoFileReader.read(sourceFile, headerInformation);
@@ -169,10 +169,10 @@ public class ImportTable extends JPanel {
 //        JDialog frame = new JDialog((Frame) SwingUtilities.windowForComponent(parentFrame), true);
 //        boolean stopWhile = false;
 //        char separator = DEFAULT_SEPARATOR;
-//        ImportTable table = null;
+//        ImportTableOld table = null;
 //        while (!stopWhile) {
 //            try {
-//                table = new ImportTable(file, separator);
+//                table = new ImportTableOld(file, separator);
 //                stopWhile = true;
 //            } catch (OnlyOneDataColumn e) {
 //                Object r = JOptionPane.showInputDialog(parentFrame, resourceBundle.getString("import.error.separator.message"), "Erreur", JOptionPane.ERROR_MESSAGE, null, new Object[]{';', ',', '.', ':', '\t', "Annuler la lecture"}, "Annuler la lecture");

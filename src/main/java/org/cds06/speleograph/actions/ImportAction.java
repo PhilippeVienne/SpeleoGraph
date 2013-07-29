@@ -22,7 +22,7 @@
 
 package org.cds06.speleograph.actions;
 
-import org.cds06.speleograph.data.ImportTable;
+import org.cds06.speleograph.data.ImportTableOld;
 import org.cds06.speleograph.utils.AcceptedFileFilter;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
@@ -43,8 +43,9 @@ public class ImportAction extends AbstractAction {
 
     /**
      * Logger for info and errors.
-     */ @NonNls
-    private static final Logger log=LoggerFactory.getLogger(ImportAction.class);
+     */
+    @NonNls
+    private static final Logger log = LoggerFactory.getLogger(ImportAction.class);
 
     /**
      * Parent component for dialog display.
@@ -53,6 +54,7 @@ public class ImportAction extends AbstractAction {
 
     /**
      * Construct the import action.
+     *
      * @param component The parent component used to display dialogs.
      */
     public ImportAction(JComponent component) {
@@ -71,7 +73,7 @@ public class ImportAction extends AbstractAction {
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             try {
-                ImportTable.openImportWizardFor(parent, file);
+                ImportTableOld.openImportWizardFor(parent, file);
             } catch (IOException e) {
                 log.error("Error on file reading", e);
             }
