@@ -34,11 +34,13 @@ import org.cds06.speleograph.graph.DrawStyle;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jfree.chart.axis.NumberAxis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.*;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -78,12 +80,16 @@ public class SpeleoFileReader implements DataFileReader {
         return instance;
     }
 
+    private ArrayList<NumberAxis> axes = new ArrayList<>();
+    private ArrayList<Boolean> typeAxesChecker = new ArrayList<>();
+
     /**
      * Read a file with SpeleoGraph File Format.
      *
      * @param file The file to read
      * @throws FileReadingError On error while reading the file
      */
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public void readFile(File file) throws FileReadingError {
         InputStreamReader streamReader;
@@ -95,6 +101,8 @@ public class SpeleoFileReader implements DataFileReader {
                     I18nSupport.translate("errors.canNotOpenFile", file.getName()), FileReadingError.Part.HEAD, e);
         }
         CSVReader reader = new CSVReader(streamReader, ';', '"');
+        axes = new ArrayList<>();
+        typeAxesChecker = new ArrayList<>();
         String[] line;
         try {
             line = reader.readNext();
@@ -123,15 +131,29 @@ public class SpeleoFileReader implements DataFileReader {
                     if ("headers".equals(firstLineElement)) state = READING_HEADERS; // NON-NLS
                     break;
                 case READING_HEADERS:
-                    if ("data".equals(firstLineElement)) { // NON-NLS
-                        state = READING_DATA;
-                        break;
-                    }
-                    if ("date".equals(firstLineElement)) { // NON-NLS
-                        readDateHeaderLine(date, line);
-                    } else {
-                        readSeriesHeaderLine(file, line, headers);
-                        break;
+                    switch (firstLineElement) {
+                        case "data":
+                            state = READING_DATA;
+                            break;
+                        case "date":
+                            readDateHeaderLine(date, line);
+                            break;
+                        case "axis":
+                            try {
+                                NumberAxis axis = new NumberAxis(line[2]);
+                                axis.setLowerBound((DecimalFormat.getInstance().parse(line[3])).doubleValue());
+                                axis.setUpperBound(DecimalFormat.getInstance().parse(line[4]).doubleValue());
+                                typeAxesChecker.add(Integer.parseInt(line[1]), new Properties(line).getBoolean("type"));
+                                axes.add(Integer.parseInt(line[1]), axis);
+                            } catch (Exception e) {
+                                log.error("Can not read axis", e);
+                            }
+                            break;
+                        case "chart":
+
+                            break;
+                        default:
+                            readSeriesHeaderLine(file, line, headers);
                     }
                     break;
                 case READING_DATA:
@@ -207,15 +229,15 @@ public class SpeleoFileReader implements DataFileReader {
      * @param line    The parsed line
      * @param headers The object which represent the headers
      */
-    private static void readSeriesHeaderLine(File file, String[] line, HeaderInformation headers) {
+    private void readSeriesHeaderLine(File file, String[] line, HeaderInformation headers) {
         int size = line.length, column = Integer.parseInt(line[0]);
         if (size < 3) { // A series line must have a length gather than 2
             log.info("Invalid header : " + StringUtils.join(line, ' '));
             return;
         }
-        Type t = Type.getType(line[1], line[2]);
-        Series series = new Series(file, t);
         @NonNls Properties p = new Properties(line);
+        Type t = Type.getType(line[1], line[2], p.getBoolean("stepped"), p.getBoolean("min-max"));
+        Series series = new Series(file, t);
 
         {
             if (p.getBoolean("show")) series.setShow(true);
@@ -231,10 +253,18 @@ public class SpeleoFileReader implements DataFileReader {
             if (p.get("name") != null) {
                 series.setName(p.get("name"));
             }
+            if (p.getNumber("axis") != null) {
+                Integer id = p.getNumber("axis");
+                if (typeAxesChecker.get(id)) {
+                    t.setAxis(axes.get(id));
+                } else {
+                    series.setAxis(axes.get(id));
+                }
+            }
         }
 
-        if (t.isHighLowType() || p.getBoolean("min-max")) { // NON-NLS
-            Integer min = p.getNumber("min"), max = p.getNumber("max"); // NON-NLS
+        if (t.isHighLowType() || p.getBoolean("min-max")) {
+            Integer min = p.getNumber("min"), max = p.getNumber("max");
             if (min == null || max == null) return;
             if (headers.hasSeriesForColumn(min) && headers.hasSeriesForColumn(max)) {
                 series.delete();

@@ -23,6 +23,7 @@
 package org.cds06.speleograph.data;
 
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.general.DatasetGroup;
@@ -48,33 +49,35 @@ public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
      * Get Type by name and unit.
      * Find a Type instance using its name and unit. If no type are found we return a new Type.
      *
-     * @param name Name of this type (not null)
-     * @param unit Unit of this type (not null)
+     * @param name    Name of this type (not null)
+     * @param unit    Unit of this type (not null)
+     * @param stepped Is a type with stepped data on a range
+     * @param minMax  Is a min/max type
      * @return Type instance which correspond to parameters.
      */
-    public static Type getType(@NotNull String name, @NotNull String unit) {
+    public static Type getType(@NotNull @NonNls String name, @NotNull @NonNls String unit,
+                               boolean stepped, boolean minMax) {
         Validate.notBlank(name, "Type name can not be blank"); // NON-NLS
         Validate.notNull(unit, "Unit can not be null"); // NON-NLS
         for (Type type : instances) {
-            if (type.name.equals(name) && type.unit.equals(unit)) {
+            if (type.name.equals(name) &&
+                    type.unit.equals(unit) &&
+                    type.isHighLowType() == minMax &&
+                    type.isSteppedType() == stepped) {
                 return type;
             }
         }
-        return new Type(DataType.OTHER, unit, name);
+        final Type t = new Type(DataType.OTHER, unit, name);
+        t.setSteppedType(stepped);
+        t.setHighLowType(minMax);
+        return t;
     }
 
-    public static final Type UNKNOWN = new Type(DataType.OTHER, "", "Donnée");
-    public static final Type PRESSURE = new Type(DataType.PRESSURE);
-    public static final Type TEMPERATURE = new Type(DataType.TEMPERATURE);
-    public static final Type TEMPERATURE_MIN_MAX = new Type(DataType.TEMPERATURE_MIN_MAX);
-    public static final Type WATER = new Type(DataType.WATER);
-
-    public static final Type[] internalTypes = new Type[]{
-            PRESSURE,
-            TEMPERATURE,
-            TEMPERATURE_MIN_MAX,
-            WATER
-    };
+    public static final Type UNKNOWN = Type.getType("Data", "", false, false);
+    public static final Type PRESSURE = Type.getType("Pression", "hPa", false, false);
+    public static final Type TEMPERATURE = Type.getType("Température", "°C", false, false);
+    public static final Type TEMPERATURE_MIN_MAX = Type.getType("Température (min/max)", "°C", false, true);
+    public static final Type WATER = Type.getType("Précipitations", "mm", false, false);
 
     private boolean highLow = false;
 
@@ -108,6 +111,10 @@ public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
             e.printStackTrace();
         }
         return Type.UNKNOWN;
+    }
+
+    public void setAxis(NumberAxis axis) {
+        this.axis = axis;
     }
 
     public static enum DataType {
@@ -190,14 +197,7 @@ public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
         highLow = v;
     }
 
-    public Type(DataType type) {
-        setUpDefaults(type);
-        this.type = type;
-        instances.add(this);
-    }
-
     public Type(DataType type, String unit) {
-        if (type != DataType.OTHER) setUpDefaults(type);
         this.type = type;
         if (unit != null) this.unit = unit;
         instances.add(this);
@@ -206,32 +206,6 @@ public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
     public Type(DataType type, String unit, String name) {
         this(type, unit);
         this.name = name;
-    }
-
-    private void setUpDefaults(DataType type) {
-        if (type == null) throw new NullPointerException("Type can not be null");
-        if (type == DataType.OTHER) throw new IllegalArgumentException("Type can not be OTHER with this constructor");
-        switch (type) {
-            case TEMPERATURE:
-                this.name = "Température";
-                this.unit = "°C";
-                break;
-            case TEMPERATURE_MIN_MAX:
-                this.name = "Température (min/max)";
-                this.unit = "°C";
-                this.highLow = true;
-                break;
-            case WATER:
-                this.name = "Précipitations";
-                this.unit = "mm";
-                break;
-            case PRESSURE:
-                this.name = "Pression";
-                this.unit = "hPa";
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown type: " + type);
-        }
     }
 
     @Override

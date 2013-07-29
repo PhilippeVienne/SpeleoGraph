@@ -26,6 +26,7 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NonNls;
+import org.jfree.chart.axis.NumberAxis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,17 +65,34 @@ public class SpeleoFileWriter {
         Integer[][] columns = new Integer[series.size()][];
         allocatedColumns = 0;
         write(SpeleoFileReader.SPELEOGRAPH_FILE_HEADER);
-        write("headers"); // NON-NLS
+        write("headers");
         writeHeaders(series, columns);
-        write("data"); // NON-NLS
+        write("data");
         writeSeries(series, columns);
-        write("eof"); // NON-NLS
+        write("eof");
         writer.close();
         return true;
     }
 
     private Integer writeHeaders(List<Series> series, Integer[][] columns) {
-        write("date", "", Integer.toString(allocatedColumns), "d/M/y H:m:s"); // NON-NLS
+        ArrayList<NumberAxis> axes = new ArrayList<>();
+        for (Series s : series) {
+            NumberAxis axis = s.getAxis();
+            if (axes.contains(axis)) continue;
+            axes.add(axis);
+            int id = axes.indexOf(axis);
+            boolean typeAxis = axis.equals(s.getType().getAxis());
+            try {
+                write("axis", Integer.toString(id),
+                        '"' + axis.getLabel() + '"',
+                        DecimalFormat.getInstance().format(axis.getLowerBound()),
+                        DecimalFormat.getInstance().format(axis.getUpperBound()),
+                        "type:" + (typeAxis ? "1" : "0"));
+            } catch (Exception e) {
+                log.error("Can not write axis to file", e);
+            }
+        }
+        write("date", "", Integer.toString(allocatedColumns), "d/M/y H:m:s");
         allocatedColumns++;
         for (Series s : series) {
             String[] seriesDescriptor = {
@@ -106,6 +125,7 @@ public class SpeleoFileWriter {
             if (s.isNameHumanSet()) {
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor, "name:" + s.getName()); // NON-NLS
             }
+            seriesDescriptor = ArrayUtils.add(seriesDescriptor, "axis:" + axes.indexOf(s.getAxis()));
             write(seriesDescriptor);
         }
         return allocatedColumns;
@@ -161,7 +181,7 @@ public class SpeleoFileWriter {
         return line;
     }
 
-    private void write(String... line) {
+    private void write(@NonNls String... line) {
         final String lineToWrite = StringUtils.join(line, ';');
         try {
             writer.write(lineToWrite);
