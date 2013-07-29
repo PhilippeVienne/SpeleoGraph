@@ -195,7 +195,9 @@ public class SpeleoGraphApp extends JFrame {
             bar.add(menu);
         }
 
-        bar.add(seriesMenu.getMenu());
+        final JMenu menu = seriesMenu.getMenu();
+        menu.setVisible(false);
+        bar.add(menu);
 
 
         return bar;

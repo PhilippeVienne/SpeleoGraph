@@ -678,7 +678,14 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
             if (lastStartBuffer + length <= originalItem.getDate().getTime()) {
                 newItems.add(new Item(newSeries, new Date(lastStartBuffer), bufferValue));
                 newItems.add(new Item(newSeries, new Date(lastStartBuffer + length), bufferValue));
+                final long time = originalItem.getDate().getTime();
                 lastStartBuffer = lastStartBuffer + length;
+                if (lastStartBuffer + 2 * length < time) {
+                    newItems.add(new Item(newSeries, new Date(lastStartBuffer), 0));
+                    lastStartBuffer = time -
+                            ((originalItem.getDate().getTime() - lastStartBuffer) % length);
+                    newItems.add(new Item(newSeries, new Date(lastStartBuffer), 0));
+                }
                 bufferValue = 0D;
             }
             bufferValue = bufferValue + (originalItem.getValue() - previousOriginalItem.getValue());
