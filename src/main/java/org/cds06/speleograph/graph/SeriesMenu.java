@@ -27,6 +27,7 @@ import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.Type;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
 import org.slf4j.LoggerFactory;
@@ -113,6 +114,44 @@ public class SeriesMenu implements DatasetChangeListener {
             }
         });
         menu.add(renameItem);
+
+        if (series.hasOwnAxis()) {
+            menu.add(new AbstractAction() {
+
+                {
+                    putValue(NAME, "Supprimer l'axe spécifique");
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (JOptionPane.showConfirmDialog(
+                            application,
+                            "Êtes vous sûr de vouloir supprimer cet axe ?",
+                            "Confirmation",
+                            JOptionPane.OK_CANCEL_OPTION
+                    ) == JOptionPane.OK_OPTION) {
+                        series.setAxis(null);
+                    }
+                }
+            });
+        } else {
+            menu.add(new JMenuItem(new AbstractAction() {
+
+                {
+                    putValue(NAME, "Créer un axe spécifique pour la série");
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String name = JOptionPane.showInputDialog(
+                            application,
+                            "Quel titre pour cet axe ?",
+                            series.getAxis().getLabel());
+                    if (name == null || "".equals(name)) return; // User has canceled
+                    series.setAxis(new NumberAxis(name));
+                }
+            }));
+        }
 
         if (series.getType().equals(Type.WATER)) {
             JMenuItem samplingItem = new JMenuItem("Créer une série échantillonée");

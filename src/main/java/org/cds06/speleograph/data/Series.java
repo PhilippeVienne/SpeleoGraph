@@ -254,6 +254,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
             log.info("Setting a null axis to series " + getName());
         }
         this.axis = axis;
+        notifyInstanceListeners();
     }
 
     /**
@@ -667,6 +668,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     public Series generateSampledSeries(long length) {
         final Series newSeries;
         newSeries = new Series(origin, type.asStepType());
+
         final int itemsCount = getItemCount();
         final ArrayList<Item> newItems = newSeries.items;
         double bufferValue = 0D;
@@ -775,5 +777,9 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         for (DatasetChangeListener listener : staticListeners) {
             listener.datasetChanged(event);
         }
+    }
+
+    public boolean hasOwnAxis() {
+        return axis != null;
     }
 }
