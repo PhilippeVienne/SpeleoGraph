@@ -236,13 +236,12 @@ public class SpeleoFileReader implements DataFileReader {
             return;
         }
         @NonNls Properties p = new Properties(line);
-        Type t = Type.getType(line[1], line[2], p.getBoolean("stepped"), p.getBoolean("min-max"));
+        Type t = Type.getType(line[1], line[2]);
         Series series = new Series(file, t);
 
         {
             if (p.getBoolean("show")) series.setShow(true);
-            if (p.getBoolean("stepped")) series.getType().setSteppedType(true);
-            if (p.get("color") != null) series.setColor(new Color(Integer.parseInt(p.get("color"))));
+            if (p.getBoolean("stepped")) series.setStepped(true);
             if (p.get("style") != null) {
                 String style = p.get("style");
                 for (DrawStyle s : DrawStyle.values()) {
@@ -250,6 +249,7 @@ public class SpeleoFileReader implements DataFileReader {
                         series.setStyle(s);
                 }
             }
+            if (p.get("color") != null) series.setColor(new Color(Integer.parseInt(p.get("color"))));
             if (p.get("name") != null) {
                 series.setName(p.get("name"));
             }
@@ -263,13 +263,13 @@ public class SpeleoFileReader implements DataFileReader {
             }
         }
 
-        if (t.isHighLowType() || p.getBoolean("min-max")) {
+        if (p.getBoolean("min-max")) {
             Integer min = p.getNumber("min"), max = p.getNumber("max");
             if (min == null || max == null) return;
             if (headers.hasSeriesForColumn(min) && headers.hasSeriesForColumn(max)) {
                 series.delete();
             }
-            t.setHighLowType(true);
+            series.setMinMax(true);
             headers.set(series, min, max);
         } else {
             headers.set(series, column);

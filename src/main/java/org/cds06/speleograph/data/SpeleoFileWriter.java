@@ -100,7 +100,7 @@ public class SpeleoFileWriter {
                     s.getType().getName(),
                     s.getType().getUnit()
             };
-            if (s.getType().isHighLowType()) {
+            if (s.isMinMax()) {
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor, "min-max:1"); // NON-NLS
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor,
                         "min:" + Integer.toString(allocatedColumns)); // NON-NLS
@@ -117,7 +117,7 @@ public class SpeleoFileWriter {
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor, "show:1"); // NON-NLS
             if (s.getColor() != null)
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor, "color:" + s.getColor().getRGB()); // NON-NLS
-            if (s.getType().isSteppedType())
+            if (s.isMinMax())
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor, "stepped:1"); // NON-NLS
             if (s.getStyle() != null) {
                 seriesDescriptor = ArrayUtils.add(seriesDescriptor, "style:" + s.getStyle().toString()); // NON-NLS

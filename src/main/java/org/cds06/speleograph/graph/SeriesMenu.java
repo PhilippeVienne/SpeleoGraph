@@ -255,7 +255,7 @@ public class SeriesMenu implements DatasetChangeListener {
             JMenu plotRenderer = new JMenu("Affichage de la série");
             final ButtonGroup modes = new ButtonGroup();
             java.util.List<DrawStyle> availableStyles;
-            if (series.getType().isHighLowType()) {
+            if (series.isMinMax()) {
                 availableStyles = DrawStyles.getDrawableStylesForHighLow();
             } else {
                 availableStyles = DrawStyles.getDrawableStyles();

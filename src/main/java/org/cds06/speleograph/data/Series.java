@@ -59,6 +59,8 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     @NonNls
     private static final Logger log = LoggerFactory.getLogger(Series.class);
     private static GraphPanel graphPanel;
+    private boolean stepped = false;
+    private boolean minMax = false;
 
     /**
      * Create a new Series opened from a file with a default Type.
@@ -188,12 +190,8 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         Date minDate = new Date(Long.MAX_VALUE), maxDate = new Date(Long.MIN_VALUE);
         for (int i = 0; i < max; i++) {
             Item item = items.get(i);
-            if (item.getStartDate().before(minDate)) minDate = item.getStartDate();
-            if (item.getEndDate() != null) {
-                if (item.getEndDate().after(maxDate)) maxDate = item.getEndDate();
-            } else {
-                if (item.getDate().after(maxDate)) maxDate = item.getDate();
-            }
+            if (item.getDate().before(minDate)) minDate = item.getDate();
+            if (item.getDate().after(maxDate)) maxDate = item.getDate();
         }
         range = new DateRange(minDate, maxDate);
         return range;
@@ -361,7 +359,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      */
     @Override
     public double getHighValue(int series, int item) {
-        if (getType().isHighLowType())
+        if (isMinMax())
             if (isShow() && (item > -1 && item < items.size()))
                 return items.get(item).getHigh();
             else
@@ -392,7 +390,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      */
     @Override
     public double getLowValue(int series, int item) {
-        if (getType().isHighLowType())
+        if (isMinMax())
             if (isShow() && (item > -1 && item < items.size()))
                 return items.get(item).getLow();
             else
@@ -650,15 +648,6 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     private XYItemRenderer renderer;
 
     public XYItemRenderer getRenderer() {
-        if (renderer == null) {
-            if (getType().isHighLowType()) {
-                renderer = new HighLowRenderer();
-            } else if (getType().isSteppedType()) {
-                renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
-            } else {
-                renderer = new XYLineAndShapeRenderer(true, false);
-            }
-        }
         if (color != null) {
             renderer.setSeriesPaint(0, color);
         }
@@ -667,8 +656,8 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     public Series generateSampledSeries(long length) {
         final Series newSeries;
-        newSeries = new Series(origin, type.asStepType());
-
+        newSeries = new Series(origin, type);
+        newSeries.setStepped(true);
         final int itemsCount = getItemCount();
         final ArrayList<Item> newItems = newSeries.items;
         double bufferValue = 0D;
@@ -718,7 +707,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     public void setStyle(DrawStyle style) {
         Validate.notNull(style);
-        if (type.isHighLowType() && !(style == DrawStyle.AUTO || style == DrawStyle.HIGH_LOW)) return;
+        if (isMinMax() && !(style == DrawStyle.AUTO || style == DrawStyle.HIGH_LOW)) return;
         if (style.equals(this.style)) return;
         this.style = style;
         switch (style) {
@@ -740,9 +729,9 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     }
 
     private void setupRendererAuto() {
-        if (getType().isHighLowType()) {
+        if (isMinMax()) {
             renderer = new HighLowRenderer();
-        } else if (getType().isSteppedType()) {
+        } else if (isStepped()) {
             renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
         } else {
             renderer = new XYLineAndShapeRenderer(true, false);
@@ -762,6 +751,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     }
 
     public void setColor(Color color) {
+        if (renderer == null) setupRendererAuto();
         this.color = color;
         notifyListeners();
     }
@@ -781,5 +771,21 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     public boolean hasOwnAxis() {
         return axis != null;
+    }
+
+    public void setStepped(boolean stepped) {
+        this.stepped = stepped;
+    }
+
+    public boolean isStepped() {
+        return stepped;
+    }
+
+    public void setMinMax(boolean minMax) {
+        this.minMax = minMax;
+    }
+
+    public boolean isMinMax() {
+        return minMax;
     }
 }
