@@ -25,6 +25,7 @@ import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.graph.DateAxisEditor;
 import org.cds06.speleograph.graph.SpeleoXYPlot;
+import org.cds06.speleograph.graph.ValueAxisEditor;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.AxisLocation;
@@ -179,15 +180,26 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
                     editDateAxis();
                 }
             }
-
+            if (event.getTrigger().getButton() == MouseEvent.BUTTON1 && event.getTrigger().getClickCount() == 2) {
+                for (Series s : series) {
+                    if (entity.getAxis().equals(s.getAxis())) {
+                        editNumberAxis(s.getAxis());
+                    }
+                }
+            }
         } else if (event.getEntity() instanceof PlotEntity) {
             System.out.println(((PlotEntity) event.getEntity()).getPlot());
         }
     }
 
+    private void editNumberAxis(NumberAxis axis) {
+        ValueAxisEditor editor = new ValueAxisEditor(axis);
+        editor.setVisible(true);
+    }
+
+
     private void editDateAxis() {
         JDialog dialog = (new DateAxisEditor(dateAxis));
-        dialog.setSize(400, 500);
         dialog.setLocation(
                 getX() + (getWidth() / 2 - dialog.getWidth() / 2),
                 getY() + (getHeight() / 2 - dialog.getHeight() / 2)

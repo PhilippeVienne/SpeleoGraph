@@ -38,15 +38,14 @@ import java.beans.PropertyChangeListener;
 public abstract class FormDialog extends JDialog {
 
     @NonNls
-    protected static final String LAYOUT_COLUMNS = "l:p,4dlu,p:grow";
-    protected static final String LAYOUT_LINES = "";
+    protected static String DEFAULT_LAYOUT_COLUMNS = "l:p,4dlu,p:grow";
+    protected static String DEFAULT_LAYOUT_LINES = "";
     protected static final String FORM_VALIDATED_PROPERTY = "formValidated"; // NON-NLS
 
     protected final JPanel contentPane = new JPanel();
 
     {
         contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        contentPane.setLayout(new FormLayout(LAYOUT_COLUMNS, LAYOUT_LINES));
     }
 
     public JPanel getPanel() {
@@ -55,18 +54,40 @@ public abstract class FormDialog extends JDialog {
 
     public FormDialog() {
         super(SpeleoGraphApp.getInstance(), true);
+        FormLayout layout;
+        if (getLayout() != null) {
+            layout = getFormLayout();
+        } else {
+            layout = new FormLayout(DEFAULT_LAYOUT_COLUMNS, DEFAULT_LAYOUT_LINES);
+        }
+        contentPane.setLayout(layout);
+    }
+
+    /**
+     * This function construct the content pane.
+     * <p>You should call this method in the constructor after assigned arguments.</p>
+     * <p>This function will : <ul>
+     * <li>Setup the content pane</li>
+     * <li>Call the {@link #setup()} function to populate the pane.</li>
+     * <li>Set a default size (from the content pane preferred size)</li>
+     * <li>Center the frame on the screen</li>
+     * </ul></p>
+     */
+    protected void construct() {
         setContentPane(contentPane);
-        setSize(400, 300);
-        centerOnScreen();
         setup();
+        setSize(contentPane.getPreferredSize().width, contentPane.getPreferredSize().height);
+        centerOnScreen();
     }
 
     /**
      * Center the dialog on screen.
      */
     protected void centerOnScreen() {
-        int x = SpeleoGraphApp.getInstance().getX() + (SpeleoGraphApp.getInstance().getWidth() / 2 - getWidth() / 2);
-        int y = SpeleoGraphApp.getInstance().getY() + (SpeleoGraphApp.getInstance().getHeight() / 2 - getHeight() / 2);
+        int x = SpeleoGraphApp.getInstance().getX() +
+                (SpeleoGraphApp.getInstance().getWidth() / 2 - getWidth() / 2);
+        int y = SpeleoGraphApp.getInstance().getY() +
+                (SpeleoGraphApp.getInstance().getHeight() / 2 - getHeight() / 2);
         setLocation(x, y);
     }
 
@@ -85,5 +106,9 @@ public abstract class FormDialog extends JDialog {
      * <p>You have to override this function to add and setup your dialog</p>
      */
     protected abstract void setup();
+
+    protected abstract void validateForm();
+
+    protected abstract FormLayout getFormLayout();
 
 }
