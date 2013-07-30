@@ -110,6 +110,7 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
         chartPanel.addChartMouseListener(this);
         setupEmptyChart();
         Series.setGraphPanel(this);
+        chartPanel.setPopupMenu(null);
         add(chartPanel);
         log.info("GraphPanel is initialized");
     }

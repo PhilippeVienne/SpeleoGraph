@@ -25,8 +25,8 @@ package org.cds06.speleograph.graph;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import com.toedter.calendar.JDateChooser;
 import org.cds06.speleograph.SpeleoGraphApp;
+import org.cds06.speleograph.utils.DateSelector;
 import org.jfree.chart.axis.DateAxis;
 
 import javax.swing.*;
@@ -61,8 +61,8 @@ public class DateAxisEditor extends JDialog {
             new HumanSimpleDateFormat("HH:mm:ss"),
     });
 
-    final private JDateChooser minDate = new JDateChooser();
-    final private JDateChooser maxDate = new JDateChooser();
+    final private DateSelector minDate = new DateSelector();
+    final private DateSelector maxDate = new DateSelector();
 
 
     public DateAxisEditor(DateAxis dateAxis) {
