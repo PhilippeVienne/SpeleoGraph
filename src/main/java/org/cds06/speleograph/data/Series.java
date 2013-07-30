@@ -74,6 +74,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         this.origin = origin;
         this.type = type;
         instances.add(this);
+        setStyle(DrawStyle.AUTO);
         notifyListeners();
     }
 
@@ -648,6 +649,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     private XYItemRenderer renderer;
 
     public XYItemRenderer getRenderer() {
+        if (renderer == null) setupRendererAuto();
         if (color != null) {
             renderer.setSeriesPaint(0, color);
         }
