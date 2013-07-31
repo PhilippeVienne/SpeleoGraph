@@ -790,4 +790,14 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     public boolean isMinMax() {
         return minMax;
     }
+
+    public void subSeries(Date start, Date end) {
+        ArrayList<Item> newItems = new ArrayList<>(items.size());
+        for (Item i : items) {
+            if (i.getDate().after(start) && i.getDate().before(end))
+                newItems.add(i);
+        }
+        items = newItems;
+        notifyListeners();
+    }
 }
