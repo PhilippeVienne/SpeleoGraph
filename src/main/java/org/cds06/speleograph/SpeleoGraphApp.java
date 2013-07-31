@@ -32,6 +32,7 @@ import org.cds06.speleograph.data.SpeleoFileReader;
 import org.cds06.speleograph.graph.GraphEditor;
 import org.cds06.speleograph.graph.ResetAxesAction;
 import org.cds06.speleograph.graph.SeriesMenu;
+import org.cds06.speleograph.utils.About;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,18 +96,19 @@ public class SpeleoGraphApp extends JFrame {
     public SpeleoGraphApp() {
         super(APP_NAME); // NON-NLS
 
+        try {
+            setIconImage(new ImageIcon(SpeleoGraphApp.class.getResource("SpeleoGraph_icon.png")).getImage()); //NON-NLS
+        } catch (Exception e) {
+            log.info("No logo for " + APP_NAME);
+        }
+
         // Initialize Graphic elements
-//        toolBar = new JToolBar();
         panel = new JPanel(new BorderLayout(2, 2));
         SpeleoSeriesListModel listModel = new SpeleoSeriesListModel();
         CheckBoxList list = new CheckBoxList(listModel);
         JScrollPane scrollPane = new JScrollPane(list);
         GraphPanel graphPanel = new GraphPanel(this);
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, graphPanel, scrollPane);
-
-        // Setup the toolbar
-//        panel.add(toolBar, BorderLayout.NORTH);
-//        addToolBarButtons();
 
         // Configure and add the splitPane
         splitPane.setResizeWeight(1.0);
@@ -126,14 +128,6 @@ public class SpeleoGraphApp extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    /**
-     * Setup buttons for the toolBar.
-     */
-//    private void addToolBarButtons() {
-////        toolBar.add(new OpenAction(panel, SpeleoFileReader.class));
-////        toolBar.add(new OpenAction(panel, ReefnetFileReader.class));
-//    }
-    @SuppressWarnings("UnusedDeclaration")
     public JSplitPane getSplitPane() {
         return splitPane;
     }
@@ -146,13 +140,14 @@ public class SpeleoGraphApp extends JFrame {
 
         JMenu fileMenu = new JMenu(I18nSupport.translate("menus.file"));
         fileMenu.add(new OpenAction(panel, SpeleoFileReader.class));
+        fileMenu.add(new SaveAction(panel));
         JMenu importMenu = new JMenu(I18nSupport.translate("menus.import"));
         importMenu.add(new OpenAction(panel, ReefnetFileReader.class));
         importMenu.add(new OpenAction(panel, HoboFileReader.class));
         importMenu.addSeparator();
         importMenu.add(new ImportAction(panel));
         fileMenu.add(importMenu);
-        fileMenu.add(new SaveAction(panel));
+        fileMenu.add(((GraphPanel) getSplitPane().getLeftComponent()).saveImageAction);
         fileMenu.addSeparator();
         fileMenu.add(new AbstractAction() {
 
@@ -199,10 +194,34 @@ public class SpeleoGraphApp extends JFrame {
             bar.add(menu);
         }
 
-        final JMenu menu = seriesMenu.getMenu();
-        menu.setVisible(false);
-        bar.add(menu);
+        {
+            final JMenu menu = seriesMenu.getMenu();
+            menu.setVisible(false);
+            bar.add(menu);
+        }
 
+//        final JMenu aide = new JMenu("Aide");
+//        bar.setHelpMenu(aide); //NON-NLS
+        bar.add(Box.createHorizontalGlue());
+
+        {
+            JMenu menu = new JMenu(I18nSupport.translate("menus.help"));
+            menu.add(new AbstractAction() {
+
+                {
+                    putValue(NAME, "A propos");
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JOptionPane.showMessageDialog(SpeleoGraphApp.this,
+                            new About("SpeleoGraph", "1.0b", "Philippe VIENNE", "Philippe@Vienne.me", null, null,
+                                    new ImageIcon(SpeleoGraphApp.class.getResource("SpeleoGraph_icon.png"))),
+                            "A propos", JOptionPane.INFORMATION_MESSAGE, new ImageIcon());
+                }
+            });
+            bar.add(menu);
+        }
 
         return bar;
     }

@@ -40,7 +40,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -217,4 +219,27 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
     public ChartPanel getChartPanel() {
         return chartPanel;
     }
+
+    public final Action saveImageAction = new AbstractAction() {
+
+        {
+            putValue(NAME, I18nSupport.translate("actions.exportAsImage"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                chartPanel.setDefaultDirectoryForSaveAs(SpeleoGraphApp.getWorkingDirectory());
+                chartPanel.doSaveAs();
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(
+                        GraphPanel.this,
+                        "Erreur lors de l'enregistrement du fichier, merci de signaler le bug suivant :\n" +
+                                e1.getLocalizedMessage() + "\nEn présisant ce que vous faisiez.",
+                        "Erreur lors de la sauvegarde",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
+    };
 }
