@@ -221,4 +221,8 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
     public JFreeChart getChart() {
         return chart;
     }
+
+    public ChartPanel getChartPanel() {
+        return chartPanel;
+    }
 }

@@ -70,16 +70,16 @@ public class DateAxisEditor extends JDialog {
         this.axis = dateAxis;
         JPanel panel = new JPanel();
         panel.setLayout(new FormLayout(
-                "r:p,4dlu,p:grow",
-                "p,4dlu:grow,p,4dlu:grow,p,4dlu:grow,p"
+                "r:p,4dlu,p:grow,4dlu",
+                "p:grow,p,4dlu:grow,p,4dlu:grow,p,4dlu:grow,p,p:grow"
         ));
         CellConstraints cc = new CellConstraints();
-        panel.add(new JLabel("Format :"), cc.xy(1, 1));
-        panel.add(dateSelector, cc.xy(3, 1));
-        panel.add(new JLabel("Date Début :"), cc.xy(1, 3));
-        panel.add(minDate, cc.xy(3, 3));
-        panel.add(new JLabel("Date Fin :"), cc.xy(1, 5));
-        panel.add(maxDate, cc.xy(3, 5));
+        panel.add(new JLabel("Format :"), cc.xy(1, 2));
+        panel.add(dateSelector, cc.xy(3, 2));
+        panel.add(new JLabel("Date Début :"), cc.xy(1, 4));
+        panel.add(minDate, cc.xy(3, 4));
+        panel.add(new JLabel("Date Fin :"), cc.xy(1, 6));
+        panel.add(maxDate, cc.xy(3, 6));
 
         ButtonBarBuilder barBuilder = new ButtonBarBuilder();
         barBuilder.addGlue();

@@ -30,6 +30,7 @@ import org.cds06.speleograph.data.HoboFileReader;
 import org.cds06.speleograph.data.ReefnetFileReader;
 import org.cds06.speleograph.data.SpeleoFileReader;
 import org.cds06.speleograph.graph.GraphEditor;
+import org.cds06.speleograph.graph.ResetAxesAction;
 import org.cds06.speleograph.graph.SeriesMenu;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
@@ -191,6 +192,7 @@ public class SpeleoGraphApp extends JFrame {
                     putValue(NAME, "Paramètres du graphique");
                 }
             });
+            menu.add(new ResetAxesAction((GraphPanel) getSplitPane().getLeftComponent()));
 
             bar.add(menu);
         }
