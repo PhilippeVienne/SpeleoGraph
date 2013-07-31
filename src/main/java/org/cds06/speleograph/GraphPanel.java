@@ -32,7 +32,6 @@ import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.entity.AxisEntity;
-import org.jfree.chart.entity.PlotEntity;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
@@ -111,6 +110,9 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
         setupEmptyChart();
         Series.setGraphPanel(this);
         chartPanel.setPopupMenu(null);
+        chartPanel.setMouseWheelEnabled(true);
+        chartPanel.setMouseZoomable(false);
+        chartPanel.setDomainZoomable(true);
         add(chartPanel);
         log.info("GraphPanel is initialized");
     }
@@ -173,23 +175,13 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
      */
     @Override
     public void chartMouseClicked(ChartMouseEvent event) {
+
         if (event.getEntity() instanceof AxisEntity) {
             AxisEntity entity = (AxisEntity) event.getEntity();
-            if (entity.getAxis().equals(dateAxis)) {
-                // User clicked on DateAxis
-                if (event.getTrigger().getButton() == MouseEvent.BUTTON1 && event.getTrigger().getClickCount() == 2) {
-                    editDateAxis();
-                }
-            }
             if (event.getTrigger().getButton() == MouseEvent.BUTTON1 && event.getTrigger().getClickCount() == 2) {
-                for (Series s : series) {
-                    if (entity.getAxis().equals(s.getAxis())) {
-                        editNumberAxis(s.getAxis());
-                    }
-                }
+                if (entity.getAxis() instanceof NumberAxis) editNumberAxis((NumberAxis) entity.getAxis());
+                else if (entity.getAxis() instanceof DateAxis) editDateAxis();
             }
-        } else if (event.getEntity() instanceof PlotEntity) {
-            System.out.println(((PlotEntity) event.getEntity()).getPlot());
         }
     }
 

@@ -52,6 +52,8 @@ import java.util.prefs.Preferences;
  */
 public class SpeleoGraphApp extends JFrame {
 
+    public static final String APP_NAME = "SpeleoGraph 1.0b"; // NON-NLS
+
     /**
      * Instance of SpeleoGraph in the current JVM.
      */
@@ -91,7 +93,7 @@ public class SpeleoGraphApp extends JFrame {
     }
 
     public SpeleoGraphApp() {
-        super("SpeleoGraph"); // NON-NLS
+        super(APP_NAME); // NON-NLS
 
         // Initialize Graphic elements
 //        toolBar = new JToolBar();
