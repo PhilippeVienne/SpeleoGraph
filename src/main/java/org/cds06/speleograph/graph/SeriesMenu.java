@@ -25,12 +25,12 @@ package org.cds06.speleograph.graph;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
+import org.cds06.speleograph.actions.SamplingAction;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.Type;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -154,43 +154,7 @@ public class SeriesMenu implements DatasetChangeListener {
         }
 
         if (series.getType().equals(Type.WATER)) {
-            JMenuItem samplingItem = new JMenuItem("Créer une série échantillonée");
-            samplingItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        boolean hasANumber = false;
-                        int duration = 60 * 60 * 24;
-                        while (!hasANumber)
-                            try {
-                                String result = JOptionPane.showInputDialog(
-                                        application,
-                                        "Quel est la longueur de l'échantillonage (en secondes) ?",
-                                        60 * 60 * 24);
-                                duration = Integer.parseInt(result);
-                                hasANumber = true;
-                            } catch (NumberFormatException e1) {
-                                hasANumber = false;
-                            }
-                        boolean hasAName = false;
-                        String name = "";
-                        while (!hasAName)
-                            try {
-                                name = JOptionPane.showInputDialog(
-                                        application,
-                                        "Quel est le nom de la nouvelle série ?",
-                                        series.getName());
-                                hasAName = !"".equals(name);
-                            } catch (Exception e1) {
-                                hasAName = false;
-                            }
-                        series.generateSampledSeries(1000 * duration).setName(name);
-                    } catch (Exception e1) {
-                        LoggerFactory.getLogger(SeriesMenu.class).error("Erreur lors de l'échantillonage", e1);
-                    }
-                }
-            });
-            menu.add(samplingItem);
+            menu.add(new SamplingAction(series));
         }
 
         {

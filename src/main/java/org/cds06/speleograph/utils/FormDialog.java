@@ -27,6 +27,7 @@ import org.cds06.speleograph.SpeleoGraphApp;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -76,7 +77,10 @@ public abstract class FormDialog extends JDialog {
     protected void construct() {
         setContentPane(contentPane);
         setup();
-        setSize(contentPane.getPreferredSize().width, contentPane.getPreferredSize().height);
+        Dimension d = contentPane.getPreferredSize();
+        d.height = d.height + 20;
+        setSize(d);
+        setMinimumSize(d);
         centerOnScreen();
     }
 
