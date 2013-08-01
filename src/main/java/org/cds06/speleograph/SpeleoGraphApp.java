@@ -42,6 +42,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.prefs.Preferences;
 
@@ -117,7 +118,8 @@ public class SpeleoGraphApp extends JFrame {
         // Configure the frame
         setContentPane(panel);
         seriesMenu = new SeriesMenu(this);
-        setJMenuBar(createMenus());
+        final JMenuBar menus = createMenus();
+        setJMenuBar(menus);
         // Positioning
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         screenSize.height = screenSize.height - 100;
@@ -245,6 +247,16 @@ public class SpeleoGraphApp extends JFrame {
 
         if (System.getProperty("os.name").contains("Mac")) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
+            try {
+                final Class<?> ApplicationClass =
+                        ClassLoader.getSystemClassLoader().loadClass("com.apple.eawt.Application");
+                Object app =
+                        ApplicationClass.getMethod("getApplication").invoke(null);
+                ApplicationClass.getMethod("setDockIconImage", Image.class).invoke(app,
+                        new ImageIcon(SpeleoGraphApp.class.getResource("SpeleoGraph_icon.png")).getImage());
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+                log.error("We are on mac without Mac support !", e);
+            }
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (

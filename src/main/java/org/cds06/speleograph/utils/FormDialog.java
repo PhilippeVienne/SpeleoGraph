@@ -56,7 +56,7 @@ public abstract class FormDialog extends JDialog {
     public FormDialog() {
         super(SpeleoGraphApp.getInstance(), true);
         FormLayout layout;
-        if (getLayout() != null) {
+        if (getFormLayout() != null) {
             layout = getFormLayout();
         } else {
             layout = new FormLayout(DEFAULT_LAYOUT_COLUMNS, DEFAULT_LAYOUT_LINES);
@@ -75,11 +75,11 @@ public abstract class FormDialog extends JDialog {
      * </ul></p>
      */
     protected void construct() {
-        setContentPane(contentPane);
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(contentPane);
         setup();
-        Dimension d = contentPane.getPreferredSize();
-        d.height = d.height + 20;
-        setSize(d);
+        pack();
+        Dimension d = getSize();
         setMinimumSize(d);
         centerOnScreen();
     }

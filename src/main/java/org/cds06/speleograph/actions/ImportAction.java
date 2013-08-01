@@ -22,16 +22,14 @@
 
 package org.cds06.speleograph.actions;
 
-import org.cds06.speleograph.data.ImportTableOld;
-import org.cds06.speleograph.utils.AcceptedFileFilter;
+import org.cds06.speleograph.SpeleoGraphApp;
+import org.cds06.speleograph.data.ImportWizard;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Action used to describe a file import.
@@ -68,15 +66,10 @@ public class ImportAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileFilter(new AcceptedFileFilter());
+        fileChooser.setCurrentDirectory(SpeleoGraphApp.getWorkingDirectory());
         int result = fileChooser.showOpenDialog(parent);
         if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            try {
-                ImportTableOld.openImportWizardFor(parent, file);
-            } catch (IOException e) {
-                log.error("Error on file reading", e);
-            }
+            new ImportWizard(fileChooser.getSelectedFile()).openWizard();
         }
     }
 }
