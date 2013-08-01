@@ -23,18 +23,15 @@
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.cds06.speleograph.utils.FormDialog;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -157,6 +154,7 @@ public class ImportWizard {
         private JTable table = new JTable();
 
         private ArrayList<ColumnEditor> editors = new ArrayList<>();
+        private ColumnEditor currentShownEditor = null;
         private JButton readButton;
         private Integer firstLineOfData = 0;
         private int columns;
@@ -205,6 +203,21 @@ public class ImportWizard {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
+                }
+            });
+            final CellConstraints cc = new CellConstraints(5, 1);
+            table.getTableHeader().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    final int columnIndex = table.getTableHeader().columnAtPoint(e.getPoint()) - 1;
+                    if (columnIndex < 0 || columnIndex > columns) return;
+                    if (e.getClickCount() != 2) return;
+                    if (currentShownEditor != null) {
+                        getPanel().remove(currentShownEditor);
+                    }
+                    currentShownEditor = editors.get(columnIndex);
+                    getPanel().add(currentShownEditor, cc);
+                    pack();
                 }
             });
             construct();
@@ -285,12 +298,39 @@ public class ImportWizard {
 
         @Override
         protected void validateForm() {
-            JOptionPane.showMessageDialog(this, "Read the file ?");
+            if (firstLineOfData == null) {
+                JOptionPane.showMessageDialog(this,
+                        "On ne peut pas continuer sans savoir où les données commencent.",
+                        "Ereur",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            SpeleoFileReader.HeaderInformation headerInformation = new SpeleoFileReader.HeaderInformation();
+            SpeleoFileReader.DateInformation dateInformation = new SpeleoFileReader.DateInformation();
+            headerInformation.setDateInformation(dateInformation);
+            for (ColumnEditor editor : editors) {
+                if (editor.isIgnoring()) continue;
+                if (editor.isDateColumn()) {
+                    dateInformation.set(editors.indexOf(editor), editor.getDateFormat());
+                    continue;
+                }
+                if (editor.isSeriesColumn()) {
+                    if (editor.isMinMax()) {
+                        Series s = new Series(file, editor.getType());
+                        s.setMinMax(true);
+                        headerInformation.set(s, editor.getLinkedColumns());
+                    } else {
+                        headerInformation.set(new Series(file, editor.getType()), editors.indexOf(editor));
+                    }
+                }
+            }
+            readFile(headerInformation, firstLineOfData);
+            setVisible(false);
         }
 
         @Override
         protected FormLayout getFormLayout() {
-            return new FormLayout("150dlu,3dlu,p:grow,3dlu,p", "p:grow,p"); // NON-NLS
+            return new FormLayout("150dlu,3dlu,p:grow,3dlu,p", "top:p:grow,p"); // NON-NLS
         }
 
         private class ColumnEditor extends JPanel implements ItemListener {
@@ -313,6 +353,7 @@ public class ImportWizard {
                 builder.addLabel("Format de la date :");
                 builder.nextLine();
                 builder.add(dateFormatField);
+                builder.nextLine();
                 builder.add(new JLabel("<HTML>" +
                         "d : Jour dans le mois (1 à 31)<br/>" +
                         "M : Mois dans l'année<br/>" +
@@ -328,9 +369,14 @@ public class ImportWizard {
             private JPanel typePropertyPanel;
 
             {
-                DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("r:p,p:grow", "p,p"));
-                builder.append("Nom :", typeNameField);
-                builder.append("Unité :", typeUnitField);
+                PanelBuilder builder = new PanelBuilder(new FormLayout("r:p,p:grow", "p,p"));
+                builder.addLabel("Nom :");
+                builder.nextColumn();
+                builder.add(typeNameField);
+                builder.nextLine();
+                builder.addLabel("Unité :");
+                builder.nextColumn();
+                builder.add(typeUnitField);
                 typePropertyPanel = builder.build();
                 typePropertyPanel.setBorder(
                         BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Type"));
@@ -338,14 +384,19 @@ public class ImportWizard {
 
             private JCheckBox isMinMax = new JCheckBox("A une valeur minimal et/ou maximal");
 
-            private JSpinner minColumnSpinner = new JSpinner(new SpinnerNumberModel(0, columns, 0, 1));
-            private JSpinner maxColumnSpinner = new JSpinner(new SpinnerNumberModel(0, columns, 0, 1));
+            private JSpinner minColumnSpinner = new JSpinner(new SpinnerNumberModel(0, 0, columns, 1));
+            private JSpinner maxColumnSpinner = new JSpinner(new SpinnerNumberModel(0, 0, columns, 1));
             private JPanel minMaxPropertyPanel;
 
             {
-                DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("r:p,p:grow", "p,p"));
-                builder.append("Minimal :", minColumnSpinner);
-                builder.append("Maximal :", maxColumnSpinner);
+                PanelBuilder builder = new PanelBuilder(new FormLayout("r:p,p:grow", "p,p"));
+                builder.addLabel("Minimal :");
+                builder.nextColumn();
+                builder.add(minColumnSpinner);
+                builder.nextLine();
+                builder.addLabel("Maximum :");
+                builder.nextColumn();
+                builder.add(maxColumnSpinner);
                 minMaxPropertyPanel = builder.build();
                 minMaxPropertyPanel.setBorder(
                         BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Min/Max"));
@@ -364,8 +415,8 @@ public class ImportWizard {
             public ColumnEditor() {
                 super(new BorderLayout());
                 add(columnTypeComboBox, BorderLayout.NORTH);
-                columnTypeComboBox.setSelectedItem(IGNORE);
                 columnTypeComboBox.addItemListener(this);
+                columnTypeComboBox.setSelectedItem(IGNORE);
                 isMinMax.addItemListener(this);
             }
 
@@ -402,13 +453,35 @@ public class ImportWizard {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getSource().equals(isMinMax)) {
-                    minMaxPropertyPanel.setVisible(isMinMax.isSelected());
+                    minMaxPropertyPanel.setVisible(isMinMax());
                 }
                 if (!e.getSource().equals(columnTypeComboBox)) return;
                 JPanel p = getEditPanel((String) columnTypeComboBox.getSelectedItem());
                 removeAll();
                 add(columnTypeComboBox, BorderLayout.NORTH);
                 add(p);
+                revalidate();
+                repaint();
+                pack();
+            }
+
+            public boolean isMinMax() {
+                return isMinMax.isSelected();
+            }
+        }
+    }
+
+    private void readFile(
+            SpeleoFileReader.HeaderInformation headerInformation,
+            int lineStart) {
+        for (int i = 0, linesSize = lines.size(); i < linesSize; i++) {
+            String[] line = lines.get(i);
+            if (i < lineStart) continue;
+            try {
+                headerInformation.read(line);
+            } catch (Exception e) {
+                System.err.println("Error while importing : " + e.getMessage()); // NON-NLS
+                e.printStackTrace(System.err);
             }
         }
     }

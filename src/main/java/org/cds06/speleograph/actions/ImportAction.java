@@ -24,9 +24,6 @@ package org.cds06.speleograph.actions;
 
 import org.cds06.speleograph.SpeleoGraphApp;
 import org.cds06.speleograph.data.ImportWizard;
-import org.jetbrains.annotations.NonNls;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -38,12 +35,6 @@ import java.awt.event.ActionEvent;
  * @since 1.0
  */
 public class ImportAction extends AbstractAction {
-
-    /**
-     * Logger for info and errors.
-     */
-    @NonNls
-    private static final Logger log = LoggerFactory.getLogger(ImportAction.class);
 
     /**
      * Parent component for dialog display.
@@ -65,10 +56,18 @@ public class ImportAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        int i = JOptionPane.showConfirmDialog(parent,
+                "Cette fonctionnalité est très instable et peut amener à des erreur sur la lecture des graphiques.\n" +
+                        "Ne continuez que si vous êtes sur de ce que vous faîtes.",
+                "Attention", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (i != JOptionPane.OK_OPTION) {
+            return;
+        }
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(SpeleoGraphApp.getWorkingDirectory());
         int result = fileChooser.showOpenDialog(parent);
         if (result == JFileChooser.APPROVE_OPTION) {
+            SpeleoGraphApp.setWorkingDirectory(fileChooser.getSelectedFile().getParentFile());
             new ImportWizard(fileChooser.getSelectedFile()).openWizard();
         }
     }
