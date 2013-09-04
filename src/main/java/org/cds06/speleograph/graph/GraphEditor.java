@@ -28,6 +28,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.GraphPanel;
 import org.jetbrains.annotations.NotNull;
+import org.jfree.chart.plot.XYPlot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,9 +63,11 @@ public class GraphEditor extends JDialog {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         {
+            // This section use FormLayout which is an external layout for Java, consult the doc before edit the
+            // following lines !
             final FormLayout layout = new FormLayout(
                     "right:max(40dlu;p), 4dlu, p:grow, 4dlu, p, 4dlu, p:grow, 4dlu, p", //NON-NLS
-                    "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p" //NON-NLS
+                    "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p" //NON-NLS
             );
 
 
@@ -73,6 +76,7 @@ public class GraphEditor extends JDialog {
             final JTextField colorLabel = new JTextField();
             final JTextField titleForGraph = new JTextField(graphPanel.getChart().getTitle() != null ? graphPanel.getChart().getTitle().getText() : "");
             final JTextField colorXYPlotLabel = new JTextField();
+            final JTextField colorGridLabel = new JTextField();
             final JCheckBox showLegendCheckBox = new JCheckBox(
                     "Afficher la légende", graphPanel.getChart().getLegend().isVisible());
 
@@ -102,18 +106,20 @@ public class GraphEditor extends JDialog {
                 builder.add(edit, "9,3");
             }
 
+            final XYPlot xyPlot = graphPanel.getChart().getXYPlot();
             {
                 builder.addLabel("Fond de la zone graphique", "1,5");
                 colorXYPlotLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 colorXYPlotLabel.setBackground(
-                        (Color) graphPanel.getChart().getXYPlot().getBackgroundPaint()
+                        (Color) xyPlot.getBackgroundPaint()
                 );
                 colorXYPlotLabel.setEnabled(false);
                 final JButton edit = new JButton("Editer");
                 edit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Color c = JColorChooser.showDialog(GraphEditor.this, "Selectionnez une couleur", colorLabel.getBackground());
+                        Color c = JColorChooser.showDialog(GraphEditor.this, "Selectionnez une couleur",
+                                colorXYPlotLabel.getBackground());
                         if (c != null) {
                             colorXYPlotLabel.setBackground(c);
                         }
@@ -124,7 +130,31 @@ public class GraphEditor extends JDialog {
             }
 
             {
-                builder.add(showLegendCheckBox, "1,7,9,1");
+                builder.addLabel("Couleur de la grille", "1,7");
+                colorGridLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                colorGridLabel.setBackground(
+                        (Color) xyPlot.getRangeGridlinePaint()
+                );
+                colorGridLabel.setEnabled(false);
+                final JButton edit = new JButton("Editer");
+                edit.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Color c = JColorChooser.showDialog(GraphEditor.this, "Selectionnez une couleur",
+                                colorGridLabel.getBackground());
+                        if (c != null) {
+                            edit.setBackground(c);
+                            colorGridLabel.setForeground(c);
+                            colorGridLabel.setDisabledTextColor(c);
+                        }
+                    }
+                });
+                builder.add(colorGridLabel, "3,7,5,1");
+                builder.add(edit, "9,7");
+            }
+
+            {
+                builder.add(showLegendCheckBox, "1,9,9,1");
             }
 
             mainPanel.add(builder.build(), BorderLayout.CENTER);
@@ -144,8 +174,15 @@ public class GraphEditor extends JDialog {
                         graphPanel.getChart().setTitle((String) null);
                     else
                         graphPanel.getChart().setTitle(titleForGraph.getText());
+                    {
+                        Color c = colorGridLabel.getBackground();
+                        xyPlot.setRangeGridlinePaint(c);
+                        xyPlot.setRangeMinorGridlinePaint(c);
+                        xyPlot.setDomainGridlinePaint(c);
+                        xyPlot.setDomainMinorGridlinePaint(c);
+                    }
                     graphPanel.getChart().setBackgroundPaint(colorLabel.getBackground());
-                    graphPanel.getChart().getXYPlot().setBackgroundPaint(colorXYPlotLabel.getBackground());
+                    xyPlot.setBackgroundPaint(colorXYPlotLabel.getBackground());
                     graphPanel.getChart().getLegend().setVisible(showLegendCheckBox.isSelected());
                     GraphEditor.this.setVisible(false);
                 }
@@ -154,7 +191,7 @@ public class GraphEditor extends JDialog {
             mainPanel.add(buttonBarBuilder.build(), BorderLayout.SOUTH);
         }
 
-        setSize(300, 200);
+        setSize(300, 300);
     }
 
     /**
