@@ -23,12 +23,15 @@ package org.cds06.speleograph;
 
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.data.Series;
+import org.cds06.speleograph.graph.DateAxisEditor;
 import org.cds06.speleograph.graph.SpeleoXYPlot;
+import org.cds06.speleograph.graph.ValueAxisEditor;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.entity.AxisEntity;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
@@ -37,6 +40,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,6 +111,10 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
         chartPanel.addChartMouseListener(this);
         setupEmptyChart();
         Series.setGraphPanel(this);
+        chartPanel.setPopupMenu(null);
+        chartPanel.setMouseWheelEnabled(true);
+        chartPanel.setMouseZoomable(false);
+        chartPanel.setDomainZoomable(true);
         add(chartPanel);
         log.info("GraphPanel is initialized");
     }
@@ -167,7 +177,29 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
      */
     @Override
     public void chartMouseClicked(ChartMouseEvent event) {
-        log.info("Received a mouse click");
+
+        if (event.getEntity() instanceof AxisEntity) {
+            AxisEntity entity = (AxisEntity) event.getEntity();
+            if (event.getTrigger().getButton() == MouseEvent.BUTTON1 && event.getTrigger().getClickCount() == 2) {
+                if (entity.getAxis() instanceof NumberAxis) editNumberAxis((NumberAxis) entity.getAxis());
+                else if (entity.getAxis() instanceof DateAxis) editDateAxis();
+            }
+        }
+    }
+
+    private void editNumberAxis(NumberAxis axis) {
+        ValueAxisEditor editor = new ValueAxisEditor(axis);
+        editor.setVisible(true);
+    }
+
+
+    private void editDateAxis() {
+        JDialog dialog = (new DateAxisEditor(dateAxis));
+        dialog.setLocation(
+                getX() + (getWidth() / 2 - dialog.getWidth() / 2),
+                getY() + (getHeight() / 2 - dialog.getHeight() / 2)
+        );
+        dialog.setVisible(true);
     }
 
     /**
@@ -179,4 +211,35 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
     public void chartMouseMoved(ChartMouseEvent event) {
 //        log.info("Received a mouse event");
     }
+
+    public JFreeChart getChart() {
+        return chart;
+    }
+
+    public ChartPanel getChartPanel() {
+        return chartPanel;
+    }
+
+    public final Action saveImageAction = new AbstractAction() {
+
+        {
+            putValue(NAME, I18nSupport.translate("actions.exportAsImage"));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                chartPanel.setDefaultDirectoryForSaveAs(SpeleoGraphApp.getWorkingDirectory());
+                chartPanel.doSaveAs();
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(
+                        GraphPanel.this,
+                        "Erreur lors de l'enregistrement du fichier, merci de signaler le bug suivant :\n" +
+                                e1.getLocalizedMessage() + "\nEn présisant ce que vous faisiez.",
+                        "Erreur lors de la sauvegarde",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
+    };
 }

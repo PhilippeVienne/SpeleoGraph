@@ -22,10 +22,12 @@
 
 package org.cds06.speleograph.actions;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.SpeleoGraphApp;
 import org.cds06.speleograph.data.DataFileReader;
 import org.cds06.speleograph.data.FileReadingError;
 import org.jetbrains.annotations.NonNls;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
@@ -42,11 +45,6 @@ import java.io.File;
  * Distributed on licence GNU GPL V3.
  */
 public class OpenAction extends AbstractAction {
-
-    /**
-     * Working directory for the current User.
-     */
-    private static File pwd;
 
     /**
      * Logger for info and errors.
@@ -113,23 +111,37 @@ public class OpenAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (pwd == null) {
-            pwd = new File(OpenAction.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        }
-        chooser.setCurrentDirectory(pwd);
-        int result = chooser.showOpenDialog(parent);
-        File file;
-        switch (result) {
-            case JFileChooser.APPROVE_OPTION:
-                file = chooser.getSelectedFile();
+        chooser.setCurrentDirectory(SpeleoGraphApp.getWorkingDirectory());
+        File file = null;
+        if (SpeleoGraphApp.isMac()) {
+            do {
+                if (file != null && !fileFilter.accept(file)) {
+                    JOptionPane.showMessageDialog(SpeleoGraphApp.getInstance(),
+                            "Le fichier sélectionné n'est pas au bon format.\nMerci de ressayer.",
+                            "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+                FileDialog chooserMac = new FileDialog(SpeleoGraphApp.getInstance());
+                chooserMac.setDirectory(SpeleoGraphApp.getWorkingDirectory().getAbsolutePath());
+                chooserMac.setVisible(true);
+                if (chooserMac.getFile() == null) return;
+                file = FileUtils.getFile(chooserMac.getDirectory(), chooserMac.getFile());
                 if (file.isDirectory()) return;
-                break;
-            case JFileChooser.CANCEL_OPTION:
-            default:
-                return;
+            } while (!fileFilter.accept(file));
+        } else {
+            int result = chooser.showOpenDialog(parent);
+            switch (result) {
+                case JFileChooser.APPROVE_OPTION:
+                    file = chooser.getSelectedFile();
+                    if (file.isDirectory()) return;
+                    break;
+                case JFileChooser.CANCEL_OPTION:
+                default:
+                    SpeleoGraphApp.setWorkingDirectory(chooser.getCurrentDirectory());
+                    return;
+            }
         }
         try {
-            pwd = file.getParentFile();
+            SpeleoGraphApp.setWorkingDirectory(file.getParentFile());
             reader.readFile(file);
         } catch (FileReadingError e1) {
             log.error("Error when try to read a SpeleoGraph File", e1);

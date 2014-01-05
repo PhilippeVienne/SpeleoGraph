@@ -30,13 +30,17 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.graph.DrawStyle;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jfree.chart.axis.NumberAxis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.io.*;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,11 +50,11 @@ import java.util.*;
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class SpeleoDataFileReader implements DataFileReader {
+public class SpeleoFileReader implements DataFileReader {
 
     @SuppressWarnings("UnusedDeclaration")
     @NonNls
-    private static final Logger log = LoggerFactory.getLogger(SpeleoDataFileReader.class);
+    private static final Logger log = LoggerFactory.getLogger(SpeleoFileReader.class);
 
     /**
      * This exception is thrown when try to read a non-speleoGraph file.
@@ -70,13 +74,14 @@ public class SpeleoDataFileReader implements DataFileReader {
     private static final int READING_DATA = 1;
     private static final int CHECKING = 2;
 
-    private static final String SERIES_WITH_INTERNAL_TYPE = "sgt"; //NON-NLS
-    private static final String SERIES_WITH_USER_TYPE = "ut"; //NON-NLS
-    private static DataFileReader instance = new SpeleoDataFileReader();
+    private static DataFileReader instance = new SpeleoFileReader();
 
     public static DataFileReader getInstance() {
         return instance;
     }
+
+    private ArrayList<NumberAxis> axes = new ArrayList<>();
+    private ArrayList<Boolean> typeAxesChecker = new ArrayList<>();
 
     /**
      * Read a file with SpeleoGraph File Format.
@@ -84,6 +89,7 @@ public class SpeleoDataFileReader implements DataFileReader {
      * @param file The file to read
      * @throws FileReadingError On error while reading the file
      */
+    @SuppressWarnings("HardCodedStringLiteral")
     @Override
     public void readFile(File file) throws FileReadingError {
         InputStreamReader streamReader;
@@ -95,6 +101,8 @@ public class SpeleoDataFileReader implements DataFileReader {
                     I18nSupport.translate("errors.canNotOpenFile", file.getName()), FileReadingError.Part.HEAD, e);
         }
         CSVReader reader = new CSVReader(streamReader, ';', '"');
+        axes = new ArrayList<>();
+        typeAxesChecker = new ArrayList<>();
         String[] line;
         try {
             line = reader.readNext();
@@ -113,6 +121,7 @@ public class SpeleoDataFileReader implements DataFileReader {
                 continue;
             }
             String firstLineElement = line[0];
+            if (firstLineElement.equals("eof")) break; // Force end for reading NON-NLS
             switch (state) {
                 case CHECKING:
                     if (!SPELEOGRAPH_FILE_HEADER.equals(firstLineElement)) throw NOT_SPELEO_FILE;
@@ -122,18 +131,33 @@ public class SpeleoDataFileReader implements DataFileReader {
                     if ("headers".equals(firstLineElement)) state = READING_HEADERS; // NON-NLS
                     break;
                 case READING_HEADERS:
-                    if ("data".equals(firstLineElement)) { // NON-NLS
-                        state = READING_DATA;
-                        break;
-                    }
-                    if ("date".equals(firstLineElement)) { // NON-NLS
-                        readDateHeaderLine(date, line);
-                    } else {
-                        readSeriesHeaderLine(file, line, headers);
-                        break;
+                    switch (firstLineElement) {
+                        case "data":
+                            state = READING_DATA;
+                            break;
+                        case "date":
+                            readDateHeaderLine(date, line);
+                            break;
+                        case "axis":
+                            try {
+                                NumberAxis axis = new NumberAxis(line[2]);
+                                axis.setLowerBound((DecimalFormat.getInstance().parse(line[3])).doubleValue());
+                                axis.setUpperBound(DecimalFormat.getInstance().parse(line[4]).doubleValue());
+                                typeAxesChecker.add(Integer.parseInt(line[1]), new Properties(line).getBoolean("type"));
+                                axes.add(Integer.parseInt(line[1]), axis);
+                            } catch (Exception e) {
+                                log.error("Can not read axis", e);
+                            }
+                            break;
+                        case "chart":
+
+                            break;
+                        default:
+                            readSeriesHeaderLine(file, line, headers);
                     }
                     break;
                 case READING_DATA:
+                    if (size <= 1) break;
                     headers.read(line);
                     break;
                 default:
@@ -145,6 +169,7 @@ public class SpeleoDataFileReader implements DataFileReader {
                 log.debug("None next lines", e);
             }
         }
+        Series.notifyInstanceListeners();
         log.info("File reading is ended");
     }
 
@@ -204,46 +229,47 @@ public class SpeleoDataFileReader implements DataFileReader {
      * @param line    The parsed line
      * @param headers The object which represent the headers
      */
-    private static void readSeriesHeaderLine(File file, String[] line, HeaderInformation headers) {
+    private void readSeriesHeaderLine(File file, String[] line, HeaderInformation headers) {
         int size = line.length, column = Integer.parseInt(line[0]);
         if (size < 3) { // A series line must have a length gather than 2
             log.info("Invalid header : " + StringUtils.join(line, ' '));
             return;
         }
-        String headerType = line[1];
-        Series series = null;
-        Type t = Type.UNKNOWN;
-        switch (headerType) {
-            case SERIES_WITH_INTERNAL_TYPE:
-                String type = line[2];
-                for (Type ty : Type.internalTypes)
-                    if (ty.getType().toString().equals(type)) t = ty;
-                series = new Series(file, t);
-                break;
-            case SERIES_WITH_USER_TYPE:
-                if (size < 4) {
-                    log.info("Invalid header : " + StringUtils.join(line, ' '));
-                    break;
+        @NonNls Properties p = new Properties(line);
+        Type t = Type.getType(line[1], line[2]);
+        Series series = new Series(file, t);
+
+        {
+            if (p.getBoolean("show")) series.setShow(true);
+            if (p.getBoolean("stepped")) series.setStepped(true);
+            if (p.get("style") != null) {
+                String style = p.get("style");
+                for (DrawStyle s : DrawStyle.values()) {
+                    if (s.toString().equals(style))
+                        series.setStyle(s);
                 }
-                t = Type.getType(line[2], line[3]);
-                series = new Series(file, t);
-                break;
-            default:
-                log.info("Invalid header : " + StringUtils.join(line, ';'));
-                throw new IllegalStateException("Invalid series entry");
+            }
+            if (p.get("color") != null) series.setColor(new Color(Integer.parseInt(p.get("color"))));
+            if (p.get("name") != null) {
+                series.setName(p.get("name"));
+            }
+            if (p.getNumber("axis") != null) {
+                Integer id = p.getNumber("axis");
+                if (typeAxesChecker.get(id)) {
+                    t.setAxis(axes.get(id));
+                } else {
+                    series.setAxis(axes.get(id));
+                }
+            }
         }
-        Properties p = new Properties(line);
 
-        // TODO : Add here code to setup series
-
-        if (t.isHighLowType() || p.getBoolean("min-max")) { // NON-NLS
-            Integer min = p.getNumber("min"), max = p.getNumber("max"); // NON-NLS
+        if (p.getBoolean("min-max")) {
+            Integer min = p.getNumber("min"), max = p.getNumber("max");
             if (min == null || max == null) return;
             if (headers.hasSeriesForColumn(min) && headers.hasSeriesForColumn(max)) {
-                if (series != null)
-                    series.delete();
+                series.delete();
             }
-            t.setHighLowType(true);
+            series.setMinMax(true);
             headers.set(series, min, max);
         } else {
             headers.set(series, column);
@@ -406,8 +432,8 @@ public class SpeleoDataFileReader implements DataFileReader {
      * Information about a file header.
      * <p>A file header is a pack of information which are which series we will read, which columns are liked to a
      * series, what are the date columns, how to parse the date ...</p>
-     * <p>This class is designed to be used by two classes, the first is {@link ImportTable} which will populate this
-     * class with user information, the second is {@link SpeleoDataFileReader} which will use it to parse the file fast.</p>
+     * <p>This class is designed to be used by two classes, the first is {@link ImportTableOld} which will populate this
+     * class with user information, the second is {@link SpeleoFileReader} which will use it to parse the file fast.</p>
      *
      * @author Philippe VIENNE
      * @see java.io.Serializable This class is serializable to be saved in case we have to reuse it.
@@ -596,18 +622,18 @@ public class SpeleoDataFileReader implements DataFileReader {
                     Item item;
                     if (columnIds.length == 1) {
                         if ("".equals(line[columnIds[0]])) continue;
-                        item = new Item(date, numberFormat.parse(line[columnIds[0]]).doubleValue());
+                        item = new Item(series[i], date, numberFormat.parse(line[columnIds[0]]).doubleValue());
                     } else if (columnIds.length == 2) {
                         if ("".equals(line[columnIds[0]])) continue;
                         if ("".equals(line[columnIds[1]])) continue;
-                        item = new Item(date, numberFormat.parse(line[columnIds[0]]).doubleValue(), numberFormat.parse(line[columnIds[1]]).doubleValue());
+                        item = new Item(series[i], date, numberFormat.parse(line[columnIds[0]]).doubleValue(), numberFormat.parse(line[columnIds[1]]).doubleValue());
                     } else {
                         continue;
                     }
                     series[i].add(item);
                 }
                 return 0;
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 log.error("Can not read an entry", e);
                 return 1;
             }

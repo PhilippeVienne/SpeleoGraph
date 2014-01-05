@@ -24,10 +24,12 @@ package org.cds06.speleograph.data;
 
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.GraphPanel;
+import org.cds06.speleograph.graph.DrawStyle;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.renderer.xy.HighLowRenderer;
+import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.DomainOrder;
@@ -39,8 +41,10 @@ import org.jfree.data.xy.OHLCDataset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.io.File;
 import java.util.*;
+import java.util.List;
 
 /**
  * Represent a Series of Data.
@@ -55,6 +59,8 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     @NonNls
     private static final Logger log = LoggerFactory.getLogger(Series.class);
     private static GraphPanel graphPanel;
+    private boolean stepped = false;
+    private boolean minMax = false;
 
     /**
      * Create a new Series opened from a file with a default Type.
@@ -68,6 +74,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         this.origin = origin;
         this.type = type;
         instances.add(this);
+        setStyle(DrawStyle.AUTO);
         notifyListeners();
     }
 
@@ -95,8 +102,55 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     private static final ArrayList<Series> instances = new ArrayList<>(20);
 
+    /**
+     * Get all series currently in the SpeleoGraph Instance
+     *
+     * @return Unmodifiable list of instances.
+     */
     public static List<Series> getInstances() {
         return Collections.unmodifiableList(instances);
+    }
+
+    /**
+     * Detect if series is the first element of instances list.
+     *
+     * @return true if it's the first element.
+     */
+    public boolean isFirst() {
+        return instances.indexOf(this) == 0;
+    }
+
+    /**
+     * Detect if series is the last element of instances list.
+     *
+     * @return true if it's the last element.
+     */
+    public boolean isLast() {
+        return instances.indexOf(this) == instances.size() - 1;
+    }
+
+    /**
+     * Move the current series to n-1 position.
+     */
+    public void upSeriesInList() {
+        int index = instances.indexOf(this), newIndex = index - 1;
+        if (newIndex < 0) return; // We are already on top.
+        Series buffer = instances.get(newIndex);
+        instances.set(newIndex, instances.get(index));
+        instances.set(index, buffer);
+        notifyListeners();
+    }
+
+    /**
+     * Move the current series to n+1 position.
+     */
+    public void downSeriesInList() {
+        int index = instances.indexOf(this), newIndex = index + 1;
+        if (newIndex >= instances.size()) return; // We are already on top.
+        Series buffer = instances.get(newIndex);
+        instances.set(newIndex, instances.get(index));
+        instances.set(index, buffer);
+        notifyListeners();
     }
 
     public static void setGraphPanel(GraphPanel graphPanel) {
@@ -137,12 +191,8 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         Date minDate = new Date(Long.MAX_VALUE), maxDate = new Date(Long.MIN_VALUE);
         for (int i = 0; i < max; i++) {
             Item item = items.get(i);
-            if (item.getStartDate().before(minDate)) minDate = item.getStartDate();
-            if (item.getEndDate() != null) {
-                if (item.getEndDate().after(maxDate)) maxDate = item.getEndDate();
-            } else {
-                if (item.getDate().after(maxDate)) maxDate = item.getDate();
-            }
+            if (item.getDate().before(minDate)) minDate = item.getDate();
+            if (item.getDate().after(maxDate)) maxDate = item.getDate();
         }
         range = new DateRange(minDate, maxDate);
         return range;
@@ -203,6 +253,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
             log.info("Setting a null axis to series " + getName());
         }
         this.axis = axis;
+        notifyInstanceListeners();
     }
 
     /**
@@ -250,9 +301,16 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * @return The display name for this Series.
      */
     public String getName() {
-        if (name == null)
-            name = getOrigin().getName() + " - " + getType().getName();
-        return name;
+        return name == null ? getOrigin().getName() + " - " + getType().getName() : name;
+    }
+
+    /**
+     * Say if the Series name has been chosen by human or generated.
+     *
+     * @return true if name is set by human
+     */
+    public boolean isNameHumanSet() {
+        return name != null;
     }
 
     /**
@@ -261,7 +319,6 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * @param name The name to set (should not be null)
      */
     public void setName(String name) {
-        Validate.notNull(name, "Series name set by human can not be null");//NON-NLS
         this.name = name;
         notifyListeners();
     }
@@ -303,7 +360,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      */
     @Override
     public double getHighValue(int series, int item) {
-        if (getType().isHighLowType())
+        if (isMinMax())
             if (isShow() && (item > -1 && item < items.size()))
                 return items.get(item).getHigh();
             else
@@ -334,7 +391,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      */
     @Override
     public double getLowValue(int series, int item) {
-        if (getType().isHighLowType())
+        if (isMinMax())
             if (isShow() && (item > -1 && item < items.size()))
                 return items.get(item).getLow();
             else
@@ -592,33 +649,42 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     private XYItemRenderer renderer;
 
     public XYItemRenderer getRenderer() {
-        if (renderer == null) {
-            renderer = getType().isHighLowType() ? new HighLowRenderer() : new XYLineAndShapeRenderer(true, false);
+        if (renderer == null) setupRendererAuto();
+        if (color != null) {
+            renderer.setSeriesPaint(0, color);
         }
         return renderer;
     }
 
     public Series generateSampledSeries(long length) {
         final Series newSeries;
-        newSeries = new Series(origin, type.asStepType());
+        newSeries = new Series(origin, type);
+        newSeries.setStepped(true);
         final int itemsCount = getItemCount();
         final ArrayList<Item> newItems = newSeries.items;
         double bufferValue = 0D;
         DateRange range = getRange();
         long lastStartBuffer = range.getLowerMillis();
-        newItems.add(new Item(new Date(lastStartBuffer), 0.0));
+        newItems.add(new Item(newSeries, new Date(lastStartBuffer), 0.0));
         for (int i = 1; i < itemsCount; i++) {
             final Item originalItem = items.get(i), previousOriginalItem = items.get(i - 1);
             if (lastStartBuffer + length <= originalItem.getDate().getTime()) {
-                newItems.add(new Item(new Date(lastStartBuffer), bufferValue));
-                newItems.add(new Item(new Date(lastStartBuffer + length), bufferValue));
+                newItems.add(new Item(newSeries, new Date(lastStartBuffer), bufferValue));
+                newItems.add(new Item(newSeries, new Date(lastStartBuffer + length), bufferValue));
+                final long time = originalItem.getDate().getTime();
                 lastStartBuffer = lastStartBuffer + length;
+                if (lastStartBuffer + 2 * length < time) {
+                    newItems.add(new Item(newSeries, new Date(lastStartBuffer), 0));
+                    lastStartBuffer = time -
+                            ((originalItem.getDate().getTime() - lastStartBuffer) % length);
+                    newItems.add(new Item(newSeries, new Date(lastStartBuffer), 0));
+                }
                 bufferValue = 0D;
             }
             bufferValue = bufferValue + (originalItem.getValue() - previousOriginalItem.getValue());
         }
-        newItems.add(new Item(new Date(lastStartBuffer), bufferValue));
-        newItems.add(new Item(new Date(range.getUpperMillis()), bufferValue));
+        newItems.add(new Item(newSeries, new Date(lastStartBuffer), bufferValue));
+        newItems.add(new Item(newSeries, new Date(range.getUpperMillis()), bufferValue));
         return newSeries;
     }
 
@@ -626,5 +692,112 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     public static void addListener(DatasetChangeListener listener) {
         staticListeners.add(listener);
+    }
+
+    public List<Item> getItems() {
+        return Collections.unmodifiableList(items);
+    }
+
+    /**
+     *
+     */
+    private DrawStyle style = DrawStyle.AUTO;
+
+    public DrawStyle getStyle() {
+        return style;
+    }
+
+    public void setStyle(DrawStyle style) {
+        Validate.notNull(style);
+        if (isMinMax() && !(style == DrawStyle.AUTO || style == DrawStyle.HIGH_LOW)) return;
+        if (style.equals(this.style)) return;
+        this.style = style;
+        switch (style) {
+            case AUTO:
+                setupRendererAuto();
+                break;
+            case AREA:
+                renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
+                break;
+            case HIGH_LOW:
+                renderer = new HighLowRenderer();
+                break;
+            default:
+            case LINE:
+                renderer = new XYLineAndShapeRenderer(true, false);
+
+        }
+        notifyListeners();
+    }
+
+    private void setupRendererAuto() {
+        if (isMinMax()) {
+            renderer = new HighLowRenderer();
+        } else if (isStepped()) {
+            renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
+        } else {
+            renderer = new XYLineAndShapeRenderer(true, false);
+        }
+    }
+
+    /**
+     * Color of the series on screen.
+     */
+    private Color color;
+
+    public Color getColor() {
+        if (color == null && renderer != null) {
+            return (Color) renderer.getSeriesPaint(0);
+        }
+        return color;
+    }
+
+    public void setColor(Color color) {
+        if (renderer == null) setupRendererAuto();
+        this.color = color;
+        notifyListeners();
+    }
+
+    /**
+     * Notify all static listeners that an edit occurs.
+     * <p>Note: This function will refresh graphics, so it could occur thread blocking</p>
+     */
+    public static void notifyInstanceListeners() {
+        final DatasetChangeEvent event = new DatasetChangeEvent(Series.class, null);
+        if (graphPanel != null)
+            graphPanel.datasetChanged(event);
+        for (DatasetChangeListener listener : staticListeners) {
+            listener.datasetChanged(event);
+        }
+    }
+
+    public boolean hasOwnAxis() {
+        return axis != null;
+    }
+
+    public void setStepped(boolean stepped) {
+        this.stepped = stepped;
+    }
+
+    public boolean isStepped() {
+        return stepped;
+    }
+
+    public void setMinMax(boolean minMax) {
+        this.minMax = minMax;
+    }
+
+    public boolean isMinMax() {
+        return minMax;
+    }
+
+    public void subSeries(Date start, Date end) {
+        ArrayList<Item> newItems = new ArrayList<>(items.size());
+        for (Item i : items) {
+            if (i.getDate().after(start) && i.getDate().before(end))
+                newItems.add(i);
+        }
+        items = newItems;
+        notifyListeners();
     }
 }

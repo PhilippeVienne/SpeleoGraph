@@ -22,16 +22,11 @@
 
 package org.cds06.speleograph.actions;
 
-import org.cds06.speleograph.data.ImportTable;
-import org.cds06.speleograph.utils.AcceptedFileFilter;
-import org.jetbrains.annotations.NonNls;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.cds06.speleograph.SpeleoGraphApp;
+import org.cds06.speleograph.data.ImportWizard;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Action used to describe a file import.
@@ -42,17 +37,13 @@ import java.io.IOException;
 public class ImportAction extends AbstractAction {
 
     /**
-     * Logger for info and errors.
-     */ @NonNls
-    private static final Logger log=LoggerFactory.getLogger(ImportAction.class);
-
-    /**
      * Parent component for dialog display.
      */
     private final JComponent parent;
 
     /**
      * Construct the import action.
+     *
      * @param component The parent component used to display dialogs.
      */
     public ImportAction(JComponent component) {
@@ -65,16 +56,19 @@ public class ImportAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        int i = JOptionPane.showConfirmDialog(parent,
+                "Cette fonctionnalité est très instable et peut amener à des erreur sur la lecture des graphiques.\n" +
+                        "Ne continuez que si vous êtes sur de ce que vous faîtes.",
+                "Attention", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (i != JOptionPane.OK_OPTION) {
+            return;
+        }
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileFilter(new AcceptedFileFilter());
+        fileChooser.setCurrentDirectory(SpeleoGraphApp.getWorkingDirectory());
         int result = fileChooser.showOpenDialog(parent);
         if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            try {
-                ImportTable.openImportWizardFor(parent, file);
-            } catch (IOException e) {
-                log.error("Error on file reading", e);
-            }
+            SpeleoGraphApp.setWorkingDirectory(fileChooser.getSelectedFile().getParentFile());
+            new ImportWizard(fileChooser.getSelectedFile()).openWizard();
         }
     }
 }

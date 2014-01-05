@@ -38,18 +38,16 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.ResourceBundle;
 
 /**
  * Table to managing file imports into SpeleoGraph.
  * <p>This table show to the user the first ten lines from the file. If only one column is detected we ask if the column
  * separator is not another thing than ';'. After on the each column header on the table, the user can choose what is
- * the data in the current column. In the end, this class call the {@link SpeleoDataFileReader} to end file reading and push
+ * the data in the current column. In the end, this class call the {@link SpeleoFileReader} to end file reading and push
  * the series into the DataSets which are automatically bidden with the list and the graph.</p>
  */
-public class ImportTable extends JPanel {
+public class ImportTableOld extends JPanel {
 
     private static final char DEFAULT_SEPARATOR = ';';
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("org.cds06.speleograph.Messages"); // NON-NLS
@@ -97,11 +95,11 @@ public class ImportTable extends JPanel {
      */
     private String[][] lines = new String[10][];
 
-    private final SpeleoDataFileReader.HeaderInformation headerInformation = new SpeleoDataFileReader.HeaderInformation();
-    private final SpeleoDataFileReader.DateInformation dateInformation = new SpeleoDataFileReader.DateInformation();
-    private static final Logger log = LoggerFactory.getLogger(ImportTable.class);
+    private final SpeleoFileReader.HeaderInformation headerInformation = new SpeleoFileReader.HeaderInformation();
+    private final SpeleoFileReader.DateInformation dateInformation = new SpeleoFileReader.DateInformation();
+    private static final Logger log = LoggerFactory.getLogger(ImportTableOld.class);
 
-    public ImportTable(final File sourceFile, char columnSeparator) throws IOException {
+    public ImportTableOld(final File sourceFile, char columnSeparator) throws IOException {
         super();
         Validate.notNull(sourceFile, "Can not use a null file."); // NON-NLS
         Validate.notNull(columnSeparator, "Column separator should be set"); // NON-NLS
@@ -132,10 +130,10 @@ public class ImportTable extends JPanel {
         read.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JDialog dialog = (JDialog) SwingUtilities.windowForComponent(ImportTable.this);
+                JDialog dialog = (JDialog) SwingUtilities.windowForComponent(ImportTableOld.this);
                 dialog.setVisible(false);
                 try {
-                    SpeleoDataFileReader.read(sourceFile, headerInformation);
+                    SpeleoFileReader.read(sourceFile, headerInformation);
                 } catch (Exception e1) {
                     showError("Impossible de lire le fichier");
                     log.error("Read file error:", e1); // NON-NLS
@@ -165,33 +163,36 @@ public class ImportTable extends JPanel {
     }
 
     public static void openImportWizardFor(JComponent parentFrame, File file) throws IOException {
-        JDialog frame = new JDialog((Frame) SwingUtilities.windowForComponent(parentFrame), true);
-        boolean stopWhile = false;
-        char separator = DEFAULT_SEPARATOR;
-        ImportTable table = null;
-        while (!stopWhile) {
-            try {
-                table = new ImportTable(file, separator);
-                stopWhile = true;
-            } catch (OnlyOneDataColumn e) {
-                Object r = JOptionPane.showInputDialog(parentFrame, resourceBundle.getString("import.error.separator.message"), "Erreur", JOptionPane.ERROR_MESSAGE, null, new Object[]{';', ',', '.', ':', '\t', "Annuler la lecture"}, "Annuler la lecture");
-                if (r instanceof Character) {
-                    separator = (char) r;
-                    stopWhile = false;
-                } else {
-                    return;
-                }
-            }
-        }
-        final JPanel jPanel = new JPanel(new BorderLayout(5, 5));
-        jPanel.add(table, BorderLayout.CENTER);
-        frame.setContentPane(table);
-        frame.setMinimumSize(new Dimension(480, 270));
-        frame.setPreferredSize(new Dimension(500, 380));
-        frame.setMaximumSize(new Dimension(800, 450));
-        frame.setLocationRelativeTo(parentFrame);
-        frame.setLocation(parentFrame.getWidth() / 2 - frame.getWidth() / 2, parentFrame.getHeight() / 2 - frame.getHeight() / 2);
-        frame.setVisible(true);
+        JOptionPane.showMessageDialog(parentFrame,
+                "Cette fonctionnalité n'est pas disponible",
+                "Erreur", JOptionPane.ERROR_MESSAGE);
+//        JDialog frame = new JDialog((Frame) SwingUtilities.windowForComponent(parentFrame), true);
+//        boolean stopWhile = false;
+//        char separator = DEFAULT_SEPARATOR;
+//        ImportTableOld table = null;
+//        while (!stopWhile) {
+//            try {
+//                table = new ImportTableOld(file, separator);
+//                stopWhile = true;
+//            } catch (OnlyOneDataColumn e) {
+//                Object r = JOptionPane.showInputDialog(parentFrame, resourceBundle.getString("import.error.separator.message"), "Erreur", JOptionPane.ERROR_MESSAGE, null, new Object[]{';', ',', '.', ':', '\t', "Annuler la lecture"}, "Annuler la lecture");
+//                if (r instanceof Character) {
+//                    separator = (char) r;
+//                    stopWhile = false;
+//                } else {
+//                    return;
+//                }
+//            }
+//        }
+//        final JPanel jPanel = new JPanel(new BorderLayout(5, 5));
+//        jPanel.add(table, BorderLayout.CENTER);
+//        frame.setContentPane(table);
+//        frame.setMinimumSize(new Dimension(480, 270));
+//        frame.setPreferredSize(new Dimension(500, 380));
+//        frame.setMaximumSize(new Dimension(800, 450));
+//        frame.setLocationRelativeTo(parentFrame);
+//        frame.setLocation(parentFrame.getWidth() / 2 - frame.getWidth() / 2, parentFrame.getHeight() / 2 - frame.getHeight() / 2);
+//        frame.setVisible(true);
     }
 
     private static class OnlyOneDataColumn extends IllegalArgumentException {
@@ -277,19 +278,19 @@ public class ImportTable extends JPanel {
             typeSelection.addItem("Selectionnez un type de donné");
             for (Type t : Type.getInstances()) typeSelection.addItem(t);
             typeSelection.setSelectedIndex(0);
-            typeSelection.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        if (e.getItem() instanceof Type) {
-                            Type t = (Type) e.getItem();
-                            if (t.isHighLowType()) minMaxPromptPanel.setVisible(true);
-                        } else {
-                            minMaxPromptPanel.setVisible(false);
-                        }
-                    }
-                }
-            });
+//            typeSelection.addItemListener(new ItemListener() {
+//                @Override
+//                public void itemStateChanged(ItemEvent e) {
+//                    if (e.getStateChange() == ItemEvent.SELECTED) {
+//                        if (e.getItem() instanceof Type) {
+////                            Type t = (Type) e.getItem();
+////                            if (t.isHighLowType()) minMaxPromptPanel.setVisible(true);
+//                        } else {
+//                            minMaxPromptPanel.setVisible(false);
+//                        }
+//                    }
+//                }
+//            });
             measureColumnPanel.add(minMaxPromptPanel);
             minMaxPromptPanel.setVisible(false);
         }
@@ -348,50 +349,50 @@ public class ImportTable extends JPanel {
         }
 
         private void validateDataFor(int index) {
-            switch (box.getSelectedIndex()) {
-                case 0:
-                    String format = dateFormatField.getText();
-                    try {
-                        new SimpleDateFormat(format).format(Calendar.getInstance().getTime());
-                        dateInformation.set(index, format);
-                        if (headerInformation.hasSeriesForColumn(index)) {
-                            headerInformation.remove(index);
-                        }
-                    } catch (IllegalArgumentException e) {
-                        showError("Le format de la date n'est pas valable");
-                    }
-                    break;
-                case 1:
-                    if (typeSelection.getSelectedItem() instanceof Type) {
-                        Type t = (Type) typeSelection.getSelectedItem();
-                        if (t.isHighLowType()) {
-                            try {
-                                Validate.notBlank(minColumnField.getText(), "Pas de numéro pour la valeur minimal");
-                                Validate.notBlank(minColumnField.getText(), "Pas de numéro pour la valeur maximal");
-                                Integer[] columns = {Integer.parseInt(minColumnField.getText()), Integer.parseInt(maxColumnField.getText())};
-                                for (int col : columns) {
-                                    Validate.notNull(col, "Il manque un numéro de colonne");
-                                    Validate.inclusiveBetween(0, numberOfColumns, col, "Le numéro de colonne n'est pas valable");
-                                }
-                                Series series = new Series(sourceFile, t);
-                                headerInformation.set(series, columns);
-                            } catch (NumberFormatException e) {
-                                showError("Merci de bien saisir des nombres");
-                                log.error(null, e);
-                            } catch (IllegalArgumentException | NullPointerException e) {
-                                showError(e.getMessage());
-                                log.error("Runtime error:", e); // NON-NLS
-                            }
-                        } else {
-                            Series series = new Series(sourceFile, t);
-                            headerInformation.set(series, editedColumn);
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(this, "No support operation !"); //NON-NLS
-                    }
-                    break;
-                default:
-            }
+//            switch (box.getSelectedIndex()) {
+//                case 0:
+//                    String format = dateFormatField.getText();
+//                    try {
+//                        new SimpleDateFormat(format).format(Calendar.getInstance().getTime());
+//                        dateInformation.set(index, format);
+//                        if (headerInformation.hasSeriesForColumn(index)) {
+//                            headerInformation.remove(index);
+//                        }
+//                    } catch (IllegalArgumentException e) {
+//                        showError("Le format de la date n'est pas valable");
+//                    }
+//                    break;
+//                case 1:
+//                    if (typeSelection.getSelectedItem() instanceof Type) {
+//                        Type t = (Type) typeSelection.getSelectedItem();
+//                        if (t.isHighLowType()) {
+//                            try {
+//                                Validate.notBlank(minColumnField.getText(), "Pas de numéro pour la valeur minimal");
+//                                Validate.notBlank(minColumnField.getText(), "Pas de numéro pour la valeur maximal");
+//                                Integer[] columns = {Integer.parseInt(minColumnField.getText()), Integer.parseInt(maxColumnField.getText())};
+//                                for (int col : columns) {
+//                                    Validate.notNull(col, "Il manque un numéro de colonne");
+//                                    Validate.inclusiveBetween(0, numberOfColumns, col, "Le numéro de colonne n'est pas valable");
+//                                }
+//                                Series series = new Series(sourceFile, t);
+//                                headerInformation.set(series, columns);
+//                            } catch (NumberFormatException e) {
+//                                showError("Merci de bien saisir des nombres");
+//                                log.error(null, e);
+//                            } catch (IllegalArgumentException | NullPointerException e) {
+//                                showError(e.getMessage());
+//                                log.error("Runtime error:", e); // NON-NLS
+//                            }
+//                        } else {
+//                            Series series = new Series(sourceFile, t);
+//                            headerInformation.set(series, editedColumn);
+//                        }
+//                    } else {
+//                        JOptionPane.showMessageDialog(this, "No support operation !"); //NON-NLS
+//                    }
+//                    break;
+//                default:
+//            }
         }
 
         public void startEditColumn(final int index) {
