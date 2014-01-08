@@ -1,19 +1,20 @@
 package org.cds06.speleograph.data;
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.lang3.StringUtils;
+import org.cds06.speleograph.I18nSupport;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -25,10 +26,16 @@ import java.util.Date;
  */
 public class WundergroundFileReader implements DataFileReader{
 
+    private static final I18nSupport resourceBundle = new I18nSupport();
+
+    public WundergroundFileReader(){
+
+    }
+
     /**
      * Wunderground Date Format.
      */
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-j H:m:s");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d H:m:s");
 
     /**
      * Logger for errors and information.
@@ -72,31 +79,40 @@ public class WundergroundFileReader implements DataFileReader{
     public void readFile(File file) throws FileReadingError {
         log.debug("Start to read file "+file);
         try {
-            CSVReader reader = new CSVReader(new FileReader(file));
+            FileReader fileReader = new FileReader(file);
 
-            // Check if the file is correctly formatted
-            String[] readNext = reader.readNext();
-            for (int i = 0; i < readNext.length; i++) {
-                String entry = readNext[i];
-                if(!entry.equals(headers[i]))
-                    throw new FileReadingError("File format is not valid !", FileReadingError.Part.HEAD);
+            BufferedReader reader = new BufferedReader(fileReader);
+
+
+            ArrayList<String> data = new ArrayList<>();
+            String line = reader.readLine(),buffer="";
+            int dataCount = 0;
+            while ((line=reader.readLine())!=null){
+                buffer+=StringUtils.normalizeSpace(line);
+                if(StringUtils.countMatches(buffer,",")>=16){
+                    data.add(buffer);
+                    buffer="";
+                }
             }
 
-            Series temperature = new Series(file,Type.TEMPERATURE);
-            Series pressure = new Series(file,Type.PRESSURE);
-            Series water = new Series(file,Type.WATER);
+            Series temperature = new Series(file,Type.TEMPERATURE); // Temperature
+            Series pressure = new Series(file,Type.PRESSURE); // Pressure
+            Series water = new Series(file,Type.WATER); // Water
 
-            while ((readNext=reader.readNext())!=null){
-                Date date = dateFormat.parse(readNext[TIME_COLUMN]);
-                temperature.add(new Item(temperature,date,Double.valueOf(readNext[TEMPERATURE_COLUMN])));
-                pressure.add(new Item(pressure,date,Double.valueOf(readNext[PRESSURE_COLUMN])));
-                water.add(new Item(water,date,Double.valueOf(readNext[WATER_COLUMN])));
+            for(String d:data){
+                String[] lineSplit = StringUtils.splitPreserveAllTokens(d,',');
+                try{
+                    Date date = dateFormat.parse(lineSplit[15]);
+                    temperature.add(new Item(temperature,date,Double.valueOf(lineSplit[TEMPERATURE_COLUMN])));
+                    pressure.add(new Item(pressure,date,Double.valueOf(lineSplit[PRESSURE_COLUMN])));
+                    water.add(new Item(water,date,Double.valueOf(lineSplit[WATER_COLUMN])));
+                } catch(Exception e){
+                    e.printStackTrace(System.err);
+                }
             }
 
         } catch (IOException e) {
             throw new FileReadingError("I/O Exception : Can not read this file !",FileReadingError.Part.HEAD,e);
-        } catch (ParseException e) {
-            throw new FileReadingError("I/O Exception : Can not read a time !",FileReadingError.Part.DATA,e);
         }
         log.debug("Ended to read file "+file);
     }
@@ -108,7 +124,7 @@ public class WundergroundFileReader implements DataFileReader{
 
     @Override
     public String getButtonText() {
-        return "Wunderground";
+        return resourceBundle.getString("actions.import.wunderground");
     }
 
     @NotNull
