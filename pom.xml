@@ -32,7 +32,7 @@
     <url>http://cds06.github.org/SpeleoGraph</url>
 
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-BETA</version>
 
     <organization>
         <name>CDS06</name>
@@ -41,7 +41,7 @@
     <developers>
         <developer>
             <name>Philippe VIENNE</name>
-            <email>PhilippeGeek@gmail.com</email>
+            <email>Philippe.Vienne@insa-lyon.fr</email>
             <id>PhilippeGeek</id>
             <roles>
                 <role>Developer</role>
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
-            <version>1.0.14</version>
+            <version>1.0.15</version>
         </dependency>
 
         <!-- MigLayout -->
@@ -230,6 +230,11 @@
             <groupId>net.sf.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>jgoodies-common</artifactId>
+            <version>1.4.0</version>
         </dependency>
 
     </dependencies>
