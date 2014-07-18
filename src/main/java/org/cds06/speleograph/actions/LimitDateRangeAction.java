@@ -41,7 +41,7 @@ public class LimitDateRangeAction extends AbstractAction {
     private final Series series;
 
     public LimitDateRangeAction(Series series) {
-        super("Elager certaines données");
+        super("Elaguer certaines données");
         this.series = series;
     }
 

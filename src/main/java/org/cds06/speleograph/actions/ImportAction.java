@@ -22,6 +22,7 @@
 
 package org.cds06.speleograph.actions;
 
+import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
 import org.cds06.speleograph.data.ImportWizard;
 
@@ -47,7 +48,7 @@ public class ImportAction extends AbstractAction {
      * @param component The parent component used to display dialogs.
      */
     public ImportAction(JComponent component) {
-        super("Importer");
+        super(I18nSupport.translate("actions.import"));
         parent = component;
     }
 
@@ -56,10 +57,8 @@ public class ImportAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        int i = JOptionPane.showConfirmDialog(parent,
-                "Cette fonctionnalité est très instable et peut amener à des erreur sur la lecture des graphiques.\n" +
-                        "Ne continuez que si vous êtes sur de ce que vous faîtes.",
-                "Attention", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+        int i = JOptionPane.showConfirmDialog(parent,I18nSupport.translate("actions.import.unstable"),
+                I18nSupport.translate("attention"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
         if (i != JOptionPane.OK_OPTION) {
             return;
         }
