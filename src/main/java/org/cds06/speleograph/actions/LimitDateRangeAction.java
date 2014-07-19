@@ -24,6 +24,7 @@ package org.cds06.speleograph.actions;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.utils.DateSelector;
 import org.cds06.speleograph.utils.FormDialog;
@@ -41,7 +42,7 @@ public class LimitDateRangeAction extends AbstractAction {
     private final Series series;
 
     public LimitDateRangeAction(Series series) {
-        super("Elaguer certaines données");
+        super(I18nSupport.translate("actions.limit"));
         this.series = series;
     }
 
@@ -58,7 +59,7 @@ public class LimitDateRangeAction extends AbstractAction {
 
         private DateSelector startDateSelector = new DateSelector();
         private DateSelector endDateSelector = new DateSelector();
-        private JCheckBox applyToAllSeriesInTheSameFile = new JCheckBox("Appliquer à toutes les séries du fichier");
+        private JCheckBox applyToAllSeriesInTheSameFile = new JCheckBox(I18nSupport.translate("actions.limit.applyall"));
         private FormLayout layout = new FormLayout("p:grow", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,6dlu,p");
 
         public PromptDialog() {
@@ -69,11 +70,11 @@ public class LimitDateRangeAction extends AbstractAction {
         @Override
         protected void setup() {
             PanelBuilder builder = new PanelBuilder(layout, getPanel());
-            builder.addLabel("Limiter la série aux données entre le :");
+            builder.addLabel(I18nSupport.translate("actions.limit.label1"));
             builder.nextLine(2);
             builder.add(startDateSelector);
             builder.nextLine(2);
-            builder.addLabel("et le :");
+            builder.addLabel(I18nSupport.translate("actions.limit.label2"));
             builder.nextLine(2);
             builder.add(endDateSelector);
             builder.nextLine(2);
@@ -82,7 +83,7 @@ public class LimitDateRangeAction extends AbstractAction {
             builder.add(new JButton(new AbstractAction() {
 
                 {
-                    putValue(NAME, "Elager les valeurs en dehors");
+                    putValue(NAME, I18nSupport.translate("actions.limit.button"));
                 }
 
                 @Override

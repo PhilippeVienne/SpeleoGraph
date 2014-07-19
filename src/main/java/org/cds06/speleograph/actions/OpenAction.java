@@ -117,8 +117,8 @@ public class OpenAction extends AbstractAction {
             do {
                 if (file != null && !fileFilter.accept(file)) {
                     JOptionPane.showMessageDialog(SpeleoGraphApp.getInstance(),
-                            "Le fichier sélectionné n'est pas au bon format.\nMerci de ressayer.",
-                            "Erreur", JOptionPane.ERROR_MESSAGE);
+                            I18nSupport.translate("actions.open.formaterror"),
+                            I18nSupport.translate("error"), JOptionPane.ERROR_MESSAGE);
                 }
                 FileDialog chooserMac = new FileDialog(SpeleoGraphApp.getInstance());
                 chooserMac.setDirectory(SpeleoGraphApp.getWorkingDirectory().getAbsolutePath());
