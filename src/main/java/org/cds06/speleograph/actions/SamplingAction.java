@@ -24,6 +24,7 @@ package org.cds06.speleograph.actions;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import com.sun.org.apache.xml.internal.security.utils.I18n;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.utils.FormDialog;
@@ -40,7 +41,7 @@ public class SamplingAction extends AbstractAction {
     private final Series series;
 
     public SamplingAction(Series series) {
-        super(I18nSupport.translate("actions.sampleSeries"));
+        super(I18nSupport.translate("actions.sample"));
         this.series = series;
     }
 
@@ -81,16 +82,16 @@ public class SamplingAction extends AbstractAction {
                 String text;
                 switch (value) {
                     case 1:
-                        text = "Seconde";
+                        text = I18nSupport.translate("actions.sample.second");
                         break;
                     case 60:
-                        text = "Minute";
+                        text = I18nSupport.translate("actions.sample.minute");
                         break;
                     case 3600:
-                        text = "Heure";
+                        text = I18nSupport.translate("actions.sample.hour");
                         break;
                     case 86400:
-                        text = "Jour";
+                        text = I18nSupport.translate("actions.sample.day");
                         break;
                     default:
                         text = "x" + Integer.toString(value) + " seconde(s)";
