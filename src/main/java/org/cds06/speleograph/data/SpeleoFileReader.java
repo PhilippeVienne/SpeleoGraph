@@ -432,7 +432,7 @@ public class SpeleoFileReader implements DataFileReader {
      * Information about a file header.
      * <p>A file header is a pack of information which are which series we will read, which columns are liked to a
      * series, what are the date columns, how to parse the date ...</p>
-     * <p>This class is designed to be used by two classes, the first is {@link ImportTableOld} which will populate this
+     * <p>This class is designed to be used by two classes, the first is {@link ImportWizard} which will populate this
      * class with user information, the second is {@link SpeleoFileReader} which will use it to parse the file fast.</p>
      *
      * @author Philippe VIENNE
