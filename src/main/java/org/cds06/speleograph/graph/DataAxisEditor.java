@@ -41,7 +41,7 @@ import java.util.Calendar;
  * @author Philippe VIENNE
  * @since 1.0
  */
-public class DateAxisEditor extends JDialog {
+public class DataAxisEditor extends JDialog {
 
     /**
      * The modified axis.
@@ -65,7 +65,7 @@ public class DateAxisEditor extends JDialog {
     final private DateSelector maxDate = new DateSelector();
 
 
-    public DateAxisEditor(DateAxis dateAxis) {
+    public DataAxisEditor(DateAxis dateAxis) {
         super(SpeleoGraphApp.getInstance(), true);
         this.axis = dateAxis;
         JPanel panel = new JPanel();

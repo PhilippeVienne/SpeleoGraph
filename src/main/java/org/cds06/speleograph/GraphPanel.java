@@ -23,7 +23,7 @@ package org.cds06.speleograph;
 
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.data.Series;
-import org.cds06.speleograph.graph.DateAxisEditor;
+import org.cds06.speleograph.graph.DataAxisEditor;
 import org.cds06.speleograph.graph.SpeleoXYPlot;
 import org.cds06.speleograph.graph.ValueAxisEditor;
 import org.jetbrains.annotations.NonNls;
@@ -194,7 +194,7 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
 
 
     private void editDateAxis() {
-        JDialog dialog = (new DateAxisEditor(dateAxis));
+        JDialog dialog = (new DataAxisEditor(dateAxis));
         dialog.setLocation(
                 getX() + (getWidth() / 2 - dialog.getWidth() / 2),
                 getY() + (getHeight() / 2 - dialog.getHeight() / 2)
