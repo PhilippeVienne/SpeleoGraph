@@ -25,6 +25,7 @@ package org.cds06.speleograph.graph;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
 import org.cds06.speleograph.utils.DateSelector;
 import org.jfree.chart.axis.DateAxis;
@@ -68,6 +69,7 @@ public class DateAxisEditor extends JDialog {
     public DateAxisEditor(DateAxis dateAxis) {
         super(SpeleoGraphApp.getInstance(), true);
         this.axis = dateAxis;
+        this.setTitle(I18nSupport.translate("graph.dateAxisEditor"));
         JPanel panel = new JPanel();
         panel.setLayout(new FormLayout(
                 "r:p,4dlu,p:grow,4dlu",
@@ -83,10 +85,25 @@ public class DateAxisEditor extends JDialog {
 
         ButtonBarBuilder barBuilder = new ButtonBarBuilder();
         barBuilder.addGlue();
+
+        //Cancel button
         barBuilder.addButton(new AbstractAction() {
 
             {
-                putValue(NAME, "OK");
+                putValue(NAME, I18nSupport.translate("cancel"));
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        });
+
+        //Ok button
+        barBuilder.addButton(new AbstractAction() {
+
+            {
+                putValue(NAME, I18nSupport.translate("ok"));
             }
 
             @Override
@@ -98,7 +115,8 @@ public class DateAxisEditor extends JDialog {
             }
         });
 
-        panel.add(barBuilder.build(), cc.xyw(1, 7, 3));
+        panel.add(barBuilder.build(), cc.xyw(1, 8, 3));
+        panel.add(new JLabel(""), cc.xyw(1, 9, 3)); //Used to set a good looking OK button
 
         minDate.setDate(dateAxis.getMinimumDate());
         maxDate.setDate(dateAxis.getMaximumDate());
