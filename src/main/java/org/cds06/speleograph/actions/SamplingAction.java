@@ -94,7 +94,7 @@ public class SamplingAction extends AbstractAction {
                         text = I18nSupport.translate("actions.sample.day");
                         break;
                     default:
-                        text = "x" + Integer.toString(value) + " seconde(s)";
+                        text = "x" + Integer.toString(value) + " " + I18nSupport.translate("actions.sample.secondPlural");
                 }
                 setText(text);
                 return this;
@@ -115,17 +115,17 @@ public class SamplingAction extends AbstractAction {
 
             PanelBuilder builder = new PanelBuilder(formLayout, getPanel());
 
-            builder.addLabel("Nom de la nouvelle série :", "1,1,3,1");
+            builder.addLabel(I18nSupport.translate("actions.sample.serieName") + " :", "1,1,3,1");
             builder.add(name, "1,2,3,1");
 
-            builder.addLabel("Pas d'échantillonage :", "1,3,3,1");
+            builder.addLabel(I18nSupport.translate("actions.sample.noSampling") + " :", "1,3,3,1");
             builder.add(spinner, "1,4");
             builder.add(timeTypeFieldBox, "3,4");
 
             builder.add(new JButton(new AbstractAction() {
 
                 {
-                    putValue(NAME, "Echantilloner");
+                    putValue(NAME, I18nSupport.translate("actions.sample.sample"));
                 }
 
                 @Override
