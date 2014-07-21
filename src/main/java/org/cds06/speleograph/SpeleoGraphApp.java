@@ -103,10 +103,64 @@ public class SpeleoGraphApp extends JFrame {
         // Initialize Graphic elements
         panel = new JPanel(new BorderLayout(2, 2));
         SpeleoSeriesListModel listModel = new SpeleoSeriesListModel();
-        CheckBoxList list = new CheckBoxList(listModel);
+        final CheckBoxList list = new CheckBoxList(listModel);
         JScrollPane scrollPane = new JScrollPane(list);
+
+        JPanel listAndButtons = new JPanel(new BorderLayout(2,2));
+        listAndButtons.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttons = new JPanel();
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
+
+        JButton tickAllButton = new JButton (new AbstractAction() {
+            {
+                putValue(NAME, I18nSupport.translate("list.tickAll"));
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < list.getModel().getSize(); i++) {
+                    list.getModel().getElementAt(i).setShow(true);
+                }
+            }
+        });
+        buttons.add(tickAllButton);
+
+        JButton untickAllButton = new JButton (new AbstractAction() {
+            {
+                putValue(NAME, I18nSupport.translate("list.untickAll"));
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < list.getModel().getSize(); i++) {
+                    list.getModel().getElementAt(i).setShow(false);
+                }
+            }
+        });
+        buttons.add(untickAllButton);
+
+        JButton invertAllButton = new JButton (new AbstractAction() {
+            {
+                putValue(NAME, I18nSupport.translate("list.invert"));
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < list.getModel().getSize(); i++) {
+                    Series value = list.getModel().getElementAt(i);
+                    value.setShow(!value.isShow());
+                }
+            }
+        });
+        buttons.add(invertAllButton);
+
+
+
+        listAndButtons.add(buttons, BorderLayout.SOUTH);
+
         GraphPanel graphPanel = new GraphPanel(this);
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, graphPanel, scrollPane);
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, graphPanel, listAndButtons);
 
         // Configure and add the splitPane
         splitPane.setResizeWeight(1.0);

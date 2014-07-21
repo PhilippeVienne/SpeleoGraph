@@ -114,7 +114,6 @@ public class    GraphEditor extends JDialog {
                         Color c = JColorChooser.showDialog(GraphEditor.this, "Selectionnez une couleur", colorLabel.getBackground());
                         if (c != null) {
                             colorLabel.setBackground(c);
-                            log.info("Couleur ajoutée au fond");
                         }
                     }
                 });
