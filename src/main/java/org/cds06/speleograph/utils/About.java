@@ -22,6 +22,8 @@
 
 package org.cds06.speleograph.utils;
 
+import org.cds06.speleograph.I18nSupport;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -48,16 +50,22 @@ public class About extends JPanel {
                  String site, String disclaimer, ImageIcon icon) {
         super(new FlowLayout(FlowLayout.LEFT));
 
-        JPanel a = new JPanel(new GridLayout(4, 1));
+        JPanel a = new JPanel(new GridLayout(7, 1));
 
         a.add(new JLabel(app + (version != null ? " - version " + version : "")));
-        a.add(new JLabel("Author: " + author
-                + (email != null ? " - email: <" + email + ">" : "")));
+        a.add(new JLabel(""));
+        a.add(new JLabel(I18nSupport.translate("authors")+ " : " + author));
 
-        if (site != null)
+        if (email != null && !email.equals(""))
+            a.add(new JLabel(I18nSupport.translate("contact") + " : <" + email + ">"));
+
+        if (site != null && !site.equals(""))
             a.add(new JLabel(site));
 
-        a.add(new JLabel(disclaimer));
+        a.add(new JLabel(""));
+
+        if (disclaimer != null && !disclaimer.equals(""))
+            a.add(new JLabel(disclaimer));
 
         this.add(new JLabel(icon));
         this.add(a);

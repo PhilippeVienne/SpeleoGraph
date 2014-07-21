@@ -20,9 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cds06.speleograph.graph;
+package org.cds06.speleograph.actions;
 
 import org.cds06.speleograph.GraphPanel;
+import org.cds06.speleograph.I18nSupport;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -36,7 +37,7 @@ public class ResetAxesAction extends AbstractAction {
     private final GraphPanel panel;
 
     public ResetAxesAction(GraphPanel panel) {
-        super("Ajuster les axes automatiquement");
+        super(I18nSupport.translate("actions.resetAxis"));
         this.panel = panel;
     }
 

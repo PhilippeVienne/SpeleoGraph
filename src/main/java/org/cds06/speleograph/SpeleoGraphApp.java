@@ -27,7 +27,7 @@ import org.cds06.speleograph.actions.OpenAction;
 import org.cds06.speleograph.actions.SaveAction;
 import org.cds06.speleograph.data.*;
 import org.cds06.speleograph.graph.GraphEditor;
-import org.cds06.speleograph.graph.ResetAxesAction;
+import org.cds06.speleograph.actions.ResetAxesAction;
 import org.cds06.speleograph.graph.SeriesMenu;
 import org.cds06.speleograph.utils.About;
 import org.jetbrains.annotations.NonNls;
@@ -171,7 +171,7 @@ public class SpeleoGraphApp extends JFrame {
         bar.add(fileMenu);
 
         {
-            JMenu menu = new JMenu("Graphique");
+            JMenu menu = new JMenu(I18nSupport.translate("menus.graph"));
 
             menu.add(new AbstractAction() {
                 final GraphEditor editor = new GraphEditor((GraphPanel) getSplitPane().getLeftComponent());
@@ -202,22 +202,23 @@ public class SpeleoGraphApp extends JFrame {
 
 //        final JMenu aide = new JMenu("Aide");
 //        bar.setHelpMenu(aide); //NON-NLS
-        bar.add(Box.createHorizontalGlue());
+//        bar.add(Box.createHorizontalGlue());
 
         {
             JMenu menu = new JMenu(I18nSupport.translate("menus.help"));
             menu.add(new AbstractAction() {
 
                 {
-                    putValue(NAME, "A propos");
+                    putValue(NAME, I18nSupport.translate("menus.help.about"));
                 }
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JOptionPane.showMessageDialog(SpeleoGraphApp.this,
-                            new About("SpeleoGraph", "1.0b", "Philippe VIENNE", "Philippe@Vienne.me", null, null,
+                            new About("SpeleoGraph", "1.0b", "Philippe VIENNE, Gabriel AUGENDRE", "Philippe@Vienne.me", "http://speleograph.free.fr",
+                                    I18nSupport.translate("menus.help.about.disclaimer"),
                                     new ImageIcon(SpeleoGraphApp.class.getResource("SpeleoGraph_icon.png"))),
-                            "A propos", JOptionPane.INFORMATION_MESSAGE, new ImageIcon());
+                            I18nSupport.translate("menus.help.about"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon());
                 }
             });
             bar.add(menu);
