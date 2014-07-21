@@ -238,7 +238,7 @@ public class SpeleoGraphApp extends JFrame {
      * No arguments are currently read by the program.
      * This function try to use the Nimbus LaF or System if not found.
      *
-     * @param args Arguments sand to the JVM (not used)
+     * @param args Arguments sent to the JVM (not used)
      */
     @NonNls
     public static void main(String... args) {

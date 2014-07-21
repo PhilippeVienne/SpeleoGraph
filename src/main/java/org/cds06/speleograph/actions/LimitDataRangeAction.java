@@ -37,11 +37,11 @@ import java.util.ArrayList;
 /**
  *
  */
-public class LimitDateRangeAction extends AbstractAction {
+public class LimitDataRangeAction extends AbstractAction {
 
     private final Series series;
 
-    public LimitDateRangeAction(Series series) {
+    public LimitDataRangeAction(Series series) {
         super(I18nSupport.translate("actions.limit"));
         this.series = series;
     }
