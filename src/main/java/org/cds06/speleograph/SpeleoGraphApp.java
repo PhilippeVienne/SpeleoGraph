@@ -31,6 +31,7 @@ import org.cds06.speleograph.actions.ResetAxesAction;
 import org.cds06.speleograph.graph.SeriesMenu;
 import org.cds06.speleograph.utils.About;
 import org.jetbrains.annotations.NonNls;
+import org.jfree.ui.tabbedui.VerticalLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,53 +110,49 @@ public class SpeleoGraphApp extends JFrame {
         JPanel listAndButtons = new JPanel(new BorderLayout(2,2));
         listAndButtons.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttons = new JPanel();
-        buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
-
-        JButton tickAllButton = new JButton (new AbstractAction() {
-            {
-                putValue(NAME, I18nSupport.translate("list.tickAll"));
-            }
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < list.getModel().getSize(); i++) {
-                    list.getModel().getElementAt(i).setShow(true);
+        //Ajout des boutons de contrôle de sélection (tout cocher/décocher, inverser)
+        JPanel buttons = new JPanel(new VerticalLayout());
+        {
+            buttons.add(new JButton(new AbstractAction() {
+                {
+                    putValue(NAME, I18nSupport.translate("list.tickAll"));
                 }
-            }
-        });
-        buttons.add(tickAllButton);
 
-        JButton untickAllButton = new JButton (new AbstractAction() {
-            {
-                putValue(NAME, I18nSupport.translate("list.untickAll"));
-            }
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < list.getModel().getSize(); i++) {
-                    list.getModel().getElementAt(i).setShow(false);
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    for (int i = 0; i < list.getModel().getSize(); i++) {
+                        list.getModel().getElementAt(i).setShow(true);
+                    }
                 }
-            }
-        });
-        buttons.add(untickAllButton);
+            }));
 
-        JButton invertAllButton = new JButton (new AbstractAction() {
-            {
-                putValue(NAME, I18nSupport.translate("list.invert"));
-            }
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < list.getModel().getSize(); i++) {
-                    Series value = list.getModel().getElementAt(i);
-                    value.setShow(!value.isShow());
+            buttons.add(new JButton(new AbstractAction() {
+                {
+                    putValue(NAME, I18nSupport.translate("list.untickAll"));
                 }
-            }
-        });
-        buttons.add(invertAllButton);
 
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    for (int i = 0; i < list.getModel().getSize(); i++) {
+                        list.getModel().getElementAt(i).setShow(false);
+                    }
+                }
+            }));
 
+            buttons.add(new JButton(new AbstractAction() {
+                {
+                    putValue(NAME, I18nSupport.translate("list.invert"));
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    for (int i = 0; i < list.getModel().getSize(); i++) {
+                        Series value = list.getModel().getElementAt(i);
+                        value.setShow(!value.isShow());
+                    }
+                }
+            }));
+        }
 
         listAndButtons.add(buttons, BorderLayout.SOUTH);
 
