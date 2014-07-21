@@ -27,8 +27,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.GraphPanel;
+import org.cds06.speleograph.I18nSupport;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.plot.XYPlot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +43,7 @@ import java.awt.event.ActionListener;
  * Create a Dialog to personalize a {@link org.jfree.chart.JFreeChart}.
  * <p>The user can edit axes, background colors, titles ...</p>
  */
-public class GraphEditor extends JDialog {
+public class    GraphEditor extends JDialog {
 
     /**
      * Attached graph panel where put user choices.
@@ -51,6 +55,14 @@ public class GraphEditor extends JDialog {
      */
     private final JPanel mainPanel = new JPanel(new BorderLayout());
 
+
+    /**
+     * Logger for errors and info.
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    @NonNls
+    private static Logger log = LoggerFactory.getLogger(GraphEditor.class);
+
     /**
      * Creates a modal dialog by specifying the attached {@link GraphPanel}.
      * <p>Please look at {@link javax.swing.JDialog#JDialog()} to see defaults params applied to this Dialog.</p>
@@ -61,6 +73,7 @@ public class GraphEditor extends JDialog {
         this.graphPanel = panel;
         setContentPane(mainPanel);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        this.setTitle(I18nSupport.translate("menus.graph.graphEditor"));
 
         {
             // This section use FormLayout which is an external layout for Java, consult the doc before edit the
@@ -73,10 +86,10 @@ public class GraphEditor extends JDialog {
 
             PanelBuilder builder = new PanelBuilder(layout);
 
-            final JTextField colorLabel = new JTextField();
+            final JLabel colorLabel = new JLabel();
             final JTextField titleForGraph = new JTextField(graphPanel.getChart().getTitle() != null ? graphPanel.getChart().getTitle().getText() : "");
-            final JTextField colorXYPlotLabel = new JTextField();
-            final JTextField colorGridLabel = new JTextField();
+            final JLabel colorXYPlotLabel = new JLabel();
+            final JLabel colorGridLabel = new JLabel();
             final JCheckBox showLegendCheckBox = new JCheckBox(
                     "Afficher la légende", graphPanel.getChart().getLegend().isVisible());
 
@@ -90,7 +103,9 @@ public class GraphEditor extends JDialog {
                 colorLabel.setBorder(BorderFactory.createLineBorder(
                         Color.BLACK
                 ));
+                colorLabel.setText(" ");
                 colorLabel.setBackground((Color) graphPanel.getChart().getBackgroundPaint());
+                colorLabel.setOpaque(true);
                 colorLabel.setEnabled(false);
                 final JButton edit = new JButton("Editer");
                 edit.addActionListener(new ActionListener() {
@@ -99,6 +114,7 @@ public class GraphEditor extends JDialog {
                         Color c = JColorChooser.showDialog(GraphEditor.this, "Selectionnez une couleur", colorLabel.getBackground());
                         if (c != null) {
                             colorLabel.setBackground(c);
+                            log.info("Couleur ajoutée au fond");
                         }
                     }
                 });
@@ -109,6 +125,8 @@ public class GraphEditor extends JDialog {
             final XYPlot xyPlot = graphPanel.getChart().getXYPlot();
             {
                 builder.addLabel("Fond de la zone graphique", "1,5");
+                colorXYPlotLabel.setText(" ");
+                colorXYPlotLabel.setOpaque(true);
                 colorXYPlotLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 colorXYPlotLabel.setBackground(
                         (Color) xyPlot.getBackgroundPaint()
@@ -131,6 +149,8 @@ public class GraphEditor extends JDialog {
 
             {
                 builder.addLabel("Couleur de la grille", "1,7");
+                colorGridLabel.setOpaque(true);
+                colorGridLabel.setText(" ");
                 colorGridLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 colorGridLabel.setBackground(
                         (Color) xyPlot.getRangeGridlinePaint()
@@ -143,9 +163,7 @@ public class GraphEditor extends JDialog {
                         Color c = JColorChooser.showDialog(GraphEditor.this, "Selectionnez une couleur",
                                 colorGridLabel.getBackground());
                         if (c != null) {
-                            edit.setBackground(c);
-                            colorGridLabel.setForeground(c);
-                            colorGridLabel.setDisabledTextColor(c);
+                            colorGridLabel.setBackground(c);
                         }
                     }
                 });
@@ -162,10 +180,21 @@ public class GraphEditor extends JDialog {
             ButtonBarBuilder buttonBarBuilder = new ButtonBarBuilder();
 
             buttonBarBuilder.addGlue();
+
+            buttonBarBuilder.addButton(new AbstractAction() {
+                {
+                    putValue(NAME, I18nSupport.translate("cancel"));
+                }
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    GraphEditor.this.setVisible(false);
+                }
+            });
+
             buttonBarBuilder.addButton(new AbstractAction() {
 
                 {
-                    putValue(NAME, "Appliquer");
+                    putValue(NAME, I18nSupport.translate("ok"));
                 }
 
                 @Override

@@ -186,7 +186,7 @@ public class SpeleoGraphApp extends JFrame {
                 }
 
                 {
-                    putValue(NAME, "Paramètres du graphique");
+                    putValue(NAME, I18nSupport.translate("menus.graph.graphEditor"));
                 }
             });
             menu.add(new ResetAxesAction((GraphPanel) getSplitPane().getLeftComponent()));
