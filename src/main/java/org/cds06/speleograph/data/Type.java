@@ -114,14 +114,14 @@ public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
     }
 
     /**
-     * Determine if two Type are equals.
-     * Type are equals if :
+     * Determine if two Types are equal.
+     * Types are equal if :
      * <ul>
-     * <li>They has got the same name</li>
-     * <li>They has got the same units</li>
+     * <li>They have the same name</li>
+     * <li>They have the same unit</li>
      * </ul>
      *
-     * @return true if the type are equals.
+     * @return true if the types are equal.
      */
     @Override
     public boolean equals(Object o) {
