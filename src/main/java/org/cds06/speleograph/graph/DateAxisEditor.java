@@ -41,7 +41,7 @@ import java.util.Calendar;
  * @author Philippe VIENNE
  * @since 1.0
  */
-public class DataAxisEditor extends JDialog {
+public class DateAxisEditor extends JDialog {
 
     /**
      * The modified axis.
@@ -65,7 +65,7 @@ public class DataAxisEditor extends JDialog {
     final private DateSelector maxDate = new DateSelector();
 
 
-    public DataAxisEditor(DateAxis dateAxis) {
+    public DateAxisEditor(DateAxis dateAxis) {
         super(SpeleoGraphApp.getInstance(), true);
         this.axis = dateAxis;
         JPanel panel = new JPanel();
@@ -76,9 +76,9 @@ public class DataAxisEditor extends JDialog {
         CellConstraints cc = new CellConstraints();
         panel.add(new JLabel("Format :"), cc.xy(1, 2));
         panel.add(dateSelector, cc.xy(3, 2));
-        panel.add(new JLabel("Date Début :"), cc.xy(1, 4));
+        panel.add(new JLabel("Date début :"), cc.xy(1, 4));
         panel.add(minDate, cc.xy(3, 4));
-        panel.add(new JLabel("Date Fin :"), cc.xy(1, 6));
+        panel.add(new JLabel("Date fin :"), cc.xy(1, 6));
         panel.add(maxDate, cc.xy(3, 6));
 
         ButtonBarBuilder barBuilder = new ButtonBarBuilder();
@@ -115,7 +115,7 @@ public class DataAxisEditor extends JDialog {
 
     /**
      * A user understandable Date Format.
-     * This SimpleDateFormat has just overridden the {@link #toString()} method to display the current system date
+     * This SimpleDateFormat simply overrides the {@link #toString()} method to display the current system date
      * formatted with the current date format.
      */
     private class HumanSimpleDateFormat extends SimpleDateFormat {

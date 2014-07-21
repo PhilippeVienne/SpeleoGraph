@@ -25,7 +25,7 @@ package org.cds06.speleograph.graph;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
-import org.cds06.speleograph.actions.LimitDataRangeAction;
+import org.cds06.speleograph.actions.LimitDateRangeAction;
 import org.cds06.speleograph.actions.SamplingAction;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.Type;
@@ -157,7 +157,7 @@ public class SeriesMenu implements DatasetChangeListener {
         if (series.getType().equals(Type.WATER)) {
             menu.add(new SamplingAction(series));
         }
-        menu.add(new LimitDataRangeAction(series));
+        menu.add(new LimitDateRangeAction(series));
 
         {
             JMenuItem deleteItem = new JMenuItem("Supprimer la série");
