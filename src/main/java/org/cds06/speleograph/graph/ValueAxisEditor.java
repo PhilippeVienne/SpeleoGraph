@@ -110,7 +110,7 @@ public class ValueAxisEditor extends FormDialog {
             builder.add(new JButton(new AbstractAction() {
 
                 {
-                    putValue(NAME, I18nSupport.translate("actions.ok"));
+                    putValue(NAME, I18nSupport.translate("ok"));
                 }
 
                 @Override
@@ -119,6 +119,20 @@ public class ValueAxisEditor extends FormDialog {
                 }
             }), cc.rcw(4, 1, 3));
         }
+
+        /*{
+            builder.add(new JButton(new AbstractAction() {
+
+                {
+                    putValue(NAME, I18nSupport.translate("cancel"));
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    setVisible(false);
+                }
+            }), cc.rcw(5, 1, 3));
+        }*/
 
         builder.build();
 
