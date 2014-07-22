@@ -99,7 +99,7 @@ public class    GraphEditor extends JDialog {
             }
 
             {
-                builder.addLabel("Fond de l'image", "1,3");
+                builder.addLabel(I18nSupport.translate("menus.graph.graphEditor.backgroundColor"), "1,3");
                 colorLabel.setBorder(BorderFactory.createLineBorder(
                         Color.BLACK
                 ));
@@ -107,11 +107,12 @@ public class    GraphEditor extends JDialog {
                 colorLabel.setBackground((Color) graphPanel.getChart().getBackgroundPaint());
                 colorLabel.setOpaque(true);
                 colorLabel.setEnabled(false);
-                final JButton edit = new JButton("Editer");
+                final JButton edit = new JButton(I18nSupport.translate("menus.graph.graphEditor.edit"));
                 edit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Color c = JColorChooser.showDialog(GraphEditor.this, "Selectionnez une couleur", colorLabel.getBackground());
+                        Color c = JColorChooser.showDialog(GraphEditor.this, I18nSupport.translate("menus.graph.graphEditor.selectColor"),
+                                colorLabel.getBackground());
                         if (c != null) {
                             colorLabel.setBackground(c);
                         }
@@ -123,7 +124,7 @@ public class    GraphEditor extends JDialog {
 
             final XYPlot xyPlot = graphPanel.getChart().getXYPlot();
             {
-                builder.addLabel("Fond de la zone graphique", "1,5");
+                builder.addLabel(I18nSupport.translate("menus.graph.graphEditor.graphColor"), "1,5");
                 colorXYPlotLabel.setText(" ");
                 colorXYPlotLabel.setOpaque(true);
                 colorXYPlotLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -131,11 +132,11 @@ public class    GraphEditor extends JDialog {
                         (Color) xyPlot.getBackgroundPaint()
                 );
                 colorXYPlotLabel.setEnabled(false);
-                final JButton edit = new JButton("Editer");
+                final JButton edit = new JButton(I18nSupport.translate("menus.graph.graphEditor.edit"));
                 edit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Color c = JColorChooser.showDialog(GraphEditor.this, "Selectionnez une couleur",
+                        Color c = JColorChooser.showDialog(GraphEditor.this, I18nSupport.translate("menus.graph.graphEditor.selectColor"),
                                 colorXYPlotLabel.getBackground());
                         if (c != null) {
                             colorXYPlotLabel.setBackground(c);
@@ -147,7 +148,7 @@ public class    GraphEditor extends JDialog {
             }
 
             {
-                builder.addLabel("Couleur de la grille", "1,7");
+                builder.addLabel(I18nSupport.translate("menus.graph.graphEditor.gridColor"), "1,7");
                 colorGridLabel.setOpaque(true);
                 colorGridLabel.setText(" ");
                 colorGridLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -155,11 +156,11 @@ public class    GraphEditor extends JDialog {
                         (Color) xyPlot.getRangeGridlinePaint()
                 );
                 colorGridLabel.setEnabled(false);
-                final JButton edit = new JButton("Editer");
+                final JButton edit = new JButton(I18nSupport.translate("menus.graph.graphEditor.edit"));
                 edit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Color c = JColorChooser.showDialog(GraphEditor.this, "Selectionnez une couleur",
+                        Color c = JColorChooser.showDialog(GraphEditor.this, I18nSupport.translate("menus.graph.graphEditor.selectColor"),
                                 colorGridLabel.getBackground());
                         if (c != null) {
                             colorGridLabel.setBackground(c);
