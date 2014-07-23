@@ -295,7 +295,7 @@ public class SpeleoGraphApp extends JFrame {
     @NonNls
     public static void main(String... args) {
 
-        if (System.getProperty("os.name").contains("Mac")) {
+        if (isMac()) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             try {
                 final Class<?> ApplicationClass =

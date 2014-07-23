@@ -29,7 +29,7 @@
     <groupId>org.cds06</groupId>
     <artifactId>SpeleoGraph</artifactId>
     <name>SpeleoGraph</name>
-    <url>http://cds06.github.org/SpeleoGraph</url>
+    <url>http://cds06.github.io/SpeleoGraph</url>
 
     <packaging>jar</packaging>
     <version>1.0-BETA</version>
@@ -43,6 +43,14 @@
             <name>Philippe VIENNE</name>
             <email>Philippe.Vienne@insa-lyon.fr</email>
             <id>PhilippeGeek</id>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Gabriel AUGENDRE</name>
+            <email>gaugendre@gmail.com</email>
+            <id>gaugendre</id>
             <roles>
                 <role>Developer</role>
             </roles>
