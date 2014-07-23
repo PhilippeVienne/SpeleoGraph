@@ -1,7 +1,5 @@
 package org.cds06.speleograph.data;
 
-import au.com.bytecode.opencsv.CSVReader;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,10 +24,6 @@ import java.util.Date;
 public class WundergroundFileReader implements DataFileReader{
 
     private static final I18nSupport resourceBundle = new I18nSupport();
-
-    public WundergroundFileReader(){
-
-    }
 
     /**
      * Wunderground Date Format.
@@ -86,7 +79,6 @@ public class WundergroundFileReader implements DataFileReader{
 
             ArrayList<String> data = new ArrayList<>();
             String line = reader.readLine(),buffer="";
-            int dataCount = 0;
             while ((line=reader.readLine())!=null){
                 buffer+=StringUtils.normalizeSpace(line);
                 if(StringUtils.countMatches(buffer,",")>=16){
