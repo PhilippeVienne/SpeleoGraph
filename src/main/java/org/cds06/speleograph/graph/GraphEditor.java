@@ -43,7 +43,7 @@ import java.awt.event.ActionListener;
  * Create a Dialog to personalize a {@link org.jfree.chart.JFreeChart}.
  * <p>The user can edit axes, background colors, titles ...</p>
  */
-public class    GraphEditor extends JDialog {
+public class GraphEditor extends JDialog {
 
     /**
      * Attached graph panel where put user choices.

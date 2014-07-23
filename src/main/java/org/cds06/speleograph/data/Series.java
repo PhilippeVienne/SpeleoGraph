@@ -528,10 +528,14 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      */
     @Override
     public double getXValue(int series, int item) {
-        if (isShow() && (item > -1 && item < items.size()))
-            return items.get(item).getDate().getTime();
-        else
+        try {
+            if (isShow() && (item > -1 && item < items.size()))
+                return items.get(item).getDate().getTime();
+            else
+                return Double.NaN;
+        } catch (NullPointerException e) {
             return Double.NaN;
+        }
     }
 
     /**
