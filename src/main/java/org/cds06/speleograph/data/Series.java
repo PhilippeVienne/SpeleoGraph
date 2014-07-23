@@ -660,6 +660,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return renderer;
     }
 
+    //TODO Write doc
     public Series generateSampledSeries(long length) {
         final Series newSeries;
         newSeries = new Series(origin, type);
@@ -795,6 +796,12 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return minMax;
     }
 
+    /**
+     * Extraire une sous-série de données.
+     * Par exemple : On a des données du 25/07 au 30/07, on veut extraire les données du 28 à 7h au 28 à 9h.
+     * @param start Date de début.
+     * @param end Date de fin.
+     */
     public void subSeries(Date start, Date end) {
         ArrayList<Item> newItems = new ArrayList<>(items.size());
         for (Item i : items) {
