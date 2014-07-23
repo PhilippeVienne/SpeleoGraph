@@ -296,8 +296,8 @@ public class SpeleoGraphApp extends JFrame {
     public static void main(String... args) {
 
         if (isMac()) {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-            try {
+            System.setProperty("apple.laf.useScreenMenuBar", "true"); //On déporte la barre de menus
+            try { //On essaie de spécifier à Mac que l'image du dock est celle des ressources avec la reflective API
                 final Class<?> ApplicationClass =
                         ClassLoader.getSystemClassLoader().loadClass("com.apple.eawt.Application");
                 Object app =
