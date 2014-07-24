@@ -154,7 +154,7 @@ public class ReefnetFileReader implements DataFileReader {
             if (11 < line.length && line.length < 14) {
                 seriesId = readReefnetEntry(line, pressureSeries, temperatureSeries, seriesId, calendar);
             } else {
-                log.info("Not a Reefnet line: " + StringUtils.join(line, ','));
+                log.info("Not a Reefnet line: " + StringUtils.join(line, ',')); //NON-NLS
             }
             try {
                 line = reader.readNext();
@@ -162,7 +162,7 @@ public class ReefnetFileReader implements DataFileReader {
                 line = null;
             }
         }
-        log.info("Reefnet File (" + file.getName() + ") has been read.");
+        log.info("Reefnet File (" + file.getName() + ") has been read."); //NON-NLS
     }
 
     /**
