@@ -34,6 +34,8 @@ public class SetTypeMenu extends JMenu {
                     );
                 }
             });
+            if (t.compareTo(Type.WATER) == 0)
+                this.addSeparator();
         }
     }
 }
