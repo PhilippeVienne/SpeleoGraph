@@ -7,7 +7,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
- * Created by Gabriel on 29/07/2014.
+ * Created by Gabriel Augendre.
+ * Allow the user to recalibrate a Pressure Serie.
+ * Recalibration will align a serie of data on another.
  */
 public class RecalibrateAction extends AbstractAction {
 
@@ -20,7 +22,8 @@ public class RecalibrateAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JOptionPane.showMessageDialog(null, "Test");
+        JOptionPane.showMessageDialog(null, "Cette fonctionnalité n'est pas encore prise en charge",
+                "Attention", JOptionPane.ERROR_MESSAGE);
 
     }
 }
