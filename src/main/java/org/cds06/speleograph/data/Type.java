@@ -37,7 +37,8 @@ import java.util.ArrayList;
  */
 public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
 
-    private static final ArrayList<Type> instances = new ArrayList<>(5);
+    public static final int DEFAULT_SIZE = 5;
+    private static final ArrayList<Type> instances = new ArrayList<>(DEFAULT_SIZE);
 
     public static ArrayList<Type> getInstances() {
         return instances;
