@@ -23,6 +23,7 @@
 package org.cds06.speleograph.data;
 
 import org.apache.commons.lang3.Validate;
+import org.cds06.speleograph.I18nSupport;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.axis.NumberAxis;
@@ -43,10 +44,10 @@ public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
     }
 
     public static final Type UNKNOWN = Type.getType("Data", null);
-    public static final Type PRESSURE = Type.getType("Pression", "hPa");
-    public static final Type TEMPERATURE = Type.getType("Température", "°C");
-    public static final Type TEMPERATURE_MIN_MAX = Type.getType("Température (min/max)", "°C");
-    public static final Type WATER = Type.getType("Précipitations", "mm");
+    public static final Type PRESSURE = Type.getType(I18nSupport.translate("actions.setType.pressure"), "hPa");
+    public static final Type TEMPERATURE = Type.getType(I18nSupport.translate("actions.setType.temperature"), "°C");
+    public static final Type TEMPERATURE_MIN_MAX = Type.getType(I18nSupport.translate("actions.setType.temperatureMinMax"), "°C");
+    public static final Type WATER = Type.getType(I18nSupport.translate("actions.setType.water"), "mm");
 
     /**
      * Get Type by name and unit.

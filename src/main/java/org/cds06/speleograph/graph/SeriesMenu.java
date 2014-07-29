@@ -26,12 +26,17 @@ import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
 import org.cds06.speleograph.actions.LimitDateRangeAction;
+import org.cds06.speleograph.actions.RecalibrateAction;
 import org.cds06.speleograph.actions.SamplingAction;
+import org.cds06.speleograph.actions.SetTypeMenu;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.Type;
+import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -51,6 +56,10 @@ import java.util.List;
  * @since 1.0
  */
 public class SeriesMenu implements DatasetChangeListener {
+
+    @SuppressWarnings("UnusedDeclaration")
+    @NonNls
+    private static final Logger log = LoggerFactory.getLogger(SeriesMenu.class);
 
     private SpeleoGraphApp application;
 
@@ -157,7 +166,14 @@ public class SeriesMenu implements DatasetChangeListener {
         if (series.getType().equals(Type.WATER)) {
             menu.add(new SamplingAction(series));
         }
+
+        if (series.getType().equals(Type.PRESSURE)) {
+            menu.add(new RecalibrateAction(series));
+        }
+
         menu.add(new LimitDateRangeAction(series));
+
+        menu.add(new SetTypeMenu(series));
 
         {
             JMenuItem deleteItem = new JMenuItem("Supprimer la série");
@@ -176,6 +192,8 @@ public class SeriesMenu implements DatasetChangeListener {
             menu.add(deleteItem);
         }
 
+        menu.addSeparator();
+
         {
             final JMenuItem up = new JMenuItem("Remonter dans la liste"),
                     down = new JMenuItem("Descendre dans la liste");
@@ -191,7 +209,6 @@ public class SeriesMenu implements DatasetChangeListener {
             };
             up.addActionListener(listener);
             down.addActionListener(listener);
-            menu.addSeparator();
             if (series.isFirst()) {
                 menu.add(down);
             } else if (series.isLast()) {
@@ -200,8 +217,9 @@ public class SeriesMenu implements DatasetChangeListener {
                 menu.add(up);
                 menu.add(down);
             }
-            menu.addSeparator();
         }
+
+        menu.addSeparator();
 
         {
             JMenuItem colorItem = new JMenuItem("Couleur de la série");
@@ -246,8 +264,8 @@ public class SeriesMenu implements DatasetChangeListener {
             menu.add(plotRenderer);
         }
         menu.addSeparator();
-        menu.add(new AbstractAction() {
 
+        menu.add(new AbstractAction() {
             {
                 putValue(Action.NAME, "Fermer le fichier");
             }

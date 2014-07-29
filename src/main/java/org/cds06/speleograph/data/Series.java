@@ -264,7 +264,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     /**
      * Notify listeners about something changed into the series.
      */
-    protected void notifyListeners() {
+    public void notifyListeners() {
         final DatasetChangeEvent event = new DatasetChangeEvent(this, this);
         if (graphPanel != null)
             graphPanel.datasetChanged(event);

@@ -35,7 +35,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 /**
- *
+ * Cette action sert à tronquer les données temporellement.
  */
 public class LimitDateRangeAction extends AbstractAction {
 
