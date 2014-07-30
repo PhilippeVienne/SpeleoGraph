@@ -24,10 +24,10 @@ package org.cds06.speleograph;
 
 import org.cds06.speleograph.actions.ImportAction;
 import org.cds06.speleograph.actions.OpenAction;
+import org.cds06.speleograph.actions.ResetAxesAction;
 import org.cds06.speleograph.actions.SaveAction;
 import org.cds06.speleograph.data.*;
 import org.cds06.speleograph.graph.GraphEditor;
-import org.cds06.speleograph.actions.ResetAxesAction;
 import org.cds06.speleograph.graph.SeriesMenu;
 import org.cds06.speleograph.utils.About;
 import org.jetbrains.annotations.NonNls;
@@ -92,6 +92,12 @@ public class SpeleoGraphApp extends JFrame {
         return seriesMenu;
     }
 
+    private final CheckBoxList list;
+
+    public CheckBoxList getSeriesList() {
+        return list;
+    }
+
     public SpeleoGraphApp() {
         super(APP_NAME); // NON-NLS
 
@@ -104,7 +110,7 @@ public class SpeleoGraphApp extends JFrame {
         // Initialize Graphic elements
         panel = new JPanel(new BorderLayout(2, 2));
         SpeleoSeriesListModel listModel = new SpeleoSeriesListModel();
-        final CheckBoxList list = new CheckBoxList(listModel);
+        list = new CheckBoxList(listModel);
         JScrollPane scrollPane = new JScrollPane(list);
 
         JPanel listAndButtons = new JPanel(new BorderLayout(2,2));

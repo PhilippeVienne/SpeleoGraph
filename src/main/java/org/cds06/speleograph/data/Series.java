@@ -724,14 +724,14 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
                 setupRendererAuto();
                 break;
             case AREA:
-                renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
+                renderer = new NewAreaRenderer(XYAreaRenderer.AREA);
                 break;
             case HIGH_LOW:
-                renderer = new HighLowRenderer();
+                renderer = new NewHighLowRenderer();
                 break;
             default:
             case LINE:
-                renderer = new XYLineAndShapeRenderer(true, false);
+                renderer = new NewLineAndShapeRenderer(true, false);
 
         }
         notifyListeners();
@@ -856,18 +856,28 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     }
 
     /**
+     * Remplace les données de la série par celles d'une sous-série.
+     * Par exemple : On a des données du 25/07 au 30/07, on veut uniquement les données du 28 à 7h au 28 à 9h.
+     * @param start Date de début.
+     * @param end Date de fin.
+     */
+    public void subSeries(Date start, Date end) {
+        items = extractSubSerie(start, end);
+        notifyListeners();
+    }
+
+    /**
      * Extraire une sous-série de données.
      * Par exemple : On a des données du 25/07 au 30/07, on veut extraire les données du 28 à 7h au 28 à 9h.
      * @param start Date de début.
      * @param end Date de fin.
      */
-    public void subSeries(Date start, Date end) {
+    public ArrayList<Item> extractSubSerie(Date start, Date end) {
         ArrayList<Item> newItems = new ArrayList<>(items.size());
         for (Item i : items) {
             if (i.getDate().after(start) && i.getDate().before(end))
                 newItems.add(i);
         }
-        items = newItems;
-        notifyListeners();
+        return newItems;
     }
 }
