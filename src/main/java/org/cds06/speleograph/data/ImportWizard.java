@@ -26,6 +26,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.cds06.speleograph.graph.SetTypePanel;
 import org.cds06.speleograph.utils.FormDialog;
 
 import javax.swing.*;
@@ -342,12 +343,6 @@ public class ImportWizard {
             private static final String DATE = "Date et/ou Heure";
             private static final String SERIES = "Série de données";
 
-            private final String PRESS = org.cds06.speleograph.data.Type.PRESSURE.toString();
-            private final String TEMP = org.cds06.speleograph.data.Type.TEMPERATURE.toString();
-            private final String TEMP_MIN_MAX = org.cds06.speleograph.data.Type.TEMPERATURE_MIN_MAX.toString();
-            private final String WATER = org.cds06.speleograph.data.Type.WATER.toString();
-            private final String OTHER = "Autre";
-
             private JComboBox<String> columnTypeComboBox = new JComboBox<>(new String[]{
                     IGNORE, DATE, SERIES
             });
@@ -373,52 +368,10 @@ public class ImportWizard {
                         "</HTML>"));
             }
 
-            private JTextField typeNameField = new JTextField();
-            private JComboBox<String> typeNameBox = new JComboBox<>(new String[]{
-                    PRESS, TEMP, TEMP_MIN_MAX, WATER, OTHER
-            });
-            private JTextField typeUnitField = new JTextField();
-            private JPanel typePropertyPanel;
+            private SetTypePanel typePropertyPanel = new SetTypePanel();
 
             {
-                PanelBuilder builder = new PanelBuilder(new FormLayout("r:p,p:grow", "p,p,p,p"));
-
-                builder.addLabel("Type :");
-                builder.nextColumn();
-                builder.add(typeNameBox);
-                typeNameBox.addItemListener(this);
-                builder.nextLine();
-
-                final String name = ((String)typeNameBox.getSelectedItem()).split(" ")[0];
-                builder.addLabel("Nom :");
-                builder.nextColumn();
-                builder.add(typeNameField);
-                typeNameField.setText(name);
-                builder.nextLine();
-
-                String unit = ((String)typeNameBox.getSelectedItem()).split(" ")[1];
-                unit = unit.substring(1, unit.length()-1);
-                builder.addLabel("Unité :");
-                builder.nextColumn();
-                builder.add(typeUnitField);
-                typeUnitField.setText(unit);
-
-                CellConstraints cc = new CellConstraints();
-                cc.xyw(1,4,2);
-                builder.addLabel("<HTML>" +
-                        "Le menu déroulant vous aide à indiquer à SpeleoGraph<br />le type correct de données.<br />" +
-                        "Pour des données correspondant aux types prédéfinis,<br />le nom doit correspondre à " +
-                        "ce que donne le menu<br />déroulant (par exemple \"Précipitations\" si vous avez<br />" +
-                        "des données de pluviométrie.<br />" +
-                        "Les types prédéfinis sont :" +
-                        "<ul>" +
-                        "<li>Pression</li>" +
-                        "<li>Température (éventuellement min/max,<br />voir case à cocher)</li>" +
-                        "<li>Précipitations</li>" +
-                        "</ul>" +
-                        "</HTML>", cc);
-
-                typePropertyPanel = builder.build();
+                typePropertyPanel.setVisible(true);
                 typePropertyPanel.setBorder(
                         BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Type"));
             }
@@ -488,14 +441,14 @@ public class ImportWizard {
             }
 
             public org.cds06.speleograph.data.Type getType() {
-                return org.cds06.speleograph.data.Type.getType(typeNameField.getText(), typeUnitField.getText());
+                return org.cds06.speleograph.data.Type.getType(typePropertyPanel.getTypeName(), typePropertyPanel.getTypeUnit());
             }
 
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (!e.getSource().equals(isMinMax) &&
-                        !e.getSource().equals(columnTypeComboBox) &&
-                        !e.getSource().equals(typeNameBox)) return;
+                        !e.getSource().equals(columnTypeComboBox)) return;
+//                if (!e.getSource().equals((typeNameBox))) return;
                 if (e.getSource().equals(isMinMax)) {
                     minMaxPropertyPanel.setVisible(isMinMax());
                 }
@@ -508,19 +461,19 @@ public class ImportWizard {
                     repaint();
                     pack();
                 }
-                if (e.getSource().equals(typeNameBox)) {
-                    final String[] type =((String) typeNameBox.getSelectedItem()).split(" ");
-                    String name = "";
-                    if (!type[0].equals("Autre"))
-                        name = type[0];
-                    String unit = "";
-                    if (type.length > 1)
-                        unit = type[1].substring(1,type[1].length()-1);
-                    if (type.length > 2)
-                        unit = type[2].substring(1,type[2].length()-1);
-                    typeNameField.setText(name);
-                    typeUnitField.setText(unit);
-                }
+//                if (e.getSource().equals(typeNameBox)) {
+//                    final String[] type =((String) typeNameBox.getSelectedItem()).split(" ");
+//                    String name = "";
+//                    if (!type[0].equals("Autre"))
+//                        name = type[0];
+//                    String unit = "";
+//                    if (type.length > 1)
+//                        unit = type[1].substring(1,type[1].length()-1);
+//                    if (type.length > 2)
+//                        unit = type[2].substring(1,type[2].length()-1);
+//                    typeNameField.setText(name);
+//                    typeUnitField.setText(unit);
+//                }
             }
 
             public boolean isMinMax() {
