@@ -25,8 +25,8 @@ package org.cds06.speleograph.graph;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
+import org.cds06.speleograph.actions.CorrelateAction;
 import org.cds06.speleograph.actions.LimitDateRangeAction;
-import org.cds06.speleograph.actions.RecalibrateAction;
 import org.cds06.speleograph.actions.SamplingAction;
 import org.cds06.speleograph.actions.SetTypeMenu;
 import org.cds06.speleograph.data.Series;
@@ -167,7 +167,7 @@ public class SeriesMenu implements DatasetChangeListener {
         }
 
         if (series.isPressure()) {
-            menu.add(new RecalibrateAction(series));
+            menu.add(new CorrelateAction(series));
         }
 
         menu.add(new LimitDateRangeAction(series));

@@ -27,7 +27,9 @@ import org.cds06.speleograph.GraphPanel;
 import org.cds06.speleograph.graph.DrawStyle;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jfree.chart.LegendItem;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.renderer.xy.HighLowRenderer;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -737,11 +739,56 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     private void setupRendererAuto() {
         if (isMinMax()) {
-            renderer = new HighLowRenderer();
+            renderer = new NewHighLowRenderer();
         } else if (isStepped()) {
-            renderer = new XYAreaRenderer(XYAreaRenderer.AREA);
+            renderer = new NewAreaRenderer(XYAreaRenderer.AREA);
         } else {
-            renderer = new XYLineAndShapeRenderer(true, false);
+            renderer = new NewLineAndShapeRenderer(true, false);
+        }
+    }
+
+    /**
+     * Used to override the display of the legend
+     */
+    private static class NewLineAndShapeRenderer extends XYLineAndShapeRenderer {
+        public NewLineAndShapeRenderer(boolean a, boolean b) {
+            super(a,b);
+        }
+
+        @Override
+        public LegendItem getLegendItem(int datasetIndex, int series) {
+            LegendItem legend = super.getLegendItem(datasetIndex, series);
+            return new LegendItem(legend.getLabel(), legend.getDescription(), legend.getToolTipText(), legend.getURLText(), Plot.DEFAULT_LEGEND_ITEM_BOX, legend.getFillPaint());
+        }
+    }
+
+    /**
+     * Used to override the display of the legend
+     */
+    private static class NewAreaRenderer extends XYAreaRenderer {
+        public NewAreaRenderer(int a) {
+            super(a);
+        }
+
+        @Override
+        public LegendItem getLegendItem(int datasetIndex, int series) {
+            LegendItem legend = super.getLegendItem(datasetIndex, series);
+            return new LegendItem(legend.getLabel(), legend.getDescription(), legend.getToolTipText(), legend.getURLText(), Plot.DEFAULT_LEGEND_ITEM_BOX, legend.getFillPaint());
+        }
+    }
+
+    /**
+     * Used to override the display of the legend
+     */
+    private static class NewHighLowRenderer extends HighLowRenderer {
+        public NewHighLowRenderer() {
+            super();
+        }
+
+        @Override
+        public LegendItem getLegendItem(int datasetIndex, int series) {
+            LegendItem legend = super.getLegendItem(datasetIndex, series);
+            return new LegendItem(legend.getLabel(), legend.getDescription(), legend.getToolTipText(), legend.getURLText(), Plot.DEFAULT_LEGEND_ITEM_BOX, legend.getFillPaint());
         }
     }
 

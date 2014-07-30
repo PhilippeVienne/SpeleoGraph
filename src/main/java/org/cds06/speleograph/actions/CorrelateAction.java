@@ -11,11 +11,11 @@ import java.awt.event.ActionEvent;
  * Allow the user to recalibrate a Pressure Serie.
  * Recalibration will align a serie of data on another.
  */
-public class RecalibrateAction extends AbstractAction {
+public class CorrelateAction extends AbstractAction {
 
     private final Series series;
 
-    public RecalibrateAction(Series series) {
+    public CorrelateAction(Series series) {
         super(I18nSupport.translate("actions.recalibrate"));
         this.series = series;
     }
@@ -24,6 +24,5 @@ public class RecalibrateAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         JOptionPane.showMessageDialog(null, "Cette fonctionnalité n'est pas encore prise en charge",
                 "Attention", JOptionPane.ERROR_MESSAGE);
-
     }
 }
