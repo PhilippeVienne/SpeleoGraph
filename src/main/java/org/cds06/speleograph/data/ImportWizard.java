@@ -160,7 +160,8 @@ public class ImportWizard {
         private int columns;
 
         /**
-         * @param lines The first ten lines to display
+         * @param lines The first lines to display.
+         * @param columns The number of columns to display.
          */
         public ImportDialog(final String[][] lines, final int columns) {
             super();
@@ -339,7 +340,7 @@ public class ImportWizard {
 
             private static final String IGNORE = "Ignorer la colonne";
             private static final String DATE = "Date et/ou Heure";
-            private static final String SERIES = "Série de donnée";
+            private static final String SERIES = "Série de données";
 
             private final String PRESS = org.cds06.speleograph.data.Type.PRESSURE.toString();
             private final String TEMP = org.cds06.speleograph.data.Type.TEMPERATURE.toString();
@@ -364,7 +365,7 @@ public class ImportWizard {
                 builder.nextLine();
                 builder.add(new JLabel("<HTML>" +
                         "d : Jour dans le mois (1 à 31)<br/>" +
-                        "M : Mois dans l'année<br/>" +
+                        "M : Mois dans l'année (1 à 12)<br/>" +
                         "y : Année<br/>" +
                         "H : Heure sur 24 heures<br/>" +
                         "m : minutes<br/>" +
@@ -380,21 +381,43 @@ public class ImportWizard {
             private JPanel typePropertyPanel;
 
             {
-                PanelBuilder builder = new PanelBuilder(new FormLayout("r:p,p:grow", "p,p,p"));
+                PanelBuilder builder = new PanelBuilder(new FormLayout("r:p,p:grow", "p,p,p,p"));
+
                 builder.addLabel("Type :");
                 builder.nextColumn();
                 builder.add(typeNameBox);
                 typeNameBox.addItemListener(this);
                 builder.nextLine();
+
+                final String name = ((String)typeNameBox.getSelectedItem()).split(" ")[0];
                 builder.addLabel("Nom :");
                 builder.nextColumn();
                 builder.add(typeNameField);
-                typeNameField.setText(PRESS.split(" ")[0]);
+                typeNameField.setText(name);
                 builder.nextLine();
+
+                String unit = ((String)typeNameBox.getSelectedItem()).split(" ")[1];
+                unit = unit.substring(1, unit.length()-1);
                 builder.addLabel("Unité :");
                 builder.nextColumn();
                 builder.add(typeUnitField);
-                typeUnitField.setText(PRESS.split(" ")[1].substring(1,PRESS.split(" ")[1].length()-1));
+                typeUnitField.setText(unit);
+
+                CellConstraints cc = new CellConstraints();
+                cc.xyw(1,4,2);
+                builder.addLabel("<HTML>" +
+                        "Le menu déroulant vous aide à indiquer à SpeleoGraph<br />le type correct de données.<br />" +
+                        "Pour des données correspondant aux types prédéfinis,<br />le nom doit correspondre à " +
+                        "ce que donne le menu<br />déroulant (par exemple \"Précipitations\" si vous avez<br />" +
+                        "des données de pluviométrie.<br />" +
+                        "Les types prédéfinis sont :" +
+                        "<ul>" +
+                        "<li>Pression</li>" +
+                        "<li>Température (éventuellement min/max,<br />voir case à cocher)</li>" +
+                        "<li>Précipitations</li>" +
+                        "</ul>" +
+                        "</HTML>", cc);
+
                 typePropertyPanel = builder.build();
                 typePropertyPanel.setBorder(
                         BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Type"));

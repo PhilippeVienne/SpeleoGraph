@@ -324,7 +324,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     }
 
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(@NotNull Object o) {
         return this.equals(o) ? 0 : -1;
     }
 
@@ -794,6 +794,18 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     public boolean isMinMax() {
         return minMax;
+    }
+
+    public boolean isWater() {
+        return this.getType().getName().equals(Type.WATER.getName());
+    }
+
+    public boolean isPressure() {
+        return this.getType().getName().equals(Type.PRESSURE.getName());
+    }
+
+    public boolean isTemperature() {
+        return this.getType().getName().equals(Type.TEMPERATURE.getName());
     }
 
     /**

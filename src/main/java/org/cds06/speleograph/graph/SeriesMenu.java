@@ -30,7 +30,6 @@ import org.cds06.speleograph.actions.RecalibrateAction;
 import org.cds06.speleograph.actions.SamplingAction;
 import org.cds06.speleograph.actions.SetTypeMenu;
 import org.cds06.speleograph.data.Series;
-import org.cds06.speleograph.data.Type;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.general.DatasetChangeEvent;
@@ -163,11 +162,11 @@ public class SeriesMenu implements DatasetChangeListener {
             }));
         }
 
-        if (series.getType().equals(Type.WATER)) {
+        if (series.isWater()) {
             menu.add(new SamplingAction(series));
         }
 
-        if (series.getType().equals(Type.PRESSURE)) {
+        if (series.isPressure()) {
             menu.add(new RecalibrateAction(series));
         }
 

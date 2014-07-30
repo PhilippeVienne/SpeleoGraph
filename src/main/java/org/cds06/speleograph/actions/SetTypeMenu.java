@@ -48,36 +48,3 @@ public class SetTypeMenu extends JMenu {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//            this.add(new AbstractAction() {
-//                {
-//                    putValue(NAME, t.getName() + " (" + t.getUnit() + ")");
-//                }
-//                @Override
-//                public void actionPerformed(ActionEvent e) {
-//                    serie.setType(t);
-//                    serie.notifyListeners();
-//                    JOptionPane.showMessageDialog(
-//                            null,
-//                            "Le type de la série " + serie.getName() + " a été défini à " + t.toString(),
-//                            "Type correctement défini",
-//                            JOptionPane.INFORMATION_MESSAGE
-//                    );
-//                }
-//            });
