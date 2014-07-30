@@ -57,11 +57,11 @@ public class ImportAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        int i = JOptionPane.showConfirmDialog(parent,I18nSupport.translate("actions.import.unstable"),
+        /*int i = JOptionPane.showConfirmDialog(parent,I18nSupport.translate("actions.import.unstable"),
                 I18nSupport.translate("attention"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
         if (i != JOptionPane.OK_OPTION) {
             return;
-        }
+        }*/
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(SpeleoGraphApp.getWorkingDirectory());
         int result = fileChooser.showOpenDialog(parent);

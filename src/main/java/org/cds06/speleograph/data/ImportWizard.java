@@ -150,7 +150,7 @@ public class ImportWizard {
 
     private class ImportDialog extends FormDialog {
 
-        private JPanel leftPanel = new JPanel(new FormLayout("p:grow,p", "p:grow,p,p,p,p"));
+        private JPanel leftPanel = new JPanel(new FormLayout("p:grow,p", "p:grow,p,p,p,p,p,p"));
         private JTable table = new JTable();
 
         private ArrayList<ColumnEditor> editors = new ArrayList<>();
@@ -221,7 +221,7 @@ public class ImportWizard {
                 }
             });
             construct();
-            centerOnScreen();
+//            centerOnScreen();
         }
 
         @Override
@@ -237,17 +237,17 @@ public class ImportWizard {
                 builder.addLabel("Ligne d'en-tête :", "1,2,2,1");
                 final JTextField headerLineField = new JTextField("1");
                 builder.add(headerLineField, "1,3");
-                builder.add(new JButton(new AbstractAction() {
-
-                    {
-                        putValue(NAME, "Ok");
-                    }
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                    }
-                }), "2,3");
+//                builder.add(new JButton(new AbstractAction() {
+//
+//                    {
+//                        putValue(NAME, "Ok");
+//                    }
+//
+//                    @Override
+//                    public void actionPerformed(ActionEvent e) {
+//
+//                    }
+//                }), "2,3");
                 builder.addLabel("Première ligne des données :", "1,4,2,1");
                 final JTextField dataLineField = new JTextField("2");
                 builder.add(dataLineField, "1,5");
@@ -271,7 +271,9 @@ public class ImportWizard {
                         }
                     }
                 });
-                builder.add(ok, "2,5");
+                CellConstraints cc = new CellConstraints();
+                cc.xyw(1,7,2);
+                builder.add(ok, cc);
             }
 
             PanelBuilder builder = new PanelBuilder((FormLayout) getPanel().getLayout(), getPanel());
@@ -339,6 +341,12 @@ public class ImportWizard {
             private static final String DATE = "Date et/ou Heure";
             private static final String SERIES = "Série de donnée";
 
+            private final String PRESS = org.cds06.speleograph.data.Type.PRESSURE.toString();
+            private final String TEMP = org.cds06.speleograph.data.Type.TEMPERATURE.toString();
+            private final String TEMP_MIN_MAX = org.cds06.speleograph.data.Type.TEMPERATURE_MIN_MAX.toString();
+            private final String WATER = org.cds06.speleograph.data.Type.WATER.toString();
+            private final String OTHER = "Autre";
+
             private JComboBox<String> columnTypeComboBox = new JComboBox<>(new String[]{
                     IGNORE, DATE, SERIES
             });
@@ -365,24 +373,34 @@ public class ImportWizard {
             }
 
             private JTextField typeNameField = new JTextField();
+            private JComboBox<String> typeNameBox = new JComboBox<>(new String[]{
+                    PRESS, TEMP, TEMP_MIN_MAX, WATER, OTHER
+            });
             private JTextField typeUnitField = new JTextField();
             private JPanel typePropertyPanel;
 
             {
-                PanelBuilder builder = new PanelBuilder(new FormLayout("r:p,p:grow", "p,p"));
+                PanelBuilder builder = new PanelBuilder(new FormLayout("r:p,p:grow", "p,p,p"));
+                builder.addLabel("Type :");
+                builder.nextColumn();
+                builder.add(typeNameBox);
+                typeNameBox.addItemListener(this);
+                builder.nextLine();
                 builder.addLabel("Nom :");
                 builder.nextColumn();
                 builder.add(typeNameField);
+                typeNameField.setText(PRESS.split(" ")[0]);
                 builder.nextLine();
                 builder.addLabel("Unité :");
                 builder.nextColumn();
                 builder.add(typeUnitField);
+                typeUnitField.setText(PRESS.split(" ")[1].substring(1,PRESS.split(" ")[1].length()-1));
                 typePropertyPanel = builder.build();
                 typePropertyPanel.setBorder(
                         BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), "Type"));
             }
 
-            private JCheckBox isMinMax = new JCheckBox("A une valeur minimal et/ou maximal");
+            private JCheckBox isMinMax = new JCheckBox("A une valeur minimale et/ou maximale");
 
             private JSpinner minColumnSpinner = new JSpinner(new SpinnerNumberModel(0, 0, columns, 1));
             private JSpinner maxColumnSpinner = new JSpinner(new SpinnerNumberModel(0, 0, columns, 1));
@@ -452,17 +470,34 @@ public class ImportWizard {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
+                if (!e.getSource().equals(isMinMax) &&
+                        !e.getSource().equals(columnTypeComboBox) &&
+                        !e.getSource().equals(typeNameBox)) return;
                 if (e.getSource().equals(isMinMax)) {
                     minMaxPropertyPanel.setVisible(isMinMax());
                 }
-                if (!e.getSource().equals(columnTypeComboBox)) return;
-                JPanel p = getEditPanel((String) columnTypeComboBox.getSelectedItem());
-                removeAll();
-                add(columnTypeComboBox, BorderLayout.NORTH);
-                add(p);
-                revalidate();
-                repaint();
-                pack();
+                if (e.getSource().equals(columnTypeComboBox)) {
+                    JPanel p = getEditPanel((String) columnTypeComboBox.getSelectedItem());
+                    removeAll();
+                    add(columnTypeComboBox, BorderLayout.NORTH);
+                    add(p);
+                    revalidate();
+                    repaint();
+                    pack();
+                }
+                if (e.getSource().equals(typeNameBox)) {
+                    final String[] type =((String) typeNameBox.getSelectedItem()).split(" ");
+                    String name = "";
+                    if (!type[0].equals("Autre"))
+                        name = type[0];
+                    String unit = "";
+                    if (type.length > 1)
+                        unit = type[1].substring(1,type[1].length()-1);
+                    if (type.length > 2)
+                        unit = type[2].substring(1,type[2].length()-1);
+                    typeNameField.setText(name);
+                    typeUnitField.setText(unit);
+                }
             }
 
             public boolean isMinMax() {
