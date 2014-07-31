@@ -231,6 +231,22 @@ public class SpeleoGraphApp extends JFrame {
         bar.add(fileMenu);
 
         {
+            JMenu menu = new JMenu(I18nSupport.translate("menus.edit"));
+
+            menu.add(new AbstractAction() {
+                {
+                    putValue(NAME, I18nSupport.translate("menus.edit.cancelAll"));
+                }
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    for (Series s : Series.getInstances()) {
+
+                    }
+                }
+            })
+        }
+
+        {
             JMenu menu = new JMenu(I18nSupport.translate("menus.graph"));
 
             menu.add(new AbstractAction() {

@@ -59,8 +59,9 @@ public class LimitDateRangeAction extends AbstractAction {
 
         private DateSelector startDateSelector = new DateSelector();
         private DateSelector endDateSelector = new DateSelector();
-        private JCheckBox applyToAllSeriesInTheSameFile = new JCheckBox(I18nSupport.translate("actions.limit.applyall"));
-        private FormLayout layout = new FormLayout("p:grow", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,6dlu,p");
+        private JCheckBox applyToAllSeriesInTheSameFile = new JCheckBox(I18nSupport.translate("actions.limit.applyAllInFile"));
+        private JCheckBox applyToAllOpenedSeries = new JCheckBox(I18nSupport.translate("actions.limit.applyAllOpened"));
+        private FormLayout layout = new FormLayout("p:grow", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,6dlu,p");
 
         public PromptDialog() {
             super();
@@ -80,6 +81,8 @@ public class LimitDateRangeAction extends AbstractAction {
             builder.nextLine(2);
             builder.add(applyToAllSeriesInTheSameFile);
             builder.nextLine(2);
+            builder.add(applyToAllOpenedSeries);
+            builder.nextLine(2);
             builder.add(new JButton(new AbstractAction() {
 
                 {
@@ -96,7 +99,10 @@ public class LimitDateRangeAction extends AbstractAction {
         @Override
         protected void validateForm() {
             ArrayList<Series> seriesToApply = new ArrayList<>();
-            if (applyToAllSeriesInTheSameFile.isSelected()) {
+            if (applyToAllOpenedSeries.isSelected()) {
+                for (Series s : Series.getInstances())
+                    seriesToApply.add(s);
+            } else if (applyToAllSeriesInTheSameFile.isSelected()) {
                 for (Series s : Series.getInstances()) {
                     if (s.getOrigin().equals(series.getOrigin())) seriesToApply.add(s);
                 }
