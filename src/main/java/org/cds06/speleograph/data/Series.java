@@ -865,6 +865,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return this.getType().getName().equals(Type.PRESSURE.getName());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public boolean isTemperature() {
         return this.getType().getName().equals(Type.TEMPERATURE.getName());
     }
