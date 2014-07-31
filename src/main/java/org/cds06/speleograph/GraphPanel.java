@@ -48,7 +48,7 @@ import java.util.List;
 
 /**
  * Panel for SpeleoGraph Charts.
- * <p>This class interact with {@link Series} to draw visible data into a {@link JFreeChart}.<br/>In add, this class
+ * <p>This class interact with {@link Series} to draw visible data into a {@link JFreeChart}.<br>In add, this class
  * controls user interaction with the graph, like click on axes ...</p>
  * <p>This is the most important graphical class in SpeleoGraph.</p>
  *
@@ -69,7 +69,7 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
      */
     private final SpeleoGraphApp application;
     /**
-     * JFreeChart used by this instance.
+     * JFreeChart used by this instance of Graph.
      */
     private final JFreeChart chart;
     /**

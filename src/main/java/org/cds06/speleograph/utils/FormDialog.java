@@ -72,7 +72,8 @@ public abstract class FormDialog extends JDialog {
      * <li>Call the {@link #setup()} function to populate the pane.</li>
      * <li>Set a default size (from the content pane preferred size)</li>
      * <li>Center the frame on the screen</li>
-     * </ul></p>
+     * </ul>
+     * </p>
      */
     protected void construct() {
         getContentPane().setLayout(new BorderLayout());

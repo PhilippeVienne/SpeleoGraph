@@ -123,6 +123,7 @@ public class CorrelateAction extends AbstractAction {
                     } else {
                         difference += (itemCor.getValue() - item.getValue());
                         itemCount++;
+                        iter.remove();
                     }
                 }
             }

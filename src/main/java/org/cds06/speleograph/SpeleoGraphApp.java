@@ -192,6 +192,7 @@ public class SpeleoGraphApp extends JFrame {
 
     /**
      * Create a JMenuBar for this application.
+     * @return the JMenuBar containg all the wanted menus.
      */
     public JMenuBar createMenus() {
         final JMenuBar bar = new JMenuBar();
