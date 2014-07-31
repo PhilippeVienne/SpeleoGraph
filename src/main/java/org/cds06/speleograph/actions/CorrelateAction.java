@@ -28,7 +28,8 @@ public class CorrelateAction extends AbstractAction {
     private final Series series;
 
     /**
-     * The acceptable distance between two datas in minutes.
+     * A value in minute.
+     * We consider two points of data taken at the same moment if they are spaced-out of at maximum this value.
      */
     private static final int TEMPORAL_RANGE_ACCEPTED = 3;
 
