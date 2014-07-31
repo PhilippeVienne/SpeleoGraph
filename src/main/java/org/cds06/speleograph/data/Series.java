@@ -869,6 +869,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return this.getType().getName().equals(Type.TEMPERATURE.getName());
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public boolean isWaterHeight() {
         return this.getType().getName().equals(Type.WATER_HEIGHT.getName());
     }
@@ -901,27 +902,42 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     }
 
     /**
-     * Setter for items
+     * Setter for items, stores the old items in a field so they can be retrieved by {@link #undo()}.
+     * The stored list of changes is limited to ten items.
+     * This method also clears the redo list.
      * @param items The {@link ArrayList} to set in place of the existing one.
      */
     public void setItems(ArrayList<Item> items) {
+        newItems.clear();
         this.oldItems.add(this.items);
         this.items = items;
+        if (this.oldItems.size() > MAX_UNDO_ITEMS)
+            this.oldItems.remove(0);
         notifyListeners();
     }
 
+    /**
+     * Undo the last destructive action (done through {@link #setItems(java.util.ArrayList)} done on the series.
+     * Can only undo ten items.
+     * All undone actions can be retrieved using {@link #redo()}.
+     * @return true if the undo could have been done, else false.
+     */
     public boolean undo() {
         if (!this.canUndo()) return false;
         final int oldItemsSize = this.oldItems.size();
         this.newItems.add(this.items);
         this.items = this.oldItems.get(oldItemsSize-1);
         this.oldItems.remove(oldItemsSize-1);
-        if (this.newItems.size() > MAX_UNDO_ITEMS)
-            this.newItems.remove(0);
+        if (this.oldItems.size() > MAX_UNDO_ITEMS)
+            this.oldItems.remove(0);
         notifyListeners();
         return true;
     }
 
+    /**
+     * Reset the series (undo everything).
+     * @return true if the reset could have been done, else false.
+     */
     public boolean reset() {
         if (!this.canUndo()) return false;
         while (this.canUndo())
@@ -929,6 +945,11 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return true;
     }
 
+    /**
+     * Redo the last undone action (see {@link #undo()}) on the series.
+     * Can only redo things that have been undone.
+     * @return true if the redo could have been done, else false.
+     */
     public boolean redo() {
         if (!this.canRedo()) return false;
         final int newItemsSize = this.newItems.size();
@@ -939,10 +960,18 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return true;
     }
 
+    /**
+     * Tells if a series can undo something.
+     * @return true if an undo can be done, else false.
+     */
     public boolean canUndo() {
         return this.oldItems.size() > 0;
     }
 
+    /**
+     * Tells if a series can redo something.
+     * @return true if an redo can be done, else false.
+     */
     public boolean canRedo() {
         return this.newItems.size() > 0;
     }
