@@ -869,6 +869,10 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return this.getType().getName().equals(Type.TEMPERATURE.getName());
     }
 
+    public boolean isWaterHeight() {
+        return this.getType().getName().equals(Type.WATER_HEIGHT.getName());
+    }
+
     /**
      * Remplace les données de la série par celles d'une sous-série.
      * Par exemple : On a des données du 25/07 au 30/07, on veut uniquement les données du 28 à 7h au 28 à 9h.

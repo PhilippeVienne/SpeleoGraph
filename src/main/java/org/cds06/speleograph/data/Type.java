@@ -37,7 +37,7 @@ import java.util.ArrayList;
  */
 public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
 
-    public static final int DEFAULT_SIZE = 5;
+    public static final int DEFAULT_SIZE = 6;
     private static final ArrayList<Type> instances = new ArrayList<>(DEFAULT_SIZE);
 
     public static ArrayList<Type> getInstances() {
@@ -49,6 +49,7 @@ public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
     public static final Type TEMPERATURE = Type.getType(I18nSupport.translate("actions.setType.temperature"), "°C");
     public static final Type TEMPERATURE_MIN_MAX = Type.getType(I18nSupport.translate("actions.setType.temperatureMinMax"), "°C");
     public static final Type WATER = Type.getType(I18nSupport.translate("actions.setType.water"), "mm");
+    public static final Type WATER_HEIGHT = Type.getType(I18nSupport.translate("actions.setType.waterHeight"), "cm");
 
     /**
      * Get Type by name and unit.

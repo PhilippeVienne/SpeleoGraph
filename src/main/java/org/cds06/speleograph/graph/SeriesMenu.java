@@ -159,6 +159,8 @@ public class SeriesMenu implements DatasetChangeListener {
             }));
         }
 
+        menu.add(new SetTypeMenu(series));
+
         menu.addSeparator();
 
 
@@ -197,16 +199,16 @@ public class SeriesMenu implements DatasetChangeListener {
         if (series.isWater())
             menu.add(new SamplingAction(series));
 
-        if (series.isPressure())
+        if (series.isPressure()) {
             menu.add(new CorrelateAction(series));
+            menu.add(new WaterHeightAction(series));
+        }
 
         menu.add(new LimitDateRangeAction(series));
 
         menu.add(new HourSettingAction(series));
 
         menu.addSeparator();
-
-        menu.add(new SetTypeMenu(series));
 
         {
             JMenuItem deleteItem = new JMenuItem("Supprimer la série");

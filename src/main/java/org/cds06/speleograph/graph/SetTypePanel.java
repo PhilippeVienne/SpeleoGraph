@@ -3,6 +3,7 @@ package org.cds06.speleograph.graph;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.cds06.speleograph.data.Type;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +16,16 @@ import java.awt.event.ItemListener;
  * Describes the panel used to select the type of the serie.
  */
 public class SetTypePanel extends JPanel implements ItemListener {
-    private final String PRESS = org.cds06.speleograph.data.Type.PRESSURE.toString();
-    private final String TEMP = org.cds06.speleograph.data.Type.TEMPERATURE.toString();
-    private final String TEMP_MIN_MAX = org.cds06.speleograph.data.Type.TEMPERATURE_MIN_MAX.toString();
-    private final String WATER = org.cds06.speleograph.data.Type.WATER.toString();
+    private final String PRESS = Type.PRESSURE.toString();
+    private final String TEMP = Type.TEMPERATURE.toString();
+    private final String TEMP_MIN_MAX = Type.TEMPERATURE_MIN_MAX.toString();
+    private final String WATER = Type.WATER.toString();
+    private final String WATER_HEIGHT = Type.WATER_HEIGHT.toString();
     private final String OTHER = "Autre";
 
     private JTextField typeNameField = new JTextField();
     private JComboBox<String> typeBox = new JComboBox<>(new String[]{
-            PRESS, TEMP, TEMP_MIN_MAX, WATER, OTHER
+            PRESS, TEMP, TEMP_MIN_MAX, WATER, WATER_HEIGHT, OTHER
     });
     private JTextField typeUnitField = new JTextField();
 
@@ -69,6 +71,7 @@ public class SetTypePanel extends JPanel implements ItemListener {
                 "<li>Pression</li>" +
                 "<li>Température (éventuellement min/max,<br />voir case à cocher)</li>" +
                 "<li>Précipitations</li>" +
+                "<li>Hauteur d'eau</li>" +
                 "</ul>" +
                 "</HTML>", cc);
 
