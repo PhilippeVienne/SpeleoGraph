@@ -163,7 +163,6 @@ public class SeriesMenu implements DatasetChangeListener {
 
         menu.addSeparator();
 
-
         menu.add(new AbstractAction() {
             {
                 putValue(NAME, "Annuler la dernière action");
@@ -180,8 +179,6 @@ public class SeriesMenu implements DatasetChangeListener {
             }
         });
 
-
-
         menu.add(new AbstractAction() {
             {
                 putValue(NAME, "Rétablir la dernière annulation");
@@ -195,6 +192,21 @@ public class SeriesMenu implements DatasetChangeListener {
                 series.redo();
             }
         });
+
+        menu.add(new AbstractAction() {
+            {
+                putValue(NAME, I18nSupport.translate("menus.serie.resetSerie"));
+                if (series.canUndo())
+                    setEnabled(true);
+                else
+                    setEnabled(false);
+            }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                series.reset();
+            }
+        });
+
 
         if (series.isWater())
             menu.add(new SamplingAction(series));

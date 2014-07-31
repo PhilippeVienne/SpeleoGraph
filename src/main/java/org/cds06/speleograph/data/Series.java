@@ -910,7 +910,8 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         notifyListeners();
     }
 
-    public void undo() {
+    public boolean undo() {
+        if (!this.canUndo()) return false;
         final int oldItemsSize = this.oldItems.size();
         this.newItems.add(this.items);
         this.items = this.oldItems.get(oldItemsSize-1);
@@ -918,14 +919,24 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         if (this.newItems.size() > MAX_UNDO_ITEMS)
             this.newItems.remove(0);
         notifyListeners();
+        return true;
     }
 
-    public void redo() {
+    public boolean reset() {
+        if (!this.canUndo()) return false;
+        while (this.canUndo())
+            undo();
+        return true;
+    }
+
+    public boolean redo() {
+        if (!this.canRedo()) return false;
         final int newItemsSize = this.newItems.size();
         this.oldItems.add(this.items);
         this.items = this.newItems.get(newItemsSize-1);
         this.newItems.remove(newItemsSize-1);
         notifyListeners();
+        return true;
     }
 
     public boolean canUndo() {

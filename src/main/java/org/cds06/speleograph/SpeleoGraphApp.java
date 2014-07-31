@@ -240,10 +240,33 @@ public class SpeleoGraphApp extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     for (Series s : Series.getInstances()) {
-
+                        s.undo();
                     }
                 }
-            })
+            });
+            menu.add(new AbstractAction() {
+                {
+                    putValue(NAME, I18nSupport.translate("menus.edit.redoAll"));
+                }
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    for (Series s : Series.getInstances()) {
+                        s.redo();
+                    }
+                }
+            });
+            menu.add(new AbstractAction() {
+                {
+                    putValue(NAME, I18nSupport.translate("menus.edit.resetSeries"));
+                }
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    for (Series s : Series.getInstances()) {
+                        s.reset();
+                    }
+                }
+            });
+            bar.add(menu);
         }
 
         {
