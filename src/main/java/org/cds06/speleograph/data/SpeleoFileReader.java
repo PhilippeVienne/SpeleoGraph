@@ -98,7 +98,7 @@ public class SpeleoFileReader implements DataFileReader {
         } catch (UnsupportedEncodingException | FileNotFoundException e) {
             log.error("Can not access to file", e);
             throw new FileReadingError(
-                    I18nSupport.translate("errors.canNotOpenFile", file.getName()), FileReadingError.Part.HEAD, e);
+                    I18nSupport.translate("error.canNotOpenFile", file.getName()), FileReadingError.Part.HEAD, e);
         }
         CSVReader reader = new CSVReader(streamReader, ';', '"');
         axes = new ArrayList<>();
@@ -108,7 +108,7 @@ public class SpeleoFileReader implements DataFileReader {
             line = reader.readNext();
         } catch (IOException e) {
             throw new FileReadingError(
-                    I18nSupport.translate("errors.canNotReadFileOrEmpty"), FileReadingError.Part.HEAD, e);
+                    I18nSupport.translate("error.canNotReadFileOrEmpty"), FileReadingError.Part.HEAD, e);
         }
         int size, state = CHECKING;
         HeaderInformation headers = new HeaderInformation();

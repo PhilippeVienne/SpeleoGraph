@@ -129,7 +129,7 @@ public class ReefnetFileReader implements DataFileReader {
             fileReader = new FileReader(file);
         } catch (FileNotFoundException e) {
             throw new FileReadingError(
-                    I18nSupport.translate("errors.canNotOpenFile", file.getName()),
+                    I18nSupport.translate("error.canNotOpenFile", file.getName()),
                     FileReadingError.Part.HEAD,
                     e
             );
@@ -140,7 +140,7 @@ public class ReefnetFileReader implements DataFileReader {
             line = reader.readNext();
         } catch (IOException e) {
             throw new FileReadingError(
-                    I18nSupport.translate("errors.canNotReadFileOrEmpty"),
+                    I18nSupport.translate("error.canNotReadFileOrEmpty"),
                     FileReadingError.Part.HEAD,
                     e
             );
@@ -216,7 +216,7 @@ public class ReefnetFileReader implements DataFileReader {
         } catch (ParseException e) {
             log.error("Can not parse a date", e);
             throw new FileReadingError(
-                    I18nSupport.translate("errors.canNotReadDate"),
+                    I18nSupport.translate("error.canNotReadDate"),
                     FileReadingError.Part.DATA,
                     e
             );

@@ -95,7 +95,7 @@ public class HoboFileReader implements DataFileReader {
             fileReader = new FileReader(file);
         } catch (FileNotFoundException e) {
             throw new FileReadingError(
-                    I18nSupport.translate("errors.canNotOpenFile", file.getName()),
+                    I18nSupport.translate("error.canNotOpenFile", file.getName()),
                     FileReadingError.Part.HEAD,
                     e
             );
@@ -106,7 +106,7 @@ public class HoboFileReader implements DataFileReader {
             line = csvReader.readNext();
         } catch (IOException e) {
             throw new FileReadingError(
-                    I18nSupport.translate("errors.canNotReadFileOrEmpty"),
+                    I18nSupport.translate("error.canNotReadFileOrEmpty"),
                     FileReadingError.Part.HEAD,
                     e
             );

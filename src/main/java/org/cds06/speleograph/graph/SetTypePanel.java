@@ -3,6 +3,7 @@ package org.cds06.speleograph.graph;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.Type;
 import org.jetbrains.annotations.NonNls;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ public class SetTypePanel extends JPanel implements ItemListener {
     private final String TEMP_MIN_MAX = Type.TEMPERATURE_MIN_MAX.toString();
     private final String WATER = Type.WATER.toString();
     private final String WATER_HEIGHT = Type.WATER_HEIGHT.toString();
-    private final String OTHER = "Autre";
+    private final String OTHER = I18nSupport.translate("actions.setType.other");
 
     private JTextField typeNameField = new JTextField();
     private JComboBox<String> typeBox = new JComboBox<>(new String[]{
@@ -39,14 +40,14 @@ public class SetTypePanel extends JPanel implements ItemListener {
     public SetTypePanel() {
         PanelBuilder builder = new PanelBuilder(new FormLayout("r:p,p:grow", "p,p,p,p"), this);
 
-        builder.addLabel("Type :");
+        builder.addLabel(I18nSupport.translate("actions.setType.type") + " :");
         builder.nextColumn();
         builder.add(typeBox);
         typeBox.addItemListener(this);
         builder.nextLine();
 
         final String name = ((String) typeBox.getSelectedItem()).split(" ")[0];
-        builder.addLabel("Nom :");
+        builder.addLabel(I18nSupport.translate("actions.setType.name") + " :");
         builder.nextColumn();
         builder.add(typeNameField);
         typeNameField.setText(name);
@@ -54,7 +55,7 @@ public class SetTypePanel extends JPanel implements ItemListener {
 
         String unit = ((String) typeBox.getSelectedItem()).split(" ")[1];
         unit = unit.substring(1, unit.length()-1);
-        builder.addLabel("Unité :");
+        builder.addLabel(I18nSupport.translate("actions.setType.unit") + " :");
         builder.nextColumn();
         builder.add(typeUnitField);
         typeUnitField.setText(unit);
@@ -62,16 +63,12 @@ public class SetTypePanel extends JPanel implements ItemListener {
         CellConstraints cc = new CellConstraints();
         cc.xyw(1,4,2);
         builder.addLabel("<HTML>" +
-                "Le menu déroulant vous aide à indiquer à SpeleoGraph<br />le type correct de données.<br />" +
-                "Pour des données correspondant aux types prédéfinis,<br />le nom doit correspondre à " +
-                "ce que donne le menu<br />déroulant (par exemple \"Précipitations\" si vous avez<br />" +
-                "des données de pluviométrie.<br />" +
-                "Les types prédéfinis sont :" +
+                I18nSupport.translate("actions.setType.message") + " :" +
                 "<ul>" +
-                "<li>Pression</li>" +
-                "<li>Température (éventuellement min/max,<br />voir case à cocher)</li>" +
-                "<li>Précipitations</li>" +
-                "<li>Hauteur d'eau</li>" +
+                "<li>" + Type.PRESSURE.getName() + "</li>" +
+                "<li>" + Type.TEMPERATURE.getName() + " " + I18nSupport.translate("actions.setType.maybeMinMax") + "</li>" +
+                "<li>" + Type.WATER.getName() + "</li>" +
+                "<li>" + Type.WATER_HEIGHT.getName() + "</li>" +
                 "</ul>" +
                 "</HTML>", cc);
 
@@ -94,7 +91,7 @@ public class SetTypePanel extends JPanel implements ItemListener {
 
         final String[] type =((String) typeBox.getSelectedItem()).split(" ");
         String name = "";
-        if (!type[0].equals("Autre"))
+        if (!type[0].equals(OTHER))
             name = type[0];
         String unit = "";
         if (type.length > 1)
