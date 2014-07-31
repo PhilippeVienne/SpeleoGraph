@@ -157,9 +157,9 @@ public class CorrelateAction extends AbstractAction {
             protected void setup() {
                 PanelBuilder builder = new PanelBuilder(layout, getPanel());
                 setTitle("Confirmation");
-                final String[] diff = ((Double) differenceMoyenne).toString().split("\\.");
+                final String[] diff = ((Double) Math.abs(differenceMoyenne)).toString().split("\\.");
                 final String diff2 = diff[0] + "," + diff[1].substring(0,4);
-                builder.addLabel("<HTML>"+"<center>La différence moyenne sur la plage sélectionnée est de<br>"+diff2+"</center><HTML>");
+                builder.addLabel("<HTML>"+"<center>L'écart moyen entre les deux séries était de :<br>"+diff2+"</center><HTML>");
                 builder.nextLine(2);
                 builder.add(new JButton(new AbstractAction() {
                     {

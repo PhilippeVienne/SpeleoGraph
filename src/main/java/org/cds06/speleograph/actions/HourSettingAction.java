@@ -70,7 +70,7 @@ public class HourSettingAction extends AbstractAction {
             builder.nextColumn();
             builder.add(offsetUnit);
             builder.nextLine();
-            cc.xyw(1,5,2);
+            cc.xyw(1,3,2);
             builder.add(new JButton(new AbstractAction() {
                 {
                     putValue(NAME,I18nSupport.translate("ok"));

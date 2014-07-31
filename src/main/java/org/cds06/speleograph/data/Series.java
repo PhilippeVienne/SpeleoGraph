@@ -88,10 +88,24 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * The file where this series has been read.
      */
     private File origin = null;
+
     /**
      * Series items, children of series.
      */
     private ArrayList<Item> items = new ArrayList<>();
+
+    /**
+     * Series old items, backup of items before modification.
+     */
+    private ArrayList<ArrayList<Item>> oldItems = new ArrayList<>();
+
+    /**
+     * Series new items, waiting to replace the actual ones.
+     */
+    private ArrayList<ArrayList<Item>> newItems = new ArrayList<>();
+
+    private static final int MAX_UNDO_ITEMS = 10;
+
     /**
      * The name of the series.
      */
@@ -887,7 +901,34 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * @param items The {@link ArrayList} to set in place of the existing one.
      */
     public void setItems(ArrayList<Item> items) {
+        this.oldItems.add(this.items);
         this.items = items;
         notifyListeners();
+    }
+
+    public void undo() {
+        final int oldItemsSize = this.oldItems.size();
+        this.newItems.add(this.items);
+        this.items = this.oldItems.get(oldItemsSize-1);
+        this.oldItems.remove(oldItemsSize-1);
+        if (this.newItems.size() > MAX_UNDO_ITEMS)
+            this.newItems.remove(0);
+        notifyListeners();
+    }
+
+    public void redo() {
+        final int newItemsSize = this.newItems.size();
+        this.oldItems.add(this.items);
+        this.items = this.newItems.get(newItemsSize-1);
+        this.newItems.remove(newItemsSize-1);
+        notifyListeners();
+    }
+
+    public boolean canUndo() {
+        return this.oldItems.size() > 0;
+    }
+
+    public boolean canRedo() {
+        return this.newItems.size() > 0;
     }
 }

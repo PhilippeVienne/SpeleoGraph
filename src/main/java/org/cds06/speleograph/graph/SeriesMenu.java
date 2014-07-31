@@ -97,11 +97,13 @@ public class SeriesMenu implements DatasetChangeListener {
         final JPopupMenu menu = new JPopupMenu(series.getName());
 
         menu.removeAll();
-        final JMenuItem renameItem = new JMenuItem("Renommer la série");
-        renameItem.addActionListener(new ActionListener() {
+
+        menu.add(new AbstractAction() {
+            {
+                putValue(NAME, "Renommer la série");
+            }
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 menu.setVisible(false);
                 String newName = "";
                 while (newName != null && newName.equals("")) {
@@ -116,10 +118,8 @@ public class SeriesMenu implements DatasetChangeListener {
                     );
                 }
                 series.setName(newName);
-
             }
         });
-        menu.add(renameItem);
 
         if (series.hasOwnAxis()) {
             menu.add(new AbstractAction() {
@@ -159,17 +159,52 @@ public class SeriesMenu implements DatasetChangeListener {
             }));
         }
 
-        if (series.isWater()) {
-            menu.add(new SamplingAction(series));
-        }
+        menu.addSeparator();
 
-        if (series.isPressure()) {
+
+        menu.add(new AbstractAction() {
+            {
+                putValue(NAME, "Annuler la dernière action");
+                if (series.canUndo())
+                    setEnabled(true);
+                else {
+                    setEnabled(false);
+                }
+
+            }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                series.undo();
+            }
+        });
+
+
+
+        menu.add(new AbstractAction() {
+            {
+                putValue(NAME, "Rétablir la dernière annulation");
+                if (series.canRedo())
+                    setEnabled(true);
+                else
+                    setEnabled(false);
+            }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                series.redo();
+            }
+        });
+
+        if (series.isWater())
+            menu.add(new SamplingAction(series));
+
+        if (series.isPressure())
             menu.add(new CorrelateAction(series));
-        }
 
         menu.add(new LimitDateRangeAction(series));
 
         menu.add(new HourSettingAction(series));
+
+        menu.addSeparator();
 
         menu.add(new SetTypeMenu(series));
 
@@ -180,7 +215,8 @@ public class SeriesMenu implements DatasetChangeListener {
                 public void actionPerformed(ActionEvent e) {
                     if (JOptionPane.showConfirmDialog(
                             application,
-                            "Etes-vous sur de vouloir supprimer cette série",
+                            "Êtes-vous sur de vouloir supprimer cette série ?\n" +
+                                    "Cette action est définitive.",
                             "Confirmation",
                             JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
                         series.delete();
@@ -272,7 +308,7 @@ public class SeriesMenu implements DatasetChangeListener {
             public void actionPerformed(ActionEvent e) {
                 if (JOptionPane.showConfirmDialog(
                         application,
-                        "Etes-vous sur de vouloir fermer toutes les séries du fichier ?",
+                        "Êtes-vous sur de vouloir fermer toutes les séries du fichier ?",
                         "Confirmation",
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
                     final File f = series.getOrigin();
