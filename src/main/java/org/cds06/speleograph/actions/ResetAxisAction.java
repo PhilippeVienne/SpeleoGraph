@@ -32,11 +32,11 @@ import java.awt.event.ActionEvent;
  * This file is created by PhilippeGeek.
  * Distributed on licence GNU GPL V3.
  */
-public class ResetAxesAction extends AbstractAction {
+public class ResetAxisAction extends AbstractAction {
 
     private final GraphPanel panel;
 
-    public ResetAxesAction(GraphPanel panel) {
+    public ResetAxisAction(GraphPanel panel) {
         super(I18nSupport.translate("actions.resetAxis"));
         this.panel = panel;
     }

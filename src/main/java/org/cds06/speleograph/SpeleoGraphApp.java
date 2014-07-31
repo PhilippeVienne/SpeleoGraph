@@ -24,7 +24,7 @@ package org.cds06.speleograph;
 
 import org.cds06.speleograph.actions.ImportAction;
 import org.cds06.speleograph.actions.OpenAction;
-import org.cds06.speleograph.actions.ResetAxesAction;
+import org.cds06.speleograph.actions.ResetAxisAction;
 import org.cds06.speleograph.actions.SaveAction;
 import org.cds06.speleograph.data.*;
 import org.cds06.speleograph.graph.GraphEditor;
@@ -288,7 +288,7 @@ public class SpeleoGraphApp extends JFrame {
                     putValue(NAME, I18nSupport.translate("menus.graph.graphEditor"));
                 }
             });
-            menu.add(new ResetAxesAction((GraphPanel) getSplitPane().getLeftComponent()));
+            menu.add(new ResetAxisAction((GraphPanel) getSplitPane().getLeftComponent()));
 
             bar.add(menu);
         }
