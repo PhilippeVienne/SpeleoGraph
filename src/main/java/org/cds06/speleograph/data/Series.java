@@ -880,7 +880,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * @param end Date de fin.
      */
     public void subSeries(Date start, Date end) {
-        items = extractSubSerie(start, end);
+        this.setItems(extractSubSerie(start, end));
         notifyListeners();
     }
 
