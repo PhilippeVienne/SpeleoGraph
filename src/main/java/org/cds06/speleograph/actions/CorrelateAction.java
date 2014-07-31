@@ -28,6 +28,11 @@ public class CorrelateAction extends AbstractAction {
     private final Series series;
 
     /**
+     * The acceptable distance between two datas in minutes.
+     */
+    private static final int TEMPORAL_RANGE_ACCEPTED = 3;
+
+    /**
      * Logger for errors and info.
      */
     @SuppressWarnings("UnusedDeclaration")
@@ -109,9 +114,10 @@ public class CorrelateAction extends AbstractAction {
                 ListIterator<Item> iter = itemsToCorrelate.listIterator();
                 while (iter.hasNext()) {
                     Item itemCor = iter.next();
-                    if (item.getDate().getTime()/60000 - itemCor.getDate().getTime()/60000 > 3) {
+                    // Divided by 60000 to transform milliseconds into minutes.
+                    if (item.getDate().getTime()/60000 - itemCor.getDate().getTime()/60000 > TEMPORAL_RANGE_ACCEPTED) {
                         iter.remove();
-                    } else if (itemCor.getDate().getTime()/60000 - item.getDate().getTime()/60000 > 3) {
+                    } else if (itemCor.getDate().getTime()/60000 - item.getDate().getTime()/60000 > TEMPORAL_RANGE_ACCEPTED) {
                         break;
                     } else {
                         difference += (itemCor.getValue() - item.getValue());
