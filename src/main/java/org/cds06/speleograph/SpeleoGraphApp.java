@@ -51,8 +51,10 @@ import java.util.prefs.Preferences;
  * @author Philippe VIENNE
  */
 public class SpeleoGraphApp extends JFrame {
-
-    public static final String APP_NAME = "SpeleoGraph 1.0b"; // NON-NLS
+    public static final String APP_VERSION = "1.1b";
+    public static final String AUTHORS = "Philippe Vienne, Gabriel Augendre";
+    public static final String CONTACT = "Philippe@Vienne.me";
+    public static final String APP_NAME = "SpeleoGraph"; // NON-NLS
 
     /**
      * Instance of SpeleoGraph in the current JVM.
@@ -99,7 +101,7 @@ public class SpeleoGraphApp extends JFrame {
     }
 
     public SpeleoGraphApp() {
-        super(APP_NAME); // NON-NLS
+        super(APP_NAME + " " + APP_VERSION); // NON-NLS
 
         try {
             setIconImage(new ImageIcon(SpeleoGraphApp.class.getResource("SpeleoGraph_icon.png")).getImage()); //NON-NLS
@@ -272,7 +274,7 @@ public class SpeleoGraphApp extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JOptionPane.showMessageDialog(SpeleoGraphApp.this,
-                            new About("SpeleoGraph", "1.0b", "Philippe VIENNE, Gabriel AUGENDRE", "Philippe@Vienne.me", "http://speleograph.free.fr",
+                            new About(APP_NAME, APP_VERSION, AUTHORS, CONTACT, "http://speleograph.free.fr",
                                     I18nSupport.translate("menus.help.about.disclaimer"),
                                     new ImageIcon(SpeleoGraphApp.class.getResource("SpeleoGraph_icon.png"))),
                             I18nSupport.translate("menus.help.about"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon());
