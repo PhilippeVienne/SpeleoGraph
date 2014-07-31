@@ -93,7 +93,7 @@ public class SamplingAction extends AbstractAction {
                         text = I18nSupport.translate("actions.sample.day");
                         break;
                     default:
-                        text = "x" + Integer.toString(value) + " " + I18nSupport.translate("actions.sample.secondPlural");
+                        text = "x" + Integer.toString(value) + " " + I18nSupport.translate("actions.sample.seconds");
                 }
                 setText(text);
                 return this;
