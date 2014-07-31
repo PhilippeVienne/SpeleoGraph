@@ -4,6 +4,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
+import org.cds06.speleograph.data.Item;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.utils.DateSelector;
 import org.cds06.speleograph.utils.FormDialog;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 /**
  * Created by Gabriel Augendre.
@@ -97,14 +100,82 @@ public class CorrelateAction extends AbstractAction {
 
         @Override
         protected void validateForm() {
-            Series serieEtalon = (Series) seriesList.getSelectedItem();
-            log.info("La série étalon est : " + serieEtalon.toString());
+            ArrayList<Item> itemsEtalons = ((Series) seriesList.getSelectedItem()).extractSubSerie(startDateSelector.getDate(), endDateSelector.getDate());
+            ArrayList<Item> itemsToCorrelate = series.extractSubSerie(startDateSelector.getDate(), endDateSelector.getDate());
+
+            double difference = 0;
+            int itemCount = 0;
+
+            for (Item item : itemsEtalons) {
+                ListIterator<Item> iter = itemsToCorrelate.listIterator();
+                while (iter.hasNext()) {
+//                    if (itemCor.getDate().compareTo(item.getDate()) < 0) {
+                    Item itemCor = iter.next();
+                    if (item.getDate().getTime()/60000 - itemCor.getDate().getTime()/60000 > 3) {
+                        iter.remove();
+                    } else if (itemCor.getDate().getTime()/60000 - item.getDate().getTime()/60000 > 3) {
+                        break;
+                    } else {
+                        difference += (itemCor.getValue() - item.getValue());
+                        itemCount++;
+                    }
+                }
+            }
+            final double differenceMoyenne = difference/itemCount;
+            ArrayList<Item> newItems = new ArrayList<>(series.getItems().size());
+            for (Item item : series.getItems()) {
+                newItems.add(new Item (item.getSeries(), item.getDate(), item.getValue() - differenceMoyenne));
+            }
+            series.setItems(newItems);
+            InfoDialog iD = new InfoDialog(differenceMoyenne);
+            iD.setVisible(true);
             setVisible(false);
         }
 
         @Override
         protected FormLayout getFormLayout() {
             return null;
+        }
+
+        private class InfoDialog extends FormDialog {
+
+            private FormLayout layout = getFormLayout();
+            double differenceMoyenne;
+
+            public InfoDialog(double differenceMoyenne) {
+                super();
+                this.differenceMoyenne = differenceMoyenne;
+                construct();
+            }
+            @Override
+            protected void setup() {
+                PanelBuilder builder = new PanelBuilder(layout, getPanel());
+                setTitle("Confirmation");
+                final String[] diff = ((Double) differenceMoyenne).toString().split("\\.");
+                final String diff2 = diff[0] + "," + diff[1].substring(0,4);
+                builder.addLabel("<HTML>"+"<center>La différence moyenne sur la plage sélectionnée est de<br>"+diff2+"</center><HTML>");
+                builder.nextLine(2);
+                builder.add(new JButton(new AbstractAction() {
+                    {
+                        putValue(NAME, "Ok");
+                    }
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        validateForm();
+                    }
+                }));
+            }
+
+            @Override
+            protected void validateForm() {
+                setVisible(false);
+            }
+
+            @Override
+            protected FormLayout getFormLayout() {
+                return new FormLayout("p:grow", "p:grow,p,p");
+            }
         }
     }
 }

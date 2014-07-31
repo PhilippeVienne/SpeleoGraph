@@ -60,7 +60,6 @@ public class SetTypeMenu extends JMenu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 final PromptDialog dialog = new PromptDialog();
-                dialog.setTitle("Modifier le type");
                 dialog.setVisible(true);
             }
         });
@@ -72,6 +71,7 @@ public class SetTypeMenu extends JMenu {
 
         public PromptDialog() {
             super();
+            setTitle("Modifier le type");
             construct();
         }
 

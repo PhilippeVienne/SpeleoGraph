@@ -880,4 +880,9 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         }
         return newItems;
     }
+
+    public void setItems(ArrayList<Item> items) {
+        this.items = items;
+        notifyListeners();
+    }
 }
