@@ -55,7 +55,7 @@ public class SetTypeMenu extends JMenu {
 
         this.add(new AbstractAction() {
             {
-                putValue(NAME, "Nouveau type");
+                putValue(NAME, I18nSupport.translate("actions.setType.newType"));
             }
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -71,7 +71,7 @@ public class SetTypeMenu extends JMenu {
 
         public PromptDialog() {
             super();
-            setTitle("Modifier le type");
+            setTitle(I18nSupport.translate("actions.setType.changeType"));
             construct();
         }
 
@@ -82,7 +82,7 @@ public class SetTypeMenu extends JMenu {
             builder.nextLine();
             builder.add(new JButton(new AbstractAction() {
                 {
-                    putValue(NAME, "Définir pour " + series.getName());
+                    putValue(NAME, I18nSupport.translate("actions.setType.setFor")+ " " + series.getName());
                 }
 
                 @Override

@@ -156,14 +156,14 @@ public class CorrelateAction extends AbstractAction {
             @Override
             protected void setup() {
                 PanelBuilder builder = new PanelBuilder(layout, getPanel());
-                setTitle("Confirmation");
+                setTitle(I18nSupport.translate("confirm"));
                 final String[] diff = ((Double) Math.abs(differenceMoyenne)).toString().split("\\.");
                 final String diff2 = diff[0] + "," + diff[1].substring(0,4);
-                builder.addLabel("<HTML>"+"<center>L'écart moyen entre les deux séries était de :<br>"+diff2+"</center><HTML>");
+                builder.addLabel("<HTML>"+"<center>" + I18nSupport.translate("actions.correlate.space") +" :<br>"+diff2+"</center><HTML>");
                 builder.nextLine(2);
                 builder.add(new JButton(new AbstractAction() {
                     {
-                        putValue(NAME, "Ok");
+                        putValue(NAME, I18nSupport.translate("ok"));
                     }
 
                     @Override

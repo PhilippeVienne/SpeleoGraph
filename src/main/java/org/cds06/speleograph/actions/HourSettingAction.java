@@ -96,7 +96,7 @@ public class HourSettingAction extends AbstractAction {
             try {
                 value = Integer.parseInt(offsetValue.getText());
             } catch (NumberFormatException e) {
-                log.error(offsetValue.getText() + " n'est pas un nombre entier.");
+                log.error(offsetValue.getText() + " " + I18nSupport.translate("notInt") + ".");
             }
 
             ArrayList<Item> newItems = new ArrayList<>(items.size());
