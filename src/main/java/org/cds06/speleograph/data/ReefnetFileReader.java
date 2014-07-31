@@ -82,12 +82,11 @@ public class ReefnetFileReader implements DataFileReader {
 
     /**
      * Detect if a file is a ReefNet CSV format.
-     * <p>Open the file as a csv, read the first line, we check that :
+     * <p>Open the file as a csv, read the first line, we check that :</p>
      * <ul>
      * <li>has got 12 or 13 elements</li>
      * <li>the second column contains a ReefNet Device ID starting with "RU-"</li>
      * </ul>
-     * </p>
      * @param file File to test
      * @return true if it's a ReefNet file
      */

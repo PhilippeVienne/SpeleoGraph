@@ -66,14 +66,14 @@ public abstract class FormDialog extends JDialog {
 
     /**
      * This function construct the content pane.
-     * <p>You should call this method in the constructor after assigned arguments.</p>
-     * <p>This function will : <ul>
+     * <p>You should call this method in the constructor after assigned arguments.<br>
+     * This function will :</p>
+     * <ul>
      * <li>Setup the content pane</li>
      * <li>Call the {@link #setup()} function to populate the pane.</li>
      * <li>Set a default size (from the content pane preferred size)</li>
      * <li>Center the frame on the screen</li>
      * </ul>
-     * </p>
      */
     protected void construct() {
         getContentPane().setLayout(new BorderLayout());
