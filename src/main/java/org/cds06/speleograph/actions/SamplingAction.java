@@ -24,7 +24,6 @@ package org.cds06.speleograph.actions;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import com.sun.org.apache.xml.internal.security.utils.I18n;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.utils.FormDialog;

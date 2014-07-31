@@ -9,7 +9,10 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,7 +81,7 @@ public class WundergroundFileReader implements DataFileReader{
 
 
             ArrayList<String> data = new ArrayList<>();
-            String line = reader.readLine(),buffer="";
+            String line,buffer="";
             while ((line=reader.readLine())!=null){
                 buffer+=StringUtils.normalizeSpace(line);
                 if(StringUtils.countMatches(buffer,",")>=16){
