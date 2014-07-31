@@ -32,7 +32,7 @@
     <url>http://cds06.github.io/SpeleoGraph</url>
 
     <packaging>jar</packaging>
-    <version>1.1-BETA</version>
+    <version>1.2</version>
 
     <organization>
         <name>CDS06</name>
