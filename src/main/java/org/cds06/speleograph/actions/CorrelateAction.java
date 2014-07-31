@@ -54,13 +54,12 @@ public class CorrelateAction extends AbstractAction {
 
         private DateSelector startDateSelector = new DateSelector();
         private DateSelector endDateSelector = new DateSelector();
-//        private JCheckBox applyToAllSeriesInTheSameFile = new JCheckBox(I18nSupport.translate("actions.limit.applyall"));
         private JComboBox<Series> seriesList = new JComboBox<>();
         {
             ListModel<Series> listModel = SpeleoGraphApp.getInstance().getSeriesList().getModel();
             for (int i = 0; i < listModel.getSize(); i++) {
                 Series item = listModel.getElementAt(i);
-                if (!item.equals(series))
+                if (!item.equals(series) && item.isPressure())
                     seriesList.addItem(listModel.getElementAt(i));
             }
         }
@@ -109,7 +108,6 @@ public class CorrelateAction extends AbstractAction {
             for (Item item : itemsEtalons) {
                 ListIterator<Item> iter = itemsToCorrelate.listIterator();
                 while (iter.hasNext()) {
-//                    if (itemCor.getDate().compareTo(item.getDate()) < 0) {
                     Item itemCor = iter.next();
                     if (item.getDate().getTime()/60000 - itemCor.getDate().getTime()/60000 > 3) {
                         iter.remove();
