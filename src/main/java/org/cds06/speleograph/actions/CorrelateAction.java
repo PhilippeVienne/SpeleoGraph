@@ -41,7 +41,7 @@ public class CorrelateAction extends AbstractAction {
     private static Logger log = LoggerFactory.getLogger(SpeleoGraphApp.class);
 
     public CorrelateAction(Series series) {
-        super(I18nSupport.translate("actions.recalibrate"));
+        super(I18nSupport.translate("actions.correlate"));
         this.series = series;
     }
 
@@ -69,12 +69,12 @@ public class CorrelateAction extends AbstractAction {
                     seriesList.addItem(listModel.getElementAt(i));
             }
         }
-        private FormLayout layout = new FormLayout("p:grow", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,6dlu,p");
+        private FormLayout layout = new FormLayout("p:grow", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,6dlu,p"); //NON-NLS
 
         public PromptDialog() {
             super();
             construct();
-            this.setTitle(I18nSupport.translate("actions.correlate"));
+            this.setTitle(I18nSupport.translate("actions.correlate.title"));
         }
 
         @Override
@@ -105,20 +105,20 @@ public class CorrelateAction extends AbstractAction {
 
         @Override
         protected void validateForm() {
-            ArrayList<Item> itemsEtalons = ((Series) seriesList.getSelectedItem()).extractSubSerie(startDateSelector.getDate(), endDateSelector.getDate());
+            ArrayList<Item> itemsStandards = ((Series) seriesList.getSelectedItem()).extractSubSerie(startDateSelector.getDate(), endDateSelector.getDate());
             ArrayList<Item> itemsToCorrelate = series.extractSubSerie(startDateSelector.getDate(), endDateSelector.getDate());
 
             double difference = 0;
             int itemCount = 0;
 
-            for (Item item : itemsEtalons) {
+            for (Item item : itemsStandards) {
                 ListIterator<Item> iter = itemsToCorrelate.listIterator();
                 while (iter.hasNext()) {
                     Item itemCor = iter.next();
                     // Divided by 60000 to transform milliseconds into minutes.
-                    if (item.getDate().getTime()/60000 - itemCor.getDate().getTime()/60000 > TEMPORAL_RANGE_ACCEPTED) {
+                    if ((item.getDate().getTime() - itemCor.getDate().getTime())/60000 > TEMPORAL_RANGE_ACCEPTED) {
                         iter.remove();
-                    } else if (itemCor.getDate().getTime()/60000 - item.getDate().getTime()/60000 > TEMPORAL_RANGE_ACCEPTED) {
+                    } else if ((itemCor.getDate().getTime() - item.getDate().getTime())/60000 > TEMPORAL_RANGE_ACCEPTED) {
                         break;
                     } else {
                         difference += (itemCor.getValue() - item.getValue());
@@ -180,7 +180,7 @@ public class CorrelateAction extends AbstractAction {
 
             @Override
             protected FormLayout getFormLayout() {
-                return new FormLayout("p:grow", "p:grow,p,p");
+                return new FormLayout("p:grow", "p:grow,6dlu,p");
             }
         }
     }
