@@ -97,6 +97,11 @@ public class WaterHeightAction extends AbstractAction {
             ArrayList<Item> newItems = new ArrayList<>(itemsToCompute.size());
             final Series newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.WATER_HEIGHT);
             newSerie.setName(I18nSupport.translate("actions.waterHeight.setName") + " - " + series.getName());
+            double multiplier = 1.02;
+            if (series.getType().getUnit().equalsIgnoreCase("bar"))
+                multiplier *= 1000;
+            if (series.getType().getUnit().equalsIgnoreCase("Pa"))
+                multiplier /= 100;
 
             for (Item item : itemsStandards) {
                 ListIterator<Item> iter = itemsToCompute.listIterator();
@@ -108,7 +113,7 @@ public class WaterHeightAction extends AbstractAction {
                     } else if ((itemCom.getDate().getTime() - item.getDate().getTime())/60000 > TEMPORAL_RANGE_ACCEPTED) {
                         break;
                     } else {
-                        newItems.add(new Item(newSerie, itemCom.getDate(), (itemCom.getValue() - item.getValue()) * 1.02));
+                        newItems.add(new Item(newSerie, itemCom.getDate(), (itemCom.getValue() - item.getValue()) * multiplier));
                         iter.remove();
                     }
                 }
