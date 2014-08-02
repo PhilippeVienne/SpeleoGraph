@@ -18,7 +18,9 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 /**
- * Created by Gabriel on 02/08/2014.
+ * Created by Gabriel Augendre.
+ * Allow the user to compute the sum of items value on a period.
+ * Useful for water-like series to compute how much of water fell during a certain amount of time.
  */
 public class SumOnPeriodAction extends AbstractAction {
 
@@ -111,9 +113,12 @@ public class SumOnPeriodAction extends AbstractAction {
             }
             @Override
             protected void setup() {
+                final String[] splited = ((Double) Math.abs(somme)).toString().split("\\.");
+                final String str = splited[0] + "," + splited[1].substring(0,4);
+
                 PanelBuilder builder = new PanelBuilder(layout, getPanel());
                 setTitle(I18nSupport.translate("confirm"));
-                builder.addLabel("<HTML>"+"<center>" + "Somme" +" :<br>"+somme+"</center><HTML>");
+                builder.addLabel("<HTML>"+"<center>" + "Somme" +" :<br>"+ str +"</center><HTML>");
                 builder.nextLine(2);
                 builder.add(new JButton(new AbstractAction() {
                     {
