@@ -159,6 +159,7 @@ public class GraphPanel extends JPanel implements DatasetChangeListener, ChartMo
                     plot.setRangeAxisLocation(index, AxisLocation.BOTTOM_OR_LEFT);
                 }
                 plot.mapDatasetToRangeAxis(id, index);
+                plot.getRenderer().setSeriesItemLabelsVisible(0, true, true);
                 plot.datasetChanged(new DatasetChangeEvent(this, set));
             }
         }

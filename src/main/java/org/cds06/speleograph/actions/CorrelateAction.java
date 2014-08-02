@@ -71,7 +71,7 @@ public class CorrelateAction extends AbstractAction {
         }
         private FormLayout layout = new FormLayout("p:grow", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,6dlu,p"); //NON-NLS
 
-        public PromptDialog() {
+        private PromptDialog() {
             super();
             construct();
             this.setTitle(I18nSupport.translate("actions.correlate.title"));

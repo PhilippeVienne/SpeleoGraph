@@ -93,6 +93,7 @@ public class HourSettingAction extends AbstractAction {
                 modifier *= 60;
 
             int value = 0;
+
             try {
                 value = Integer.parseInt(offsetValue.getText());
             } catch (NumberFormatException e) {

@@ -116,7 +116,7 @@ public class DateAxisEditor extends JDialog {
         });
 
         panel.add(barBuilder.build(), cc.xyw(1, 8, 3));
-        panel.add(new JLabel(""), cc.xyw(1, 9, 3)); //Used to set a good looking OK button
+//        panel.add(new JLabel(""), cc.xyw(1, 9, 3)); //Used to set a good looking OK button
 
         minDate.setDate(dateAxis.getMinimumDate());
         maxDate.setDate(dateAxis.getMaximumDate());
