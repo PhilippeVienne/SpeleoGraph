@@ -33,7 +33,8 @@ public class HourSettingAction extends AbstractAction {
     private static Logger log = LoggerFactory.getLogger(SpeleoGraphApp.class);
 
     public HourSettingAction(Series series) {
-        super(I18nSupport.translate("actions.timezone"));
+        super();
+        putValue(NAME, I18nSupport.translate("actions.timezone"));
         this.series = series;
     }
 
@@ -111,7 +112,7 @@ public class HourSettingAction extends AbstractAction {
                     newItems.add(new Item(series, new Date(i.getDate().getTime() + value * modifier), i.getLow(), i.getHigh()));
                 }
             }
-            series.setItems(newItems);
+            series.setItems(newItems, (String) getValue(NAME));
             setVisible(false);
         }
 

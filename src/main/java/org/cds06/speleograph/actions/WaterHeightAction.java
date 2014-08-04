@@ -41,7 +41,8 @@ public class WaterHeightAction extends AbstractAction {
     private static Logger log = LoggerFactory.getLogger(SpeleoGraphApp.class);
 
     public WaterHeightAction(Series series) {
-        super(I18nSupport.translate("actions.waterHeight"));
+        super();
+        putValue(NAME, I18nSupport.translate("actions.waterHeight"));
         this.series = series;
     }
 
@@ -118,7 +119,7 @@ public class WaterHeightAction extends AbstractAction {
                     }
                 }
             }
-            newSerie.setItems(newItems);
+            newSerie.setItems(newItems, (String) getValue(NAME));
 
             setVisible(false);
         }

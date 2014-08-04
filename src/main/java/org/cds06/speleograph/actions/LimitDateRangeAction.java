@@ -42,7 +42,8 @@ public class LimitDateRangeAction extends AbstractAction {
     private final Series series;
 
     public LimitDateRangeAction(Series series) {
-        super(I18nSupport.translate("actions.limit"));
+        super();
+        putValue(NAME, I18nSupport.translate("actions.limit"));
         this.series = series;
     }
 
@@ -99,10 +100,13 @@ public class LimitDateRangeAction extends AbstractAction {
         @Override
         protected void validateForm() {
             ArrayList<Series> seriesToApply = new ArrayList<>();
+            boolean applyToAll = false;
             if (applyToAllOpenedSeries.isSelected()) {
+                applyToAll = true;
                 for (Series s : Series.getInstances())
                     seriesToApply.add(s);
             } else if (applyToAllSeriesInTheSameFile.isSelected()) {
+                applyToAll = true;
                 for (Series s : Series.getInstances()) {
                     if (s.getOrigin().equals(series.getOrigin())) seriesToApply.add(s);
                 }
@@ -110,7 +114,7 @@ public class LimitDateRangeAction extends AbstractAction {
                 seriesToApply.add(series);
             }
             for (Series s : seriesToApply) {
-                s.subSeries(startDateSelector.getDate(), endDateSelector.getDate());
+                s.subSeries(startDateSelector.getDate(), endDateSelector.getDate(), applyToAll);
             }
             setVisible(false);
         }

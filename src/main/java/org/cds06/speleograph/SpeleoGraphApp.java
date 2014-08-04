@@ -233,8 +233,19 @@ public class SpeleoGraphApp extends JFrame {
         {
             JMenu menu = new JMenu(I18nSupport.translate("menus.edit"));
 
+           /* menu.add(new AbstractAction() {
+                {
+                    putValue(NAME, I18nSupport.translate("cancel"));
+                }
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });*/
+
             menu.add(new AbstractAction() {
                 {
+                    String name;
                     putValue(NAME, I18nSupport.translate("menus.edit.cancelAll"));
                 }
                 @Override

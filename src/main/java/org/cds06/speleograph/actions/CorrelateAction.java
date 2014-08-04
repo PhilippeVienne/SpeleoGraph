@@ -41,7 +41,8 @@ public class CorrelateAction extends AbstractAction {
     private static Logger log = LoggerFactory.getLogger(SpeleoGraphApp.class);
 
     public CorrelateAction(Series series) {
-        super(I18nSupport.translate("actions.correlate"));
+        super();
+        putValue(NAME, I18nSupport.translate("actions.correlate"));
         this.series = series;
     }
 
@@ -132,7 +133,7 @@ public class CorrelateAction extends AbstractAction {
             for (Item item : series.getItems()) {
                 newItems.add(new Item (item.getSeries(), item.getDate(), item.getValue() - differenceMoyenne));
             }
-            series.setItems(newItems);
+            series.setItems(newItems, (String) getValue(NAME));
             InfoDialog iD = new InfoDialog(differenceMoyenne);
             iD.setVisible(true);
             setVisible(false);

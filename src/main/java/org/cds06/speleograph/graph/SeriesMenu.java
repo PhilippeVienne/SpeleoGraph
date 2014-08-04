@@ -165,7 +165,12 @@ public class SeriesMenu implements DatasetChangeListener {
 
         menu.add(new AbstractAction() {
             {
-                putValue(NAME, "Annuler la dernière action");
+                String name;
+                if (series.canUndo()) name = "Annuler " + series.getItemsName();
+                else name = series.getLastUndoName();
+
+                putValue(NAME, name);
+
                 if (series.canUndo())
                     setEnabled(true);
                 else {
@@ -181,7 +186,12 @@ public class SeriesMenu implements DatasetChangeListener {
 
         menu.add(new AbstractAction() {
             {
-                putValue(NAME, "Rétablir la dernière annulation");
+                String name;
+                if (series.canRedo()) name = "Refaire " + series.getNextRedoName();
+                else name = series.getNextRedoName();
+
+                putValue(NAME, name);
+
                 if (series.canRedo())
                     setEnabled(true);
                 else
