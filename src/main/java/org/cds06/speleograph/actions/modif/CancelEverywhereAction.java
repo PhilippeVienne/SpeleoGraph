@@ -17,8 +17,12 @@ public class CancelEverywhereAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        setEnabled(false);
         for (Series s : Series.getInstances()) {
-            s.undo();
+            if (s.canUndo()) {
+                s.undo();
+                setEnabled(true);
+            }
         }
     }
 }

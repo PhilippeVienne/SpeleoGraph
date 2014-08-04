@@ -16,8 +16,12 @@ public class RedoEverywhereAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        setEnabled(false);
         for (Series s : Series.getInstances()) {
-            s.redo();
+            if (s.canRedo()) {
+                s.redo();
+                setEnabled(true);
+            }
         }
     }
 }
