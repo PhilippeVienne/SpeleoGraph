@@ -20,11 +20,13 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cds06.speleograph.data;
+package org.cds06.speleograph.data.fileio;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.cds06.speleograph.data.Item;
+import org.cds06.speleograph.data.Series;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.axis.NumberAxis;
 import org.slf4j.Logger;

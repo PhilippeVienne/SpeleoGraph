@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cds06.speleograph.data;
+package org.cds06.speleograph.data.fileio;
 
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;

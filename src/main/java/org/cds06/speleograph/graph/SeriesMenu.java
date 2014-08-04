@@ -25,7 +25,7 @@ package org.cds06.speleograph.graph;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
-import org.cds06.speleograph.actions.*;
+import org.cds06.speleograph.actions.data.*;
 import org.cds06.speleograph.data.Series;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.axis.NumberAxis;

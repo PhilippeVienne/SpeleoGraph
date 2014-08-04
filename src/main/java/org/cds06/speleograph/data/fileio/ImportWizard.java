@@ -20,12 +20,13 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cds06.speleograph.data;
+package org.cds06.speleograph.data.fileio;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.graph.SetTypePanel;
 import org.cds06.speleograph.utils.FormDialog;
 

@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cds06.speleograph.data;
+package org.cds06.speleograph.data.fileio;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.io.FileUtils;
@@ -30,6 +30,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.data.Item;
+import org.cds06.speleograph.data.Series;
+import org.cds06.speleograph.data.Type;
 import org.cds06.speleograph.graph.DrawStyle;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;

@@ -20,11 +20,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cds06.speleograph.actions;
+package org.cds06.speleograph.actions.data;
 
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
-import org.cds06.speleograph.data.ImportWizard;
+import org.cds06.speleograph.data.fileio.ImportWizard;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

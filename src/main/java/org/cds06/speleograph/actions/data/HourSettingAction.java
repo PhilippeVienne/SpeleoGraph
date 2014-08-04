@@ -1,4 +1,4 @@
-package org.cds06.speleograph.actions;
+package org.cds06.speleograph.actions.data;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;

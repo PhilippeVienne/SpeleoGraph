@@ -103,19 +103,9 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     private String itemsName;
 
     /**
-     * Series old items, backup of items before modification.
-     */
-    private ArrayList<ArrayList<Item>> oldItems = new ArrayList<>();
-
-    /**
      * Series previous modifications, just undone.
      */
     private ArrayList<Modification> previousModifs = new ArrayList<>(10);
-
-    /**
-     * Series new items, waiting to replace the actual ones.
-     */
-    private ArrayList<ArrayList<Item>> newItems = new ArrayList<>();
 
     /**
      * Series next modifications, waiting to be redone.
@@ -1037,7 +1027,8 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return this.previousModifs.get(previousModifs.size()-1).getName();
     }
     public Modification getLastModif() {
-        return this.previousModifs.get(previousModifs.size()-1);
+        if (canUndo()) return this.previousModifs.get(previousModifs.size()-1);
+        return null;
     }
     public String getNextRedoName() {
         if (!canRedo()) return "Pas de modification à refaire";

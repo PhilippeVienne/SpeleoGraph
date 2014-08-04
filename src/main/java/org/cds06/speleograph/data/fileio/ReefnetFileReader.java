@@ -20,13 +20,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cds06.speleograph.data;
+package org.cds06.speleograph.data.fileio;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
 import org.apache.commons.lang3.StringUtils;
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.data.Item;
+import org.cds06.speleograph.data.Series;
+import org.cds06.speleograph.data.Type;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -118,7 +121,7 @@ public class ReefnetFileReader implements DataFileReader {
      *
      * @param file The file to read.
      * @throws FileReadingError When an error occurs when read the file.
-     * @see #readReefnetEntry(String[], Series, Series, String, java.util.Calendar)
+     * @see #readReefnetEntry(String[], org.cds06.speleograph.data.Series, org.cds06.speleograph.data.Series, String, java.util.Calendar)
      * @see #readDate(String[], java.util.Calendar)
      */
     @Override

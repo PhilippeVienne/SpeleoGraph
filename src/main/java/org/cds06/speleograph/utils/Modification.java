@@ -13,8 +13,6 @@ import java.util.Date;
  */
 public class Modification {
 
-    private static ArrayList<Modification> allModifs;
-
     /**
      * A name for the modification.
      */
@@ -77,15 +75,45 @@ public class Modification {
         return applyToAll;
     }
 
-    public Modification getLastModif() {
-        Modification modif = Series.getInstances().get(0).getLastModif();
-        Date d = Series.getInstances().get(0).getLastModif().getDate();
+    public static Modification getLastModif() {
+        int initial = -1;
         for (Series s : Series.getInstances()) {
-            if (s.getLastModif().getDate().after(d)) {
-                d = s.getLastModif().getDate();
-                modif = s.getLastModif();
+            if (s.canUndo()) {
+                initial = Series.getInstances().indexOf(s);
+                break;
+            }
+        }
+        if (initial < 0) return null;
+
+        Modification modif = Series.getInstances().get(initial).getLastModif();
+        Date d = Series.getInstances().get(initial).getLastModif().getDate();
+        for (Series s : Series.getInstances()) {
+            if (s.canUndo()) {
+                Modification sModif = s.getLastModif();
+                if (sModif.getDate().after(d)) {
+                    d = sModif.getDate();
+                    modif = sModif;
+                }
             }
         }
         return modif;
+    }
+
+    public static boolean canCancel() {
+        return getLastModif() != null;
+    }
+
+    public Series getLinkedSeries() {
+        return items.get(0).getSeries();
+    }
+
+    /**
+     * Compares two modifications to say if they are similar.
+     * We consider two modifications similar if they are done at the same time (approx., with 3 sec of uncertainty).
+     * @param modif The modification to compare to.
+     * @return true if the modifications are similar, false else.
+     */
+    public boolean isLike(Modification modif) {
+        return Math.abs(modif.getDate().getTime() - this.getDate().getTime()) <= 3000 && modif.isApplyToAll() && this.isApplyToAll();
     }
 }

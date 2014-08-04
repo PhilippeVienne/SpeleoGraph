@@ -4,6 +4,8 @@ import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.data.fileio.DataFileReader;
+import org.cds06.speleograph.data.fileio.FileReadingError;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -24,7 +26,7 @@ import java.util.Date;
  *
  * @author Philippe VIENNE
  */
-public class WundergroundFileReader implements DataFileReader{
+public class WundergroundFileReader implements DataFileReader {
 
     private static final I18nSupport resourceBundle = new I18nSupport();
 
@@ -42,6 +44,7 @@ public class WundergroundFileReader implements DataFileReader{
     /**
      * List of CSV headers excepted into the file.
      */
+    @SuppressWarnings("UnusedDeclaration")
     private static final String[] headers = new String[]{"Time","TemperatureC","DewpointC","PressurehPa",
             "WindDirection","WindDirectionDegrees","WindSpeedKMH","WindSpeedGustKMH","Humidity","HourlyPrecipMM",
             "Conditions","Clouds","dailyrainMM","SolarRadiationWatts/m^2","SoftwareType","DateUTC"};
@@ -54,6 +57,7 @@ public class WundergroundFileReader implements DataFileReader{
     /**
      *
      */
+    @SuppressWarnings("UnusedDeclaration")
     private static final int TIME_COLUMN = 0;
 
     /**
@@ -69,7 +73,7 @@ public class WundergroundFileReader implements DataFileReader{
     /**
      *
      * @param file The file to open
-     * @throws FileReadingError
+     * @throws org.cds06.speleograph.data.fileio.FileReadingError
      */
     @Override
     public void readFile(File file) throws FileReadingError {

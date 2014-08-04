@@ -22,15 +22,27 @@
 
 package org.cds06.speleograph;
 
-import org.cds06.speleograph.actions.ImportAction;
 import org.cds06.speleograph.actions.OpenAction;
+import org.cds06.speleograph.actions.QuitAction;
 import org.cds06.speleograph.actions.ResetAxisAction;
 import org.cds06.speleograph.actions.SaveAction;
-import org.cds06.speleograph.data.*;
+import org.cds06.speleograph.actions.data.ImportAction;
+import org.cds06.speleograph.actions.modif.CancelEverywhereAction;
+import org.cds06.speleograph.actions.modif.CancelLastModifAction;
+import org.cds06.speleograph.actions.modif.RedoEverywhereAction;
+import org.cds06.speleograph.actions.modif.ResetAllAction;
+import org.cds06.speleograph.data.Series;
+import org.cds06.speleograph.data.WundergroundFileReader;
+import org.cds06.speleograph.data.fileio.FileReadingError;
+import org.cds06.speleograph.data.fileio.HoboFileReader;
+import org.cds06.speleograph.data.fileio.ReefnetFileReader;
+import org.cds06.speleograph.data.fileio.SpeleoFileReader;
 import org.cds06.speleograph.graph.GraphEditor;
 import org.cds06.speleograph.graph.SeriesMenu;
 import org.cds06.speleograph.utils.About;
 import org.jetbrains.annotations.NonNls;
+import org.jfree.data.general.DatasetChangeEvent;
+import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.ui.tabbedui.VerticalLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +62,7 @@ import java.util.prefs.Preferences;
  *
  * @author Philippe VIENNE
  */
-public class SpeleoGraphApp extends JFrame {
+public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
     public static final String APP_VERSION = "1.3";
     public static final String AUTHORS = "Philippe Vienne, Gabriel Augendre";
     public static final String CONTACT = "Philippe@Vienne.me";
@@ -209,74 +221,18 @@ public class SpeleoGraphApp extends JFrame {
         fileMenu.add(importMenu);
         fileMenu.add(((GraphPanel) getSplitPane().getLeftComponent()).saveImageAction);
         fileMenu.addSeparator();
-        fileMenu.add(new AbstractAction() {
-
-            {
-                putValue(Action.NAME, I18nSupport.translate("actions.exit"));
-            }
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int result = JOptionPane.showConfirmDialog(
-                        panel,
-                        I18nSupport.translate("actions.exit.confirm.message"),
-                        I18nSupport.translate("actions.exit.confirm.title"),
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE);
-                if (result == JOptionPane.OK_OPTION) {
-                    SpeleoGraphApp.this.dispose();
-                }
-            }
-        });
+        fileMenu.add(new QuitAction(panel, this));
         bar.add(fileMenu);
 
         {
             JMenu menu = new JMenu(I18nSupport.translate("menus.edit"));
 
-           /* menu.add(new AbstractAction() {
-                {
-                    putValue(NAME, I18nSupport.translate("cancel"));
-                }
-                @Override
-                public void actionPerformed(ActionEvent e) {
-
-                }
-            });*/
-
-            menu.add(new AbstractAction() {
-                {
-                    String name;
-                    putValue(NAME, I18nSupport.translate("menus.edit.cancelAll"));
-                }
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    for (Series s : Series.getInstances()) {
-                        s.undo();
-                    }
-                }
-            });
-            menu.add(new AbstractAction() {
-                {
-                    putValue(NAME, I18nSupport.translate("menus.edit.redoAll"));
-                }
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    for (Series s : Series.getInstances()) {
-                        s.redo();
-                    }
-                }
-            });
-            menu.add(new AbstractAction() {
-                {
-                    putValue(NAME, I18nSupport.translate("menus.edit.resetSeries"));
-                }
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    for (Series s : Series.getInstances()) {
-                        s.reset();
-                    }
-                }
-            });
+            menu.add(new CancelLastModifAction());
+            menu.addSeparator();
+            menu.add(new CancelEverywhereAction());
+            menu.add(new RedoEverywhereAction());
+            menu.addSeparator();
+            menu.add(new ResetAllAction());
             bar.add(menu);
         }
 
@@ -309,10 +265,6 @@ public class SpeleoGraphApp extends JFrame {
             menu.setVisible(false);
             bar.add(menu);
         }
-
-//        final JMenu aide = new JMenu("Aide");
-//        bar.setHelpMenu(aide); //NON-NLS
-//        bar.add(Box.createHorizontalGlue());
 
         {
             JMenu menu = new JMenu(I18nSupport.translate("menus.help"));
@@ -433,5 +385,10 @@ public class SpeleoGraphApp extends JFrame {
      */
     public static void setWorkingDirectory(File dir) {
         configuration.put("workingDirectory", dir.getAbsolutePath()); // NON-NLS
+    }
+
+    @Override
+    public void datasetChanged(DatasetChangeEvent event) {
+        setJMenuBar(createMenus());
     }
 }

@@ -25,7 +25,7 @@ package org.cds06.speleograph.actions;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
-import org.cds06.speleograph.data.SpeleoFileWriter;
+import org.cds06.speleograph.data.fileio.SpeleoFileWriter;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

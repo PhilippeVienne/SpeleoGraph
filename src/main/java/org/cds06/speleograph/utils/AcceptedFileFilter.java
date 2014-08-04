@@ -23,7 +23,7 @@
 package org.cds06.speleograph.utils;
 
 import org.cds06.speleograph.I18nSupport;
-import org.cds06.speleograph.data.ReefnetFileReader;
+import org.cds06.speleograph.data.fileio.ReefnetFileReader;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.filechooser.FileFilter;
