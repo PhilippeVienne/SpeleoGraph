@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -102,6 +103,9 @@ public class CorrelateAction extends AbstractAction {
                     validateForm();
                 }
             }));
+
+            Dimension dim = getPanel().getPreferredSize();
+            getPanel().setPreferredSize(new Dimension(dim.width + 50, dim.height));
         }
 
         @Override

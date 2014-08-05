@@ -43,6 +43,7 @@ public class ValueAxisEditor extends FormDialog {
         super();
         this.axis = axis;
         construct();
+        setTitle(I18nSupport.translate("graph.valueAxisEditor"));
     }
 
     /**
@@ -50,26 +51,30 @@ public class ValueAxisEditor extends FormDialog {
      */
     @Override
     protected void setup() {
-        PanelBuilder builder = new PanelBuilder((FormLayout) getPanel().getLayout(), getPanel());
+        PanelBuilder builder = new PanelBuilder(getFormLayout(), getPanel());
         CellConstraints cc = new CellConstraints();
 
         {
-            builder.add(new JLabel("Titre de l'axe :"), cc.rc(1, 1));
+            builder.add(new JLabel("Titre de l'axe :"));
             final JTextField axisTitleField = new JTextField();
             axisTitleField.setText(axis.getLabel());
-            builder.add(axisTitleField, cc.rc(1, 3));
+            builder.nextColumn(2);
+            builder.add(axisTitleField);
             addListenerOnSuccess(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    axis.setLabel(axisTitleField.getText());
+                    String text = axisTitleField.getText();
+                    if (text != null && !text.equals("")) axis.setLabel(axisTitleField.getText());
                 }
             });
         }
 
         {
-            builder.add(new JLabel("Valeur min. :"), cc.rc(2, 1));
+            builder.nextLine(2);
+            builder.add(new JLabel("Valeur min. :"));
             final JTextField field = new JTextField(Double.toString(axis.getLowerBound()));
-            builder.add(field, cc.rc(2, 3));
+            builder.nextColumn(2);
+            builder.add(field);
             addListenerOnSuccess(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -87,9 +92,11 @@ public class ValueAxisEditor extends FormDialog {
         }
 
         {
-            builder.add(new JLabel("Valeur max. :"), cc.rc(3, 1));
+            builder.nextLine(2);
+            builder.add(new JLabel("Valeur max. :"));
             final JTextField field = new JTextField(Double.toString(axis.getUpperBound()));
-            builder.add(field, cc.rc(3, 3));
+            builder.nextColumn(2);
+            builder.add(field);
             addListenerOnSuccess(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -117,7 +124,7 @@ public class ValueAxisEditor extends FormDialog {
                 public void actionPerformed(ActionEvent e) {
                     validateForm();
                 }
-            }), cc.rcw(4, 1, 3));
+            }), cc.rcw(7, 1, 3));
         }
 
         /*{
@@ -138,7 +145,7 @@ public class ValueAxisEditor extends FormDialog {
 
         getPanel().setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         Dimension dim = getPanel().getPreferredSize();
-        getPanel().setPreferredSize(new Dimension(dim.width + 100, dim.height + 50));
+        getPanel().setPreferredSize(new Dimension(dim.width + 100, dim.height));
 
         addListenerOnSuccess(new ActionListener() {
             @Override
@@ -159,7 +166,7 @@ public class ValueAxisEditor extends FormDialog {
     }
 
     @NonNls
-    private static final FormLayout FORM_LAYOUT = new FormLayout("r:p,4dlu,p:grow", "p,p,p,p");
+    private static final FormLayout FORM_LAYOUT = new FormLayout("r:p,4dlu,p:grow", "p,2dlu,p,2dlu,p,4dlu,p");
 
     @Override
     protected FormLayout getFormLayout() {

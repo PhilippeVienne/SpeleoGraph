@@ -31,6 +31,7 @@ import org.cds06.speleograph.utils.FormDialog;
 import org.jfree.data.time.DateRange;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
@@ -67,6 +68,7 @@ public class LimitDateRangeAction extends AbstractAction {
         public PromptDialog() {
             super();
             construct();
+            setTitle(I18nSupport.translate("actions.limit"));
         }
 
         @Override
@@ -95,6 +97,9 @@ public class LimitDateRangeAction extends AbstractAction {
                     validateForm();
                 }
             }));
+
+            Dimension dim = getPanel().getPreferredSize();
+            getPanel().setPreferredSize(new Dimension(dim.width + 50, dim.height));
         }
 
         @Override
