@@ -76,6 +76,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         Validate.notNull(type, "Type can not be null");// NON-NLS
         Validate.notNull(origin);
         this.origin = origin;
+        Series.lastOpenedFile = origin;
         this.type = type;
         this.itemsName = "Initialisation";
         instances.add(this);
@@ -91,6 +92,11 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * The file where this series has been read.
      */
     private File origin = null;
+
+    /**
+     * The last opened file, independent of the current series.
+     */
+    private static File lastOpenedFile = null;
 
     /**
      * Series items, children of series.
@@ -220,6 +226,14 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         }
         range = new DateRange(minDate, maxDate);
         return range;
+    }
+
+    /**
+     * Returns the last opened file, independent of the current series.
+     * @return the last opened file, independent of the current series.
+     */
+    public static File getLastOpenedFile() {
+        return lastOpenedFile;
     }
 
     /**

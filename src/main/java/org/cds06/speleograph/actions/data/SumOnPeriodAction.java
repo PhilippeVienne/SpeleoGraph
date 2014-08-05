@@ -61,7 +61,7 @@ public class SumOnPeriodAction extends AbstractAction {
         @Override
         protected void setup() {
             PanelBuilder builder = new PanelBuilder(layout, getPanel());
-            builder.addLabel(I18nSupport.translate("actions.correlate.selectRange"));
+            builder.addLabel(I18nSupport.translate("actions.sum.selectRange"));
             builder.nextLine(2);
             builder.add(startDateSelector);
             builder.nextLine(2);

@@ -22,16 +22,12 @@
 
 package org.cds06.speleograph;
 
-import org.cds06.speleograph.actions.OpenAction;
-import org.cds06.speleograph.actions.QuitAction;
-import org.cds06.speleograph.actions.ResetAxisAction;
-import org.cds06.speleograph.actions.SaveAction;
+import org.cds06.speleograph.actions.*;
 import org.cds06.speleograph.actions.data.ImportAction;
 import org.cds06.speleograph.actions.modif.CancelEverywhereAction;
 import org.cds06.speleograph.actions.modif.CancelLastModifAction;
 import org.cds06.speleograph.actions.modif.RedoEverywhereAction;
 import org.cds06.speleograph.actions.modif.ResetAllAction;
-import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.WundergroundFileReader;
 import org.cds06.speleograph.data.fileio.FileReadingError;
 import org.cds06.speleograph.data.fileio.HoboFileReader;
@@ -43,7 +39,6 @@ import org.cds06.speleograph.utils.About;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
-import org.jfree.ui.tabbedui.VerticalLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,10 +83,7 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
      * Main panel for the application.
      */
     private final JPanel panel;
-    /**
-     * Main upper Toolbar.
-     */
-//    private final JToolBar toolBar;
+
     /**
      * The splitPane to divide space between Graph and Series' List.
      */
@@ -131,50 +123,7 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
         listAndButtons.add(scrollPane, BorderLayout.CENTER);
 
         //Ajout des boutons de contrôle de sélection (tout cocher/décocher, inverser)
-        JPanel buttons = new JPanel(new VerticalLayout());
-        {
-            buttons.add(new JButton(new AbstractAction() {
-                {
-                    putValue(NAME, I18nSupport.translate("list.tickAll"));
-                }
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    for (int i = 0; i < list.getModel().getSize(); i++) {
-                        list.getModel().getElementAt(i).setShow(true);
-                    }
-                }
-            }));
-
-            buttons.add(new JButton(new AbstractAction() {
-                {
-                    putValue(NAME, I18nSupport.translate("list.untickAll"));
-                }
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    for (int i = 0; i < list.getModel().getSize(); i++) {
-                        list.getModel().getElementAt(i).setShow(false);
-                    }
-                }
-            }));
-
-            buttons.add(new JButton(new AbstractAction() {
-                {
-                    putValue(NAME, I18nSupport.translate("list.invert"));
-                }
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    for (int i = 0; i < list.getModel().getSize(); i++) {
-                        Series value = list.getModel().getElementAt(i);
-                        value.setShow(!value.isShow());
-                    }
-                }
-            }));
-        }
-
-        listAndButtons.add(buttons, BorderLayout.SOUTH);
+        listAndButtons.add(new SelectButtonsPanel(list), BorderLayout.SOUTH);
 
         GraphPanel graphPanel = new GraphPanel(this);
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, graphPanel, listAndButtons);
