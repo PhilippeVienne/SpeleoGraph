@@ -104,6 +104,11 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     private ArrayList<Item> items = new ArrayList<>();
 
     /**
+     * Are the current items linked to others ? (modification on more than one series cancelled, for example)
+     */
+    private boolean applyToAll = false;
+
+    /**
      * Series items list name.
      */
     private String itemsName;
@@ -903,17 +908,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * Par exemple : On a des données du 25/07 au 30/07, on veut uniquement les données du 28 à 7h au 28 à 9h.
      * @param start Date de début.
      * @param end Date de fin.
-     */
-    public void subSeries(Date start, Date end) {
-        this.setItems(extractSubSerie(start, end), I18nSupport.translate("actions.limit"));
-        notifyListeners();
-    }
-
-    /**
-     * Remplace les données de la série par celles d'une sous-série.
-     * Par exemple : On a des données du 25/07 au 30/07, on veut uniquement les données du 28 à 7h au 28 à 9h.
-     * @param start Date de début.
-     * @param end Date de fin.
+     * @param applyToAll Is the modification applied to more than one series ?
      */
     public void subSeries(Date start, Date end, boolean applyToAll) {
         this.setItems(extractSubSerie(start, end), I18nSupport.translate("actions.limit"), applyToAll);
@@ -941,16 +936,10 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * The stored list of changes is limited to ten items.
      * This method also clears the redo list.
      * @param items The {@link ArrayList} to set in place of the existing one.
-     * @param name The name of the modification that occured.
+     * @param name The name of the modification that occurred.
      */
     public void setItems(ArrayList<Item> items, String name) {
-        nextModifs.clear();
-        this.previousModifs.add(new Modification(this.itemsName, new Date(), this.items));
-        this.items = items;
-        this.itemsName = name;
-        if (this.previousModifs.size() > MAX_UNDO_ITEMS)
-            this.previousModifs.remove(0);
-        notifyListeners();
+        setItems(items, name, false);
     }
 
     /**
@@ -958,11 +947,15 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * The stored list of changes is limited to ten items.
      * This method also clears the redo list.
      * @param items The {@link ArrayList} to set in place of the existing one.
-     * @param name The name of the modification that occured.
+     * @param name The name of the modification that occurred.
+     * @param applyToAll Is the modification applied to more than one series ?
      */
     public void setItems(ArrayList<Item> items, String name, boolean applyToAll) {
         nextModifs.clear();
-        this.previousModifs.add(new Modification(this.itemsName, new Date(), this.items, applyToAll));
+        Modification m = new Modification(this.itemsName, new Date(), this.items, applyToAll);
+        this.applyToAll = false;
+        this.previousModifs.add(m);
+        Modification.addToUndoList(m);
         this.items = items;
         this.itemsName = name;
         if (this.previousModifs.size() > MAX_UNDO_ITEMS)
@@ -979,9 +972,14 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     public boolean undo() {
         if (!this.canUndo()) return false;
         final int previousModifsSize = this.previousModifs.size();
-        this.nextModifs.add(this.createModif());
-        this.items = this.previousModifs.get(previousModifsSize-1).getItems();
+        Modification m = this.createModif();
+        this.nextModifs.add(m);
+        Modification.addToRedoList(m);
+        Modification old = this.previousModifs.get(previousModifsSize - 1);
+        this.items = old.getItems();
+        this.applyToAll = old.isApplyToAll();
         this.previousModifs.remove(previousModifsSize - 1);
+        Modification.removeLastUndo();
         notifyListeners();
         return true;
     }
@@ -1005,9 +1003,14 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     public boolean redo() {
         if (!this.canRedo()) return false;
         final int nextModifsSize = this.nextModifs.size();
-        this.previousModifs.add(this.createModif());
-        this.items = this.nextModifs.get(nextModifsSize-1).getItems();
+        Modification m = this.createModif();
+        this.previousModifs.add(m);
+        Modification.addToUndoList(m);
+        Modification next = this.nextModifs.get(nextModifsSize-1);
+        this.items = next.getItems();
+        this.applyToAll = next.isApplyToAll();
         this.nextModifs.remove(nextModifsSize-1);
+        Modification.removeLastRedo();
         notifyListeners();
         return true;
     }
@@ -1033,12 +1036,12 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * @return the new {@link org.cds06.speleograph.utils.Modification}
      */
     public Modification createModif() {
-        return new Modification(this.itemsName, new Date(), this.items);
+        return new Modification(this.itemsName, new Date(), this.items, this.applyToAll);
     }
 
     public String getLastUndoName() {
         if (!canUndo()) return "Pas de modification à annuler";
-        return this.previousModifs.get(previousModifs.size()-1).getName();
+        return getLastModif().getName();
     }
     public Modification getLastModif() {
         if (canUndo()) return this.previousModifs.get(previousModifs.size()-1);
@@ -1046,6 +1049,10 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     }
     public String getNextRedoName() {
         if (!canRedo()) return "Pas de modification à refaire";
-        return this.nextModifs.get(nextModifs.size()-1).getName();
+        return getNextRedo().getName();
+    }
+    public Modification getNextRedo() {
+        if (canRedo()) return this.nextModifs.get(nextModifs.size()-1);
+        return null;
     }
 }

@@ -24,10 +24,7 @@ package org.cds06.speleograph;
 
 import org.cds06.speleograph.actions.*;
 import org.cds06.speleograph.actions.data.ImportAction;
-import org.cds06.speleograph.actions.modif.CancelEverywhereAction;
-import org.cds06.speleograph.actions.modif.CancelLastModifAction;
-import org.cds06.speleograph.actions.modif.RedoEverywhereAction;
-import org.cds06.speleograph.actions.modif.ResetAllAction;
+import org.cds06.speleograph.actions.modif.*;
 import org.cds06.speleograph.data.WundergroundFileReader;
 import org.cds06.speleograph.data.fileio.FileReadingError;
 import org.cds06.speleograph.data.fileio.HoboFileReader;
@@ -177,6 +174,7 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
             JMenu menu = new JMenu(I18nSupport.translate("menus.edit"));
 
             menu.add(new CancelLastModifAction());
+            menu.add(new RedoLastUndoAction());
             menu.addSeparator();
             menu.add(new CancelEverywhereAction());
             menu.add(new RedoEverywhereAction());

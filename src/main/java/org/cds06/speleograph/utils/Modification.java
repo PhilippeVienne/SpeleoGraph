@@ -33,17 +33,9 @@ public class Modification {
      */
     private boolean applyToAll = false;
 
-    /**
-     * Create a modification saving the series items before the modification was made.
-     * @param name A name for the modification.
-     * @param date The date when the modification was made.
-     * @param items The item list to be saved.
-     */
-    public Modification(String name, Date date, ArrayList<Item> items) {
-        this.name = name;
-        this.date = date;
-        this.items = items;
-    }
+    private static ArrayList<Modification> redoList = new ArrayList<>();
+
+    private static ArrayList<Modification> undoList = new ArrayList<>();
 
     /**
      * Create a modification saving the series items before the modification was made.
@@ -76,31 +68,19 @@ public class Modification {
     }
 
     public static Modification getLastModif() {
-        int initial = -1;
-        for (Series s : Series.getInstances()) {
-            if (s.canUndo()) {
-                initial = Series.getInstances().indexOf(s);
-                break;
-            }
-        }
-        if (initial < 0) return null;
+        return undoList.get(undoList.size()-1);
+    }
 
-        Modification modif = Series.getInstances().get(initial).getLastModif();
-        Date d = Series.getInstances().get(initial).getLastModif().getDate();
-        for (Series s : Series.getInstances()) {
-            if (s.canUndo()) {
-                Modification sModif = s.getLastModif();
-                if (sModif.getDate().after(d)) {
-                    d = sModif.getDate();
-                    modif = sModif;
-                }
-            }
-        }
-        return modif;
+    public static Modification getNextRedo() {
+        return redoList.get(redoList.size()-1);
     }
 
     public static boolean canCancel() {
-        return getLastModif() != null;
+        return undoList.size() > 0;
+    }
+
+    public static boolean canRedo() {
+        return redoList.size() > 0;
     }
 
     public Series getLinkedSeries() {
@@ -115,5 +95,21 @@ public class Modification {
      */
     public boolean isLike(Modification modif) {
         return Math.abs(modif.getDate().getTime() - this.getDate().getTime()) <= 3000 && modif.isApplyToAll() && this.isApplyToAll();
+    }
+
+    public static void addToRedoList(Modification m) {
+        redoList.add(m);
+    }
+
+    public static void removeLastRedo() {
+        redoList.remove(redoList.size()-1);
+    }
+
+    public static void addToUndoList(Modification m) {
+        undoList.add(m);
+    }
+
+    public static void removeLastUndo() {
+        undoList.remove(undoList.size()-1);
     }
 }

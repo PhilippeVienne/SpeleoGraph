@@ -187,15 +187,16 @@ public class SeriesMenu implements DatasetChangeListener {
         menu.add(new AbstractAction() {
             {
                 String name;
-                if (series.canRedo()) name = "Refaire " + series.getNextRedoName();
-                else name = series.getNextRedoName();
+                if (series.canRedo()){
+                    name = "Refaire " + series.getNextRedoName();
+                    setEnabled(true);
+                }
+                else{
+                    name = series.getNextRedoName();
+                    setEnabled(false);
+                }
 
                 putValue(NAME, name);
-
-                if (series.canRedo())
-                    setEnabled(true);
-                else
-                    setEnabled(false);
             }
             @Override
             public void actionPerformed(ActionEvent e) {
