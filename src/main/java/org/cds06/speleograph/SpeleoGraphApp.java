@@ -24,19 +24,16 @@ package org.cds06.speleograph;
 
 import org.cds06.speleograph.actions.*;
 import org.cds06.speleograph.actions.data.ImportAction;
-import org.cds06.speleograph.actions.modif.*;
-import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.WundergroundFileReader;
 import org.cds06.speleograph.data.fileio.FileReadingError;
 import org.cds06.speleograph.data.fileio.HoboFileReader;
 import org.cds06.speleograph.data.fileio.ReefnetFileReader;
 import org.cds06.speleograph.data.fileio.SpeleoFileReader;
+import org.cds06.speleograph.graph.EditMenu;
 import org.cds06.speleograph.graph.GraphEditor;
 import org.cds06.speleograph.graph.SeriesMenu;
 import org.cds06.speleograph.utils.About;
 import org.jetbrains.annotations.NonNls;
-import org.jfree.data.general.DatasetChangeEvent;
-import org.jfree.data.general.DatasetChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +52,7 @@ import java.util.prefs.Preferences;
  *
  * @author Philippe VIENNE
  */
-public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
+public class SpeleoGraphApp extends JFrame {
     public static final String APP_VERSION = "1.3";
     public static final String AUTHORS = "Philippe Vienne, Gabriel Augendre";
     public static final String CONTACT = "Philippe@Vienne.me";
@@ -143,8 +140,6 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
         setLocation(50, 50);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        Series.addListener(this);
     }
 
     public JSplitPane getSplitPane() {
@@ -173,18 +168,7 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
         fileMenu.add(new QuitAction(panel, this));
         bar.add(fileMenu);
 
-        {
-            JMenu menu = new JMenu(I18nSupport.translate("menus.edit"));
-
-            menu.add(new CancelLastModifAction());
-            menu.add(new RedoLastUndoAction());
-            menu.addSeparator();
-            menu.add(new CancelEverywhereAction());
-            menu.add(new RedoEverywhereAction());
-            menu.addSeparator();
-            menu.add(new ResetAllAction());
-            bar.add(menu);
-        }
+        bar.add(new EditMenu());
 
         {
             JMenu menu = new JMenu(I18nSupport.translate("menus.graph"));
@@ -335,10 +319,5 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
      */
     public static void setWorkingDirectory(File dir) {
         configuration.put("workingDirectory", dir.getAbsolutePath()); // NON-NLS
-    }
-
-    @Override
-    public void datasetChanged(DatasetChangeEvent event) {
-        this.setJMenuBar(createMenus());
     }
 }

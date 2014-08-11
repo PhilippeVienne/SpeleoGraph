@@ -2,6 +2,7 @@ package org.cds06.speleograph.actions.modif;
 
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.Series;
+import org.cds06.speleograph.utils.Modification;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -11,7 +12,15 @@ import java.awt.event.ActionEvent;
  */
 public class RedoEverywhereAction extends AbstractAction {
     public RedoEverywhereAction() {
-        super(I18nSupport.translate("menus.edit.redoAll"));
+        String name;
+        if (Modification.canRedo()) {
+            name = I18nSupport.translate("menus.edit.redoAll");
+            setEnabled(true);
+        } else {
+            name = "Pas de modification à refaire";
+            setEnabled(false);
+        }
+        putValue(NAME, name);
     }
 
     @Override

@@ -60,7 +60,7 @@ public class SeriesMenu implements DatasetChangeListener {
     private SpeleoGraphApp application;
 
     private JMenu menu = new JMenu("Séries");
-    private HashMap<Series, JPopupMenu> menuList = new HashMap<>(20);
+    private HashMap<Series, JPopupMenu> menus = new HashMap<>(20);
     private List<Series> series = Series.getInstances();
 
     public SeriesMenu(SpeleoGraphApp app) {
@@ -78,7 +78,7 @@ public class SeriesMenu implements DatasetChangeListener {
     public void datasetChanged(DatasetChangeEvent event) {
         menu.removeAll();
         for (Series s : series.toArray(new Series[series.size()])) {
-            this.menuList.put(s, createPopupMenuForSeries(s));
+            this.menus.put(s, createPopupMenuForSeries(s));
             JMenu jMenu = new JMenu(s.getName());
             for (Component item : createPopupMenuForSeries(s).getComponents()) {
                 if (item instanceof JMenuItem || item instanceof JSeparator) {
@@ -355,9 +355,9 @@ public class SeriesMenu implements DatasetChangeListener {
     }
 
     public JPopupMenu getPopupMenu(Series s) {
-        if (!menuList.containsKey(s)) {
+        if (!menus.containsKey(s)) {
             createPopupMenuForSeries(s);
         }
-        return menuList.get(s);
+        return menus.get(s);
     }
 }
