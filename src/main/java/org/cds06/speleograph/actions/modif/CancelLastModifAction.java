@@ -14,14 +14,13 @@ public class CancelLastModifAction extends AbstractAction {
 
     public CancelLastModifAction() {
         String name;
-        setEnabled(true);
         if (Modification.canCancel()){
             name = I18nSupport.translate("cancel") + " " + Modification.getLastModif().getLinkedSeries().getItemsName();
-//            setEnabled(true);
+            setEnabled(true);
         }
         else{
             name = "Pas de modification à annuler";
-//            setEnabled(false);
+            setEnabled(false);
         }
 
         putValue(NAME, name);
@@ -34,7 +33,8 @@ public class CancelLastModifAction extends AbstractAction {
             if (!lastModif.isApplyToAll()) lastModif.getLinkedSeries().undo(); //Si elle n'était pas appliquée à toutes les séries, on l'annule sur la série concernée.
             else { //Sinon on l'annule partout où la même modification a été effectuée.
                 for (Series s : Series.getInstances()) {
-                    if (s.getLastModif() != null && s.getLastModif().isLike(lastModif))
+                    Modification m = s.getLastModif();
+                    if (m != null && m.isLike(lastModif))
                         s.undo();
                 }
             }

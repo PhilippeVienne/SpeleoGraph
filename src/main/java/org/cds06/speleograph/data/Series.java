@@ -953,8 +953,9 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     public void setItems(ArrayList<Item> items, String name, boolean applyToAll) {
         nextModifs.clear();
         Modification m = new Modification(this.itemsName, new Date(), this.items, applyToAll);
-        this.applyToAll = false;
+        this.applyToAll = applyToAll;
         this.previousModifs.add(m);
+        Modification.clearRedoList();
         Modification.addToUndoList(m);
         this.items = items;
         this.itemsName = name;

@@ -112,4 +112,8 @@ public class Modification {
     public static void removeLastUndo() {
         undoList.remove(undoList.size()-1);
     }
+
+    public static void clearRedoList() {
+        redoList.clear();
+    }
 }

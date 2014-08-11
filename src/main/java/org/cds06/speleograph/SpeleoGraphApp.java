@@ -25,6 +25,7 @@ package org.cds06.speleograph;
 import org.cds06.speleograph.actions.*;
 import org.cds06.speleograph.actions.data.ImportAction;
 import org.cds06.speleograph.actions.modif.*;
+import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.WundergroundFileReader;
 import org.cds06.speleograph.data.fileio.FileReadingError;
 import org.cds06.speleograph.data.fileio.HoboFileReader;
@@ -142,6 +143,8 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
         setLocation(50, 50);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        Series.addListener(this);
     }
 
     public JSplitPane getSplitPane() {
@@ -336,6 +339,6 @@ public class SpeleoGraphApp extends JFrame implements DatasetChangeListener {
 
     @Override
     public void datasetChanged(DatasetChangeEvent event) {
-        setJMenuBar(createMenus());
+        this.setJMenuBar(createMenus());
     }
 }
