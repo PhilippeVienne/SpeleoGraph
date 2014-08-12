@@ -53,7 +53,7 @@ import java.util.prefs.Preferences;
  * @author Philippe VIENNE
  */
 public class SpeleoGraphApp extends JFrame {
-    public static final String APP_VERSION = "1.3";
+    public static final String APP_VERSION = "1.4";
     public static final String AUTHORS = "Philippe Vienne, Gabriel Augendre";
     public static final String CONTACT = "Philippe@Vienne.me";
     public static final String APP_NAME = "SpeleoGraph"; // NON-NLS
