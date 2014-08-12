@@ -127,8 +127,6 @@ public class ImportWizard {
      */
     private List<String[]> lines;
 
-    private ImportDialog importDialog;
-
     private void openImportTable() {
         try {
             CSVReader reader = new CSVReader(new FileReader(file), separatorChar, '"');
@@ -141,7 +139,7 @@ public class ImportWizard {
                 columns = columns < s.length ? s.length : columns;
             }
             separatorDialog.setVisible(false);
-            importDialog = new ImportDialog(data, columns);
+            ImportDialog importDialog = new ImportDialog(data, columns);
             importDialog.setVisible(true);
         } catch (IOException e) {
             JOptionPane.showInternalMessageDialog(separatorDialog,
