@@ -208,6 +208,7 @@ public class ImportWizard {
                     return false;
                 }
             });
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             final CellConstraints cc = new CellConstraints(5, 1);
             table.getTableHeader().addMouseListener(new MouseAdapter() {
                 @Override
