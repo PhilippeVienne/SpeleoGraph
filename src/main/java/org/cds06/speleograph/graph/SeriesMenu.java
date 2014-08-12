@@ -106,7 +106,7 @@ public class SeriesMenu implements DatasetChangeListener {
             public void actionPerformed(ActionEvent e) {
                 menu.setVisible(false);
                 String newName = "";
-                while (newName != null && newName.equals("")) {
+                while (newName == null || newName.equals("")) {
                     newName = (String) JOptionPane.showInputDialog(
                             application,
                             "Entrez un nouveau nom pour la série",

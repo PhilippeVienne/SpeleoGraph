@@ -99,7 +99,7 @@ public class LimitDateRangeAction extends AbstractAction {
             }));
 
             Dimension dim = getPanel().getPreferredSize();
-            getPanel().setPreferredSize(new Dimension(dim.width + 50, dim.height));
+            getPanel().setPreferredSize(new Dimension(dim.width + 100, dim.height));
         }
 
         @Override
