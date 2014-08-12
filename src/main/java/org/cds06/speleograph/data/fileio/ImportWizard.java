@@ -222,10 +222,11 @@ public class ImportWizard {
                     currentShownEditor = editors.get(columnIndex);
                     getPanel().add(currentShownEditor, cc);
                     pack();
+                    centerOnScreen();
                 }
             });
             construct();
-//            centerOnScreen();
+            centerOnScreen();
         }
 
         @Override
@@ -235,23 +236,12 @@ public class ImportWizard {
                 PanelBuilder builder = new PanelBuilder((FormLayout) leftPanel.getLayout(), leftPanel);
                 builder.add(
                         new JLabel("<HTML><h1>Importer des données</h1><p>Vous pouvez soit désigner une ligne " +
-                                "d'en-tête dans votre fichier et les séries seront lu selon les colonnes, soit " +
+                                "d'en-tête dans votre fichier et les séries seront lues selon les colonnes, soit " +
                                 "cliquer sur les colonnes pour définir ce qu'elles contiennent.</p></HTML>"),
                         "1,1,2,1");
                 builder.addLabel("Ligne d'en-tête :", "1,2,2,1");
                 final JTextField headerLineField = new JTextField("1");
                 builder.add(headerLineField, "1,3");
-//                builder.add(new JButton(new AbstractAction() {
-//
-//                    {
-//                        putValue(NAME, "Ok");
-//                    }
-//
-//                    @Override
-//                    public void actionPerformed(ActionEvent e) {
-//
-//                    }
-//                }), "2,3");
                 builder.addLabel("Première ligne des données :", "1,4,2,1");
                 final JTextField dataLineField = new JTextField("2");
                 builder.add(dataLineField, "1,5");
@@ -450,7 +440,6 @@ public class ImportWizard {
             public void itemStateChanged(ItemEvent e) {
                 if (!e.getSource().equals(isMinMax) &&
                         !e.getSource().equals(columnTypeComboBox)) return;
-//                if (!e.getSource().equals((typeNameBox))) return;
                 if (e.getSource().equals(isMinMax)) {
                     minMaxPropertyPanel.setVisible(isMinMax());
                 }
@@ -462,20 +451,8 @@ public class ImportWizard {
                     revalidate();
                     repaint();
                     pack();
+                    centerOnScreen();
                 }
-//                if (e.getSource().equals(typeNameBox)) {
-//                    final String[] type =((String) typeNameBox.getSelectedItem()).split(" ");
-//                    String name = "";
-//                    if (!type[0].equals("Autre"))
-//                        name = type[0];
-//                    String unit = "";
-//                    if (type.length > 1)
-//                        unit = type[1].substring(1,type[1].length()-1);
-//                    if (type.length > 2)
-//                        unit = type[2].substring(1,type[2].length()-1);
-//                    typeNameField.setText(name);
-//                    typeUnitField.setText(unit);
-//                }
             }
 
             public boolean isMinMax() {
