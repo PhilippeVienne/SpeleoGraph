@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +46,7 @@ public class HourSettingAction extends AbstractAction {
     }
 
     private class PromptDialog extends FormDialog {
-        private FormLayout layout = new FormLayout("p:grow,p","p,p,p");
+        private FormLayout layout = new FormLayout("p:grow,p:grow","p,p,p");
         private JTextField offsetValue = new JTextField();
         private final String HOUR = I18nSupport.translate("actions.timezone.hours"),
                 MINUTE = I18nSupport.translate("actions.timezone.minutes"),
@@ -81,6 +82,9 @@ public class HourSettingAction extends AbstractAction {
                     validateForm();
                 }
             }),cc);
+
+            Dimension dim = getPanel().getPreferredSize();
+            getPanel().setPreferredSize(new Dimension(dim.width + 50, dim.height));
         }
 
         @Override
@@ -120,5 +124,6 @@ public class HourSettingAction extends AbstractAction {
         protected FormLayout getFormLayout() {
             return layout;
         }
+
     }
 }

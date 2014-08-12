@@ -30,6 +30,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -77,6 +78,15 @@ public abstract class FormDialog extends JDialog {
      */
     protected void construct() {
         getContentPane().setLayout(new BorderLayout());
+
+        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        contentPane.registerKeyboardAction(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        }, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+
         getContentPane().add(contentPane);
         setup();
         pack();
