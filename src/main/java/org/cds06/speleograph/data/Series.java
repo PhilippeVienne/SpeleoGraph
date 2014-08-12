@@ -116,14 +116,17 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     /**
      * Series previous modifications, just undone.
      */
-    private ArrayList<Modification> previousModifs = new ArrayList<>(10);
+    private ArrayList<Modification> previousModifs = new ArrayList<>(MAX_UNDO_ITEMS);
 
     /**
      * Series next modifications, waiting to be redone.
      */
-    private ArrayList<Modification> nextModifs = new ArrayList<>(10);
+    private ArrayList<Modification> nextModifs = new ArrayList<>(MAX_UNDO_ITEMS);
 
-    private static final int MAX_UNDO_ITEMS = 10;
+    /**
+     * The number of modification that can be canceled.
+     */
+    public static final int MAX_UNDO_ITEMS = 10;
 
     /**
      * The name of the series.

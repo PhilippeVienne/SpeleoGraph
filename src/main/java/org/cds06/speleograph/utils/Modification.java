@@ -33,9 +33,9 @@ public class Modification {
      */
     private boolean applyToAll = false;
 
-    private static ArrayList<Modification> redoList = new ArrayList<>();
+    private static ArrayList<Modification> redoList = new ArrayList<>(Series.MAX_UNDO_ITEMS);
 
-    private static ArrayList<Modification> undoList = new ArrayList<>();
+    private static ArrayList<Modification> undoList = new ArrayList<>(Series.MAX_UNDO_ITEMS);
 
     /**
      * Create a modification saving the series items before the modification was made.
@@ -105,15 +105,17 @@ public class Modification {
         redoList.remove(redoList.size()-1);
     }
 
+    public static void clearRedoList() {
+        redoList.clear();
+    }
+
     public static void addToUndoList(Modification m) {
+        if (undoList.size() > Series.MAX_UNDO_ITEMS * Series.getInstances().size())
+            undoList.remove(0);
         undoList.add(m);
     }
 
     public static void removeLastUndo() {
         undoList.remove(undoList.size()-1);
-    }
-
-    public static void clearRedoList() {
-        redoList.clear();
     }
 }
