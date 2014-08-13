@@ -222,6 +222,7 @@ public class SeriesMenu implements DatasetChangeListener {
         if (series.isWater()) {
             menu.add(new SamplingAction(series));
             menu.add(new SumOnPeriodAction(series));
+            menu.add(new CreateCumulAction(series));
         }
 
         if (series.isPressure()) {

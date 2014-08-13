@@ -903,7 +903,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     @SuppressWarnings("UnusedDeclaration")
     public boolean isWaterHeight() {
-        return this.getType().getName().equals(Type.WATER_HEIGHT_CM.getName());
+        return this.getType().getName().equals(Type.WATER_HEIGHT.getName());
     }
 
     /**

@@ -108,21 +108,19 @@ public class WaterHeightAction extends AbstractAction {
             List<Item> itemsToCompute = series.extractSubSerie(range.getLowerDate(), range.getUpperDate());
             ArrayList<Item> newItems = new ArrayList<>(itemsToCompute.size());
             final Series newSerie;
-            switch ((String) unitList.getSelectedItem()) {
-                case "ft":
-                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.getType(I18nSupport.translate("actions.setType.waterHeight"), "ft"));
-                    break;
-                case "in":
-                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.getType(I18nSupport.translate("actions.setType.waterHeight"), "in"));
-                    break;
-                case "m":
-                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.WATER_HEIGHT_M);
+            final String seriesUnit = (String) (unitList.getSelectedItem());
+
+            switch (seriesUnit.toLowerCase()) {
+                case "cm":
+                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.WATER_HEIGHT);
                     break;
                 default:
-                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.WATER_HEIGHT_CM);
+                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.getType(I18nSupport.translate("actions.setType.waterHeight"), seriesUnit));
                     break;
             }
             newSerie.setName(series.getOrigin().getName() + " - " + I18nSupport.translate("actions.waterHeight.setName"));
+
+
             double multiplier = 1.02;
             String unit = series.getType().getUnit();
 

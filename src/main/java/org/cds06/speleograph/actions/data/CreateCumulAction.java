@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
@@ -40,8 +41,8 @@ public class CreateCumulAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        PromptDialog dialog = new PromptDialog();
-        DateRange range = series.getRange();
+        final PromptDialog dialog = new PromptDialog();
+        final DateRange range = series.getRange();
         dialog.startDateSelector.setDate(range.getLowerDate());
         dialog.endDateSelector.setDate(range.getUpperDate());
         dialog.setVisible(true);
@@ -61,11 +62,12 @@ public class CreateCumulAction extends AbstractAction {
         @Override
         protected void setup() {
             PanelBuilder builder = new PanelBuilder(layout, getPanel());
-            builder.addLabel(I18nSupport.translate("actions.sum.selectRange"));
+            this.setTitle(I18nSupport.translate("actions.sum.selectRange"));
+            builder.addLabel(I18nSupport.translate("date.from") + " :");
             builder.nextLine(2);
             builder.add(startDateSelector);
             builder.nextLine(2);
-            builder.addLabel(I18nSupport.translate("actions.limit.label2"));
+            builder.addLabel(I18nSupport.translate("date.to") + " :");
             builder.nextLine(2);
             builder.add(endDateSelector);
             builder.nextLine(2);
@@ -80,17 +82,37 @@ public class CreateCumulAction extends AbstractAction {
                     validateForm();
                 }
             }));
+
+            final Dimension dim = getPanel().getPreferredSize();
+            getPanel().setPreferredSize(new Dimension(dim.width + 50, dim.height));
         }
 
         @Override
         protected void validateForm() {
-            double somme = 0;
-            ArrayList<Item> items = series.extractSubSerie(startDateSelector.getDate(), endDateSelector.getDate());
-            for (Item item : items)
-                somme += item.getValue();
+            org.cds06.speleograph.data.Type type;
+            final String unit = series.getType().getUnit();
+            switch (unit.toLowerCase()) {
+                case "mm":
+                    type = org.cds06.speleograph.data.Type.WATER_CUMUL;
+                    break;
+                default:
+                    type = org.cds06.speleograph.data.Type.getType(org.cds06.speleograph.data.Type.WATER_CUMUL.getName(), unit);
+            }
+            final Series newSeries = new Series(series.getOrigin(), type);
 
-            InfoDialog iD = new InfoDialog(somme);
-            iD.setVisible(true);
+            ArrayList<Item> items = new ArrayList<>(series.getItemCount());
+
+            for (int i = 0; i < series.getItemCount(); i++) {
+                Item item = series.getItems().get(i);
+                double value = item.getValue();
+                if (i > 0)
+                    value += items.get(i-1).getValue();
+                items.add(new Item(newSeries, item.getDate(), value));
+            }
+
+            newSeries.setItems(items, (String) getValue(NAME));
+
+
             setVisible(false);
         }
 
@@ -100,47 +122,5 @@ public class CreateCumulAction extends AbstractAction {
         }
 
 
-
-        private class InfoDialog extends FormDialog {
-
-            private FormLayout layout = getFormLayout();
-            double somme;
-
-            public InfoDialog(double somme) {
-                super();
-                this.somme = somme;
-                construct();
-            }
-            @Override
-            protected void setup() {
-                final String[] splited = ((Double) Math.abs(somme)).toString().split("\\.");
-                final String str = splited[0] + "," + splited[1].substring(0,4);
-
-                PanelBuilder builder = new PanelBuilder(layout, getPanel());
-                setTitle(I18nSupport.translate("confirm"));
-                builder.addLabel("<HTML>"+"<center>" + "Somme" +" :<br>"+ str +"</center><HTML>");
-                builder.nextLine(2);
-                builder.add(new JButton(new AbstractAction() {
-                    {
-                        putValue(NAME, I18nSupport.translate("ok"));
-                    }
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        validateForm();
-                    }
-                }));
-            }
-
-            @Override
-            protected void validateForm() {
-                setVisible(false);
-            }
-
-            @Override
-            protected FormLayout getFormLayout() {
-                return new FormLayout("p:grow", "p:grow,6dlu,p");
-            }
-        }
     }
 }

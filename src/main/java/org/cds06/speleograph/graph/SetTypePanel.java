@@ -21,7 +21,7 @@ public class SetTypePanel extends JPanel implements ItemListener {
     private final String TEMP = Type.TEMPERATURE.toString();
     private final String TEMP_MIN_MAX = Type.TEMPERATURE_MIN_MAX.toString();
     private final String WATER = Type.WATER.toString();
-    private final String WATER_HEIGHT = Type.WATER_HEIGHT_CM.toString();
+    private final String WATER_HEIGHT = Type.WATER_HEIGHT.toString();
     private final String OTHER = I18nSupport.translate("actions.setType.other");
 
     private JTextField typeNameField = new JTextField();
@@ -68,7 +68,7 @@ public class SetTypePanel extends JPanel implements ItemListener {
                 "<li>" + Type.PRESSURE.getName() + "</li>" +
                 "<li>" + Type.TEMPERATURE.getName() + " " + I18nSupport.translate("actions.setType.maybeMinMax") + "</li>" +
                 "<li>" + Type.WATER.getName() + "</li>" +
-                "<li>" + Type.WATER_HEIGHT_CM.getName() + "</li>" +
+                "<li>" + Type.WATER_HEIGHT.getName() + "</li>" +
                 "</ul>" +
                 "</HTML>", cc);
 

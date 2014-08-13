@@ -49,9 +49,8 @@ public class Type extends DatasetGroup implements Comparable<Type>, Cloneable {
     public static final Type TEMPERATURE = Type.getType(I18nSupport.translate("actions.setType.temperature"), "°C");
     public static final Type TEMPERATURE_MIN_MAX = Type.getType(I18nSupport.translate("actions.setType.temperatureMinMax"), "°C");
     public static final Type WATER = Type.getType(I18nSupport.translate("actions.setType.water"), "mm");
-    public static final Type WATER_HEIGHT_CM = Type.getType(I18nSupport.translate("actions.setType.waterHeight"), "cm");
-    public static final Type WATER_HEIGHT_M = Type.getType(I18nSupport.translate("actions.setType.waterHeight"), "m");
-    public static final Type WATER_CUMUL = Type.getType("Cumul pluie", "cm");
+    public static final Type WATER_HEIGHT = Type.getType(I18nSupport.translate("actions.setType.waterHeight"), "cm");
+    public static final Type WATER_CUMUL = Type.getType("Cumul pluie", "mm");
 
     /**
      * Get Type by name and unit.

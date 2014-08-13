@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
@@ -130,6 +131,9 @@ public class SumOnPeriodAction extends AbstractAction {
                         validateForm();
                     }
                 }));
+
+                Dimension dim = getPanel().getPreferredSize();
+                getPanel().setPreferredSize(new Dimension(dim.width + 50, dim.height));
             }
 
             @Override
