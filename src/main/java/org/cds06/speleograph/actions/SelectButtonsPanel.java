@@ -18,6 +18,7 @@ public class SelectButtonsPanel extends JPanel {
         this.add(new JButton(new SelectAction(1, list, applyToNewFile)));
         this.add(new JButton(new SelectAction(0, list, applyToNewFile)));
         this.add(new JButton(new SelectAction(-1, list, applyToNewFile)));
+        applyToNewFile.setSelected(true);
         this.add(applyToNewFile);
     }
 }

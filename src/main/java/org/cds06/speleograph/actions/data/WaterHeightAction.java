@@ -101,7 +101,7 @@ public class WaterHeightAction extends AbstractAction {
             List<Item> itemsToCompute = series.extractSubSerie(range.getLowerDate(), range.getUpperDate());
             ArrayList<Item> newItems = new ArrayList<>(itemsToCompute.size());
             final Series newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.WATER_HEIGHT);
-            newSerie.setName(I18nSupport.translate("actions.waterHeight.setName") + " - " + series.getName());
+            newSerie.setName(series.getOrigin().getName() + " - " + I18nSupport.translate("actions.waterHeight.setName"));
             double multiplier = 1.02;
             if (series.getType().getUnit().equalsIgnoreCase("bar"))
                 multiplier *= 1000;

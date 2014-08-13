@@ -84,7 +84,10 @@ public class Modification {
     }
 
     public Series getLinkedSeries() {
-        return items.get(0).getSeries();
+        if (items.size() > 0)
+            return items.get(0).getSeries();
+        else
+            return null;
     }
 
     /**

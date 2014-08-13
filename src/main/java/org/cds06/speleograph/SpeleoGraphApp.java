@@ -24,11 +24,7 @@ package org.cds06.speleograph;
 
 import org.cds06.speleograph.actions.*;
 import org.cds06.speleograph.actions.data.ImportAction;
-import org.cds06.speleograph.data.WundergroundFileReader;
-import org.cds06.speleograph.data.fileio.FileReadingError;
-import org.cds06.speleograph.data.fileio.HoboFileReader;
-import org.cds06.speleograph.data.fileio.ReefnetFileReader;
-import org.cds06.speleograph.data.fileio.SpeleoFileReader;
+import org.cds06.speleograph.data.fileio.*;
 import org.cds06.speleograph.graph.EditMenu;
 import org.cds06.speleograph.graph.GraphEditor;
 import org.cds06.speleograph.graph.SeriesMenu;

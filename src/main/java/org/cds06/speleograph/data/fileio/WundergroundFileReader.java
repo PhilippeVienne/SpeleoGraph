@@ -1,11 +1,12 @@
-package org.cds06.speleograph.data;
+package org.cds06.speleograph.data.fileio;
 
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.cds06.speleograph.I18nSupport;
-import org.cds06.speleograph.data.fileio.DataFileReader;
-import org.cds06.speleograph.data.fileio.FileReadingError;
+import org.cds06.speleograph.data.Item;
+import org.cds06.speleograph.data.Series;
+import org.cds06.speleograph.data.Type;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public class WundergroundFileReader implements DataFileReader {
                 }
             }
 
-            Series temperature = new Series(file,Type.TEMPERATURE); // Temperature
+            Series temperature = new Series(file, Type.TEMPERATURE); // Temperature
             Series pressure = new Series(file,Type.PRESSURE); // Pressure
             Series water = new Series(file,Type.WATER); // Water
 

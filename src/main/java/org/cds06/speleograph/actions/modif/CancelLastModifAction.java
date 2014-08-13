@@ -3,6 +3,8 @@ package org.cds06.speleograph.actions.modif;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.utils.Modification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -12,11 +14,20 @@ import java.awt.event.ActionEvent;
  */
 public class CancelLastModifAction extends AbstractAction {
 
+    private static Logger log = LoggerFactory.getLogger(CancelLastModifAction.class);
+
     public CancelLastModifAction() {
         String name;
         if (Modification.canCancel()){
-            name = I18nSupport.translate("cancel") + " " + Modification.getLastModif().getLinkedSeries().getItemsName();
-            setEnabled(true);
+            Series series = Modification.getLastModif().getLinkedSeries();
+            try {
+                name = I18nSupport.translate("cancel") + " " + Modification.getLastModif().getLinkedSeries().getItemsName();
+                setEnabled(true);
+            } catch (NullPointerException npe) {
+                log.info("Unable to get series corresponding to last modif");
+                name = "Pas de modification à annuler";
+                setEnabled(false);
+            }
         }
         else{
             name = "Pas de modification à annuler";
