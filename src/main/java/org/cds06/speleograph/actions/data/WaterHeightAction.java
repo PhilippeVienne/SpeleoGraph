@@ -55,6 +55,7 @@ public class WaterHeightAction extends AbstractAction {
 
     private class PromptDialog extends FormDialog {
         private JComboBox<Series> seriesList = new JComboBox<>();
+        private JComboBox<String> unitList = new JComboBox<>();
         {
             ListModel<Series> listModel = SpeleoGraphApp.getInstance().getSeriesList().getModel();
             for (int i = 0; i < listModel.getSize(); i++) {
@@ -62,8 +63,12 @@ public class WaterHeightAction extends AbstractAction {
                 if (!item.equals(series) && item.isPressure())
                     seriesList.addItem(listModel.getElementAt(i));
             }
+            unitList.addItem("cm");
+            unitList.addItem("m");
+            unitList.addItem("ft");
+            unitList.addItem("in");
         }
-        private FormLayout layout = new FormLayout("p:grow", "p,4dlu,p,6dlu,p"); //NON-NLS
+        private FormLayout layout = new FormLayout("p:grow, p", "p,4dlu,p,4dlu,p,6dlu,p"); //NON-NLS
 
         public PromptDialog() {
             super();
@@ -77,6 +82,8 @@ public class WaterHeightAction extends AbstractAction {
             builder.addLabel(I18nSupport.translate("actions.waterHeight.selectSerie"));
             builder.nextLine(2);
             builder.add(seriesList);
+            builder.nextLine(2);
+            builder.add(unitList);
             builder.nextLine(2);
             builder.add(new JButton(new AbstractAction() {
 
@@ -100,13 +107,39 @@ public class WaterHeightAction extends AbstractAction {
             List<Item> itemsStandards = ((Series) seriesList.getSelectedItem()).getItems();
             List<Item> itemsToCompute = series.extractSubSerie(range.getLowerDate(), range.getUpperDate());
             ArrayList<Item> newItems = new ArrayList<>(itemsToCompute.size());
-            final Series newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.WATER_HEIGHT);
+            final Series newSerie;
+            switch ((String) unitList.getSelectedItem()) {
+                case "ft":
+                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.getType(I18nSupport.translate("actions.setType.waterHeight"), "ft"));
+                    break;
+                case "in":
+                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.getType(I18nSupport.translate("actions.setType.waterHeight"), "in"));
+                    break;
+                case "m":
+                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.WATER_HEIGHT_M);
+                    break;
+                default:
+                    newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.WATER_HEIGHT_CM);
+                    break;
+            }
             newSerie.setName(series.getOrigin().getName() + " - " + I18nSupport.translate("actions.waterHeight.setName"));
             double multiplier = 1.02;
-            if (series.getType().getUnit().equalsIgnoreCase("bar"))
+            String unit = series.getType().getUnit();
+
+            // Pour avoir un résultat en cm
+            if (unit.equalsIgnoreCase("bar"))
                 multiplier *= 1000;
-            if (series.getType().getUnit().equalsIgnoreCase("Pa"))
+            else if (unit.equalsIgnoreCase("Pa"))
                 multiplier /= 100;
+
+            unit = newSerie.getType().getUnit();
+            // Pour convertir ce résultat vers une autre unité
+            if (unit.equalsIgnoreCase("m"))
+                multiplier /= 100;
+            else if (unit.equalsIgnoreCase("ft"))
+                multiplier /= 30.48;
+            else if (unit.equalsIgnoreCase("in"))
+                multiplier /= 2.54;
 
             for (Item item : itemsStandards) {
                 ListIterator<Item> iter = itemsToCompute.listIterator();

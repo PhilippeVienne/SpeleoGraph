@@ -29,6 +29,11 @@ public class Modification {
     private final ArrayList<Item> items;
 
     /**
+     * The linked series.
+     */
+    private final Series series;
+
+    /**
      * Intended to say of the modification applies to every series or just one.
      */
     private boolean applyToAll = false;
@@ -42,12 +47,14 @@ public class Modification {
      * @param name A name for the modification.
      * @param date The date when the modification was made.
      * @param items The item list to be saved.
+     * @param series The linked series.
      * @param applyToAll Intended to say of the modification applies to every series or just one.
      */
-    public Modification(String name, Date date, ArrayList<Item> items, boolean applyToAll) {
+    public Modification(String name, Date date, ArrayList<Item> items, Series series, boolean applyToAll) {
         this.name = name;
         this.date = date;
         this.items = items;
+        this.series = series;
         this.applyToAll = applyToAll;
     }
 
@@ -84,10 +91,7 @@ public class Modification {
     }
 
     public Series getLinkedSeries() {
-        if (items.size() > 0)
-            return items.get(0).getSeries();
-        else
-            return null;
+        return series;
     }
 
     /**

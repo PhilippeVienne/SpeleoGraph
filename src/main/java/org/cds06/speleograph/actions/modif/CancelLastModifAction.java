@@ -21,11 +21,11 @@ public class CancelLastModifAction extends AbstractAction {
         if (Modification.canCancel()){
             Series series = Modification.getLastModif().getLinkedSeries();
             try {
-                name = I18nSupport.translate("cancel") + " " + Modification.getLastModif().getLinkedSeries().getItemsName();
+                name = I18nSupport.translate("cancel") + " " + series.getItemsName();
                 setEnabled(true);
             } catch (NullPointerException npe) {
                 log.info("Unable to get series corresponding to last modif");
-                name = "Pas de modification à annuler";
+                name = "Erreur";
                 setEnabled(false);
             }
         }

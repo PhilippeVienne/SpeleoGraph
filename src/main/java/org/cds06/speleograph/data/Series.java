@@ -903,7 +903,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     @SuppressWarnings("UnusedDeclaration")
     public boolean isWaterHeight() {
-        return this.getType().getName().equals(Type.WATER_HEIGHT.getName());
+        return this.getType().getName().equals(Type.WATER_HEIGHT_CM.getName());
     }
 
     /**
@@ -955,7 +955,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      */
     public void setItems(ArrayList<Item> items, String name, boolean applyToAll) {
         nextModifs.clear();
-        Modification m = new Modification(this.itemsName, new Date(), this.items, applyToAll);
+        Modification m = new Modification(this.itemsName, new Date(), this.items, this , applyToAll);
         this.applyToAll = applyToAll;
         this.previousModifs.add(m);
         Modification.clearRedoList();
@@ -1040,7 +1040,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * @return the new {@link org.cds06.speleograph.utils.Modification}
      */
     public Modification createModif() {
-        return new Modification(this.itemsName, new Date(), this.items, this.applyToAll);
+        return new Modification(this.itemsName, new Date(), this.items, this, this.applyToAll);
     }
 
     public String getLastUndoName() {
