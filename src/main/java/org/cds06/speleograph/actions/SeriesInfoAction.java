@@ -42,32 +42,79 @@ public class SeriesInfoAction extends AbstractAction {
     }
 
     private class PromptDialog extends FormDialog {
-        private FormLayout layout = new FormLayout("p:grow","p,p,p,p:grow,p");
+        private final FormLayout layout = new FormLayout("p","p,p,p,p,p,p");
 
         public PromptDialog() {
             super();
             construct();
             setTitle(I18nSupport.translate("actions.info"));
+            setResizable(false);
         }
 
         @Override
         protected void setup() {
             PanelBuilder builder = new PanelBuilder(layout, getPanel());
 
-            String seriesString = "<HTML><ul>";
+
+            builder.addLabel("<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.series") + "</h3>" +
+                    "<ul style=\"margin-top:0;margin-bottom:0;\"><li><em>" + series.getName() + "</em> - [" +
+                    series.getSeriesMinValue() + " --> " + series.getSeriesMaxValue() +
+                    "] " + series.getType().getUnit() + "</li></ul>" + "</HTML>");
+
+            builder.nextLine();
+            String seriesStringColor = "<HTML><ul style=\"margin-top:0;\">";
             for (Series s : Series.getInstances()) {
-                if (s.getOrigin().equals(series.getOrigin())) {
-                    seriesString += ("<li><em>" + s.getName() + "</em> - [" +
-                            s.getSeriesMinValue() + " --> " + s.getSeriesMaxValue() +
-                            "] " + s.getType().getUnit() + "</li>");
+                if (!s.equals(series)) {
+                    String color = "color";
+                    color = " style=\"" + color + ":rgb(" +
+                            s.getColor().getRed() + "," +
+                            s.getColor().getGreen() + "," +
+                            s.getColor().getBlue() + ");";
+                    if ((s.getColor().getGreen() > 160 || s.getColor().getBlue() > 160 || s.getColor().getRed() > 160) && color.contains("background"))
+                        color += "color:#ffffff;";
+                    color += "\"";
+                    if (s.getOrigin().equals(series.getOrigin())) {
+                        seriesStringColor += ("<li><span" + color + ">" +
+                                "<em>" + s.getName() + "</em> - [" +
+                                s.getSeriesMinValue() + " --> " + s.getSeriesMaxValue() +
+                                "] " + s.getType().getUnit() + "</span></li>");
+                    }
                 }
             }
-            seriesString += "</ul></HTML>";
+            seriesStringColor += "</ul></HTML>";
 
-            final String absoluteFile = "<HTML><strong>" + I18nSupport.translate("actions.info.filename") + " : </strong>" +
+            String seriesStringBlack = "<HTML><ul style=\"margin-top:0;\">";
+            for (Series s : Series.getInstances()) {
+                if (!s.equals(series)) {
+                    if (s.getOrigin().equals(series.getOrigin())) {
+                        seriesStringBlack += ("<li><em>" + s.getName() + "</em> - [" +
+                                s.getSeriesMinValue() + " --> " + s.getSeriesMaxValue() +
+                                "] " + s.getType().getUnit() + "</li>");
+                    }
+                }
+            }
+            seriesStringBlack += "</ul></HTML>";
+
+            final String black = seriesStringBlack;
+            final String colored = seriesStringColor;
+
+            final JLabel seriesLabel = new JLabel(black);
+            seriesLabel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    if (seriesLabel.getText().equals(black))
+                        seriesLabel.setText(colored);
+                    else
+                        seriesLabel.setText(black);
+                }
+            });
+
+            final String absoluteFile = "<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.filename") + "</h3>" +
                     series.getOrigin().getAbsolutePath() + "</HTML>";
-            final String file = "<HTML><strong>" + I18nSupport.translate("actions.info.filename") + " : </strong>" +
+            final String file = "<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.filename") + "</h3>" +
                     series.getOrigin().getName() + "</HTML>";
+
             final JLabel fileLabel = new JLabel(file);
             fileLabel.addMouseListener(new MouseAdapter() {
                 @Override
@@ -87,13 +134,13 @@ public class SeriesInfoAction extends AbstractAction {
             builder.add(fileLabel);
 
             builder.nextLine();
-            builder.addLabel("<HTML><strong>" + I18nSupport.translate("actions.info.dateRange") + " : </strong>" +
+            builder.addLabel("<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.dateRange") + "</h3>" +
                     series.getRange().toString() + "</HTML>");
 
             builder.nextLine();
-            builder.addLabel("<HTML><strong>" + I18nSupport.translate("actions.info.associatedSeries") + " :</strong></HTML>");
+            builder.addLabel("<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.sameFileSeries") + "</h3></HTML>");
             builder.nextLine();
-            builder.addLabel(seriesString);
+            builder.add(seriesLabel);
 
             builder.nextLine();
             builder.add(new JButton(new AbstractAction() {
