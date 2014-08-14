@@ -74,6 +74,6 @@ public class Item implements Comparable<Item> {
     @Override
     public int compareTo(@SuppressWarnings("NullableProblems") Item o) {
         if (o == null) throw new NullPointerException("Value compared is null");
-        return getDate().compareTo(o.getDate());
+        return getValue()<o.getValue() ? -1 : (getValue()==o.getValue() ? 0 : 1);
     }
 }

@@ -167,6 +167,9 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return instances.indexOf(this) == instances.size() - 1;
     }
 
+    private double seriesMaxValue;
+    private double seriesMinValue;
+
     /**
      * Move the current series to n-1 position.
      */
@@ -212,6 +215,14 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      */
     public File getOrigin() {
         return origin;
+    }
+
+    public double getSeriesMaxValue() {
+        return seriesMaxValue;
+    }
+
+    public double getSeriesMinValue() {
+        return seriesMinValue;
     }
 
     /**
@@ -382,6 +393,10 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
     public void add(Item item) {
         Validate.notNull(item);
         items.add(item);
+        if (item.getValue() > seriesMaxValue)
+            seriesMaxValue = item.getValue();
+        else if (item.getValue() < seriesMinValue)
+            seriesMinValue = item.getValue();
     }
 
     /**
@@ -954,17 +969,25 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
      * @param applyToAll Is the modification applied to more than one series ?
      */
     public void setItems(ArrayList<Item> items, String name, boolean applyToAll) {
-        nextModifs.clear();
         Modification m = new Modification(this.itemsName, new Date(), this.items, this , applyToAll);
         this.applyToAll = applyToAll;
         this.previousModifs.add(m);
+        this.nextModifs.clear();
         Modification.clearRedoList();
         Modification.addToUndoList(m);
+
         this.items = items;
+        setMinMaxValue();
+
         this.itemsName = name;
         if (this.previousModifs.size() > MAX_UNDO_ITEMS)
             this.previousModifs.remove(0);
         notifyListeners();
+    }
+
+    private void setMinMaxValue() {
+        seriesMaxValue = Collections.max(items).getValue();
+        seriesMinValue = Collections.min(items).getValue();
     }
 
     /**
@@ -981,6 +1004,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         Modification.addToRedoList(m);
         Modification old = this.previousModifs.get(previousModifsSize - 1);
         this.items = old.getItems();
+        setMinMaxValue();
         this.applyToAll = old.isApplyToAll();
         this.previousModifs.remove(previousModifsSize - 1);
         Modification.removeLastUndo();
@@ -1012,6 +1036,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         Modification.addToUndoList(m);
         Modification next = this.nextModifs.get(nextModifsSize-1);
         this.items = next.getItems();
+        setMinMaxValue();
         this.applyToAll = next.isApplyToAll();
         this.nextModifs.remove(nextModifsSize-1);
         Modification.removeLastRedo();

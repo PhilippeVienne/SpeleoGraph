@@ -25,6 +25,7 @@ package org.cds06.speleograph.graph;
 import org.apache.commons.lang3.Validate;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.SpeleoGraphApp;
+import org.cds06.speleograph.actions.SeriesInfoAction;
 import org.cds06.speleograph.actions.data.*;
 import org.cds06.speleograph.data.Series;
 import org.jetbrains.annotations.NonNls;
@@ -282,6 +283,10 @@ public class SeriesMenu implements DatasetChangeListener {
         }
 
         menu.addSeparator();
+
+        {
+            menu.add(new SeriesInfoAction(series));
+        }
 
         {
             JMenuItem colorItem = new JMenuItem("Couleur de la série");

@@ -22,6 +22,7 @@
 
 package org.cds06.speleograph.graph;
 
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -38,10 +39,15 @@ import java.awt.event.ActionListener;
 public class ValueAxisEditor extends FormDialog {
 
     private final NumberAxis axis;
+    private final Double oldHighValue;
+    private final Double oldLowValue;
 
     public ValueAxisEditor(NumberAxis axis) {
         super();
         this.axis = axis;
+        this.oldLowValue = axis.getLowerBound();
+        this.oldHighValue = axis.getUpperBound();
+
         construct();
         setTitle(I18nSupport.translate("graph.valueAxisEditor"));
     }
@@ -79,7 +85,11 @@ public class ValueAxisEditor extends FormDialog {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        axis.setLowerBound(Double.valueOf(field.getText()));
+                        Double value = Double.valueOf(field.getText());
+                        if (isApply) {
+                            axis.setLowerBound(value);
+                        } else if (isCancel && oldLowValue != null)
+                            axis.setLowerBound(oldLowValue);
                     } catch (NumberFormatException e1) {
                         canClose = false;
                         JOptionPane.showMessageDialog(
@@ -101,7 +111,11 @@ public class ValueAxisEditor extends FormDialog {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        axis.setUpperBound(Double.valueOf(field.getText()));
+                        Double value = Double.valueOf(field.getText());
+                        if (isApply) {
+                            axis.setUpperBound(value);
+                        } else if (isCancel && oldHighValue != null)
+                            axis.setUpperBound(oldHighValue);
                     } catch (NumberFormatException e1) {
                         canClose = false;
                         JOptionPane.showMessageDialog(
@@ -113,22 +127,11 @@ public class ValueAxisEditor extends FormDialog {
             });
         }
 
+        JPanel buttonPanel= new JPanel();
+        ButtonBarBuilder buttonBuilder = new ButtonBarBuilder(buttonPanel);
+        buttonBuilder.addGlue();
         {
-            builder.add(new JButton(new AbstractAction() {
-
-                {
-                    putValue(NAME, I18nSupport.translate("ok"));
-                }
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    validateForm();
-                }
-            }), cc.rcw(7, 1, 3));
-        }
-
-        /*{
-            builder.add(new JButton(new AbstractAction() {
+            buttonBuilder.addButton(new AbstractAction() {
 
                 {
                     putValue(NAME, I18nSupport.translate("cancel"));
@@ -136,10 +139,51 @@ public class ValueAxisEditor extends FormDialog {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    setVisible(false);
+                    isCancel = true;
+                    isApply = false;
+                    canClose = true;
+                    validateForm();
                 }
-            }), cc.rcw(5, 1, 3));
-        }*/
+            });
+        }
+
+        {
+            buttonBuilder.addButton(new AbstractAction() {
+
+                {
+                    putValue(NAME, I18nSupport.translate("apply"));
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    isCancel = false;
+                    isApply = true;
+                    canClose = false;
+                    validateForm();
+                }
+            });
+        }
+
+        {
+            buttonBuilder.addButton(new AbstractAction() {
+
+                {
+                    putValue(NAME, I18nSupport.translate("ok"));
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    isCancel = false;
+                    isApply = true;
+                    canClose = true;
+                    validateForm();
+                }
+            });
+        }
+
+        buttonBuilder.build();
+        buttonPanel.setVisible(true);
+        builder.add(buttonBuilder.getPanel(), cc.xyw(1,7,3));
 
         builder.build();
 
@@ -151,12 +195,13 @@ public class ValueAxisEditor extends FormDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (canClose) setVisible(false);
-                canClose = true;
             }
         });
     }
 
-    private boolean canClose = true;
+    private boolean canClose = false;
+    private boolean isCancel = false;
+    private boolean isApply = false;
 
     /**
      * {@inheritDoc}
