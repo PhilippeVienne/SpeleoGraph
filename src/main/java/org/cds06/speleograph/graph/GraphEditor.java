@@ -80,7 +80,7 @@ public class GraphEditor extends JDialog {
             // following lines !
             final FormLayout layout = new FormLayout(
                     "right:max(40dlu;p), 4dlu, p:grow, 4dlu, p, 4dlu, p:grow, 4dlu, p", //NON-NLS
-                    "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p" //NON-NLS
+                    "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p" //NON-NLS
             );
 
 
@@ -220,7 +220,10 @@ public class GraphEditor extends JDialog {
             mainPanel.add(buttonBarBuilder.build(), BorderLayout.SOUTH);
         }
 
-        setSize(300, 300);
+        pack();
+        Dimension d = this.getPreferredSize();
+        this.setSize(new Dimension(d.width + 20, d.height));
+        setResizable(false);
     }
 
     /**

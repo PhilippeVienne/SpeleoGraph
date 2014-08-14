@@ -723,8 +723,7 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     //TODO Write doc
     public Series generateSampledSeries(long length) {
-        final Series newSeries;
-        newSeries = new Series(origin, type);
+        final Series newSeries = new Series(origin, Type.WATER);
         newSeries.setStepped(true);
         final int itemsCount = getItemCount();
         final ArrayList<Item> newItems = newSeries.items;
@@ -905,6 +904,10 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
 
     public boolean isWater() {
         return this.getType().getName().equals(Type.WATER.getName());
+    }
+
+    public boolean isWaterCumul() {
+        return this.getType().getName().equals(Type.WATER_CUMUL.getName());
     }
 
     public boolean isPressure() {
