@@ -38,6 +38,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 /**
  * Create a Dialog to personalize a {@link org.jfree.chart.JFreeChart}.
@@ -71,6 +72,15 @@ public class GraphEditor extends JDialog {
         super((Frame) SwingUtilities.windowForComponent(panel), true);
         Validate.notNull(panel);
         this.graphPanel = panel;
+
+        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        mainPanel.registerKeyboardAction(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        }, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+
         setContentPane(mainPanel);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         this.setTitle(I18nSupport.translate("menus.graph.graphEditor"));
