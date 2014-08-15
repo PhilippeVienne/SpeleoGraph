@@ -38,6 +38,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 /**
  * Create a Dialog to personalize a {@link org.jfree.chart.JFreeChart}.
@@ -71,6 +72,15 @@ public class GraphEditor extends JDialog {
         super((Frame) SwingUtilities.windowForComponent(panel), true);
         Validate.notNull(panel);
         this.graphPanel = panel;
+
+        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        mainPanel.registerKeyboardAction(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        }, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+
         setContentPane(mainPanel);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         this.setTitle(I18nSupport.translate("menus.graph.graphEditor"));
@@ -80,7 +90,7 @@ public class GraphEditor extends JDialog {
             // following lines !
             final FormLayout layout = new FormLayout(
                     "right:max(40dlu;p), 4dlu, p:grow, 4dlu, p, 4dlu, p:grow, 4dlu, p", //NON-NLS
-                    "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p" //NON-NLS
+                    "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p" //NON-NLS
             );
 
 
@@ -220,7 +230,10 @@ public class GraphEditor extends JDialog {
             mainPanel.add(buttonBarBuilder.build(), BorderLayout.SOUTH);
         }
 
-        setSize(300, 300);
+        pack();
+        Dimension d = this.getPreferredSize();
+        this.setSize(new Dimension(d.width + 20, d.height));
+        setResizable(false);
     }
 
     /**
