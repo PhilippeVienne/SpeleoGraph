@@ -705,6 +705,20 @@ public class Series implements Comparable, OHLCDataset, Cloneable {
         return getName();
     }
 
+    /**
+     * Has the ability to return an html version of the {@link #toString()} containing more info.
+     * @param b Want to get html version ?
+     * @return The html version of the {@link #toString()} method containing min/max values and unit.
+     */
+    public String toString(boolean b) {
+        if (b)
+            return "<em>" + this.getName() + "</em> - [" +
+                    this.getSeriesMinValue() + " --> " + this.getSeriesMaxValue() +
+                    "] " + this.getType().getUnit();
+        else
+            return toString();
+    }
+
     public void delete() {
         instances.remove(this);
         items.clear();

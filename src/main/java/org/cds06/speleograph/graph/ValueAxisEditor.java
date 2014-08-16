@@ -27,11 +27,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.cds06.speleograph.I18nSupport;
+import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.utils.FormDialog;
 import org.jetbrains.annotations.NonNls;
 import org.jfree.chart.axis.NumberAxis;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,11 +45,23 @@ public class ValueAxisEditor extends FormDialog {
     private final Double oldHighValue;
     private final Double oldLowValue;
 
+    private final JTextField maxField;
+    private final JTextField maxModifier = new JTextField("0");
+    private final JTextField lowField;
+    private final JTextField minModifier = new JTextField("0");
+    private final JSlider translateSlider;
+    private final JSlider homotSlider;
+
     public ValueAxisEditor(NumberAxis axis) {
         super();
         this.axis = axis;
         this.oldLowValue = axis.getLowerBound();
         this.oldHighValue = axis.getUpperBound();
+        this.maxField = new JTextField(Double.toString(axis.getUpperBound()));
+        this.lowField = new JTextField(Double.toString(axis.getLowerBound()));
+        int max = (int)(axis.getUpperBound()/5);
+        translateSlider = new JSlider(Adjustable.VERTICAL, -max, max, 0);
+        homotSlider = new JSlider(Adjustable.VERTICAL, -max, max, 0);
 
         construct();
         setTitle(I18nSupport.translate("graph.valueAxisEditor"));
@@ -60,12 +75,17 @@ public class ValueAxisEditor extends FormDialog {
         PanelBuilder builder = new PanelBuilder(getFormLayout(), getPanel());
         CellConstraints cc = new CellConstraints();
 
+        Dimension d = maxModifier.getPreferredSize();
+        maxModifier.setPreferredSize(new Dimension(d.width + 50, d.height));
+        d = minModifier.getPreferredSize();
+        minModifier.setPreferredSize(new Dimension(d.width + 50, d.height));
+
         {
             builder.add(new JLabel("Titre de l'axe :"));
             final JTextField axisTitleField = new JTextField();
             axisTitleField.setText(axis.getLabel());
             builder.nextColumn(2);
-            builder.add(axisTitleField);
+            builder.add(axisTitleField,cc.xyw(3,1,5));
             addListenerOnSuccess(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -78,14 +98,13 @@ public class ValueAxisEditor extends FormDialog {
         {
             builder.nextLine(2);
             builder.add(new JLabel("Valeur min. :"));
-            final JTextField field = new JTextField(Double.toString(axis.getLowerBound()));
             builder.nextColumn(2);
-            builder.add(field);
+            builder.add(lowField);
             addListenerOnSuccess(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        Double value = Double.valueOf(field.getText());
+                        Double value = Double.valueOf(lowField.getText());
                         if (isApply) {
                             axis.setLowerBound(value);
                         } else if (isCancel && oldLowValue != null)
@@ -94,24 +113,27 @@ public class ValueAxisEditor extends FormDialog {
                         canClose = false;
                         JOptionPane.showMessageDialog(
                                 ValueAxisEditor.this.getParent(),
-                                "'" + field.getText() + "' n'est pas un nombre", "Erreur",
+                                "'" + lowField.getText() + "' n'est pas un nombre", "Erreur",
                                 JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
+            builder.nextColumn(2);
+            builder.add(new JLabel("+"));
+            builder.nextColumn(2);
+            builder.add(minModifier);
         }
 
         {
             builder.nextLine(2);
             builder.add(new JLabel("Valeur max. :"));
-            final JTextField field = new JTextField(Double.toString(axis.getUpperBound()));
             builder.nextColumn(2);
-            builder.add(field);
+            builder.add(maxField);
             addListenerOnSuccess(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        Double value = Double.valueOf(field.getText());
+                        Double value = Double.valueOf(maxField.getText());
                         if (isApply) {
                             axis.setUpperBound(value);
                         } else if (isCancel && oldHighValue != null)
@@ -120,11 +142,28 @@ public class ValueAxisEditor extends FormDialog {
                         canClose = false;
                         JOptionPane.showMessageDialog(
                                 ValueAxisEditor.this.getParent(),
-                                "'" + field.getText() + "' n'est pas un nombre", "Erreur",
+                                "'" + maxField.getText() + "' n'est pas un nombre", "Erreur",
                                 JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
+            builder.nextColumn(2);
+            builder.add(new JLabel("+"));
+            builder.nextColumn(2);
+            builder.add(maxModifier);
+        }
+
+        {
+            builder.nextLine(2);
+            builder.add(new JLabel("<HTML><strong>Séries associées à l'axe</strong></HTML>"), cc.xyw(1,7,3));
+            String linkedSeries = "<html><ul>";
+            for (Series series : Series.getInstances()) {
+                if (series.getAxis().equals(axis))
+                    linkedSeries += "<li>" + series.toString(true) + "</li>";
+            }
+            linkedSeries += "</ul></html>";
+
+            builder.add(new JLabel(linkedSeries), cc.xyw(1,8,3));
         }
 
         JPanel buttonPanel= new JPanel();
@@ -183,13 +222,38 @@ public class ValueAxisEditor extends FormDialog {
 
         buttonBuilder.build();
         buttonPanel.setVisible(true);
-        builder.add(buttonBuilder.getPanel(), cc.xyw(1,7,3));
+        builder.add(buttonBuilder.getPanel(), cc.xyw(1,10,8));
+
+        {
+            translateSlider.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    int maxValue = translateSlider.getValue();
+                    maxModifier.setText(String.valueOf(maxValue));
+                    int lowValue = translateSlider.getValue();
+                    minModifier.setText(String.valueOf(lowValue));
+                }
+            });
+            builder.add(translateSlider, cc.xywh(9, 1, 1, 8));
+        }
+        {
+            homotSlider.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    int maxValue = homotSlider.getValue();
+                    maxModifier.setText(String.valueOf(maxValue));
+                    int lowValue = -homotSlider.getValue();
+                    minModifier.setText(String.valueOf(lowValue));
+                }
+            });
+            builder.add(homotSlider, cc.xywh(10, 1, 1, 8));
+        }
 
         builder.build();
 
         getPanel().setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        Dimension dim = getPanel().getPreferredSize();
-        getPanel().setPreferredSize(new Dimension(dim.width + 100, dim.height));
+//        Dimension dim = getPanel().getPreferredSize();
+//        getPanel().setPreferredSize(new Dimension(dim.width + 100, dim.height));
 
         addListenerOnSuccess(new ActionListener() {
             @Override
@@ -207,11 +271,34 @@ public class ValueAxisEditor extends FormDialog {
      * {@inheritDoc}
      */
     protected void validateForm() {
+        int maxValue = 0;
+        int minValue = 0;
+        try {
+            maxValue = (int) (Double.parseDouble(maxField.getText()) + Double.parseDouble(maxModifier.getText()));
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(
+                ValueAxisEditor.this.getParent(),
+                "'" + maxField.getText() + "'" + " ou '" + maxModifier.getText() + "' n'est pas un nombre", "Erreur",
+                JOptionPane.ERROR_MESSAGE);
+        }
+        try {
+            minValue = (int) (Double.parseDouble(lowField.getText()) + Double.parseDouble(minModifier.getText()));
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(
+                ValueAxisEditor.this.getParent(),
+                "'" + lowField.getText() + "'" + " ou '" + minModifier.getText() + "' n'est pas un nombre", "Erreur",
+                JOptionPane.ERROR_MESSAGE);
+        }
+        translateSlider.setValue(0);
+        homotSlider.setValue(0);
+        maxField.setText(String.valueOf(maxValue));
+        lowField.setText(String.valueOf(minValue));
+
         firePropertyChange(FORM_VALIDATED_PROPERTY, null, this);
     }
 
     @NonNls
-    private static final FormLayout FORM_LAYOUT = new FormLayout("r:p,4dlu,p:grow", "p,2dlu,p,2dlu,p,4dlu,p");
+    private static final FormLayout FORM_LAYOUT = new FormLayout("r:p,4dlu,p:grow,2dlu,p,2dlu,p,4dlu,p,p", "p,2dlu,p,2dlu,p,2dlu,p,p,4dlu,p");
 
     @Override
     protected FormLayout getFormLayout() {

@@ -91,9 +91,6 @@ public class SeriesInfoAction extends AbstractAction {
             builder.addLabel("<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.dateRange") + "</h3>" +
                     series.getRange().toString() + "</HTML>");
 
-//            builder.nextLine();
-//            builder.addLabel("<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.sameFileSeries") + "</h3></HTML>");
-
             builder.nextLine();
             String seriesStringBlack = "<HTML><h3 style=\"margin-bottom:0;\">" +
                     I18nSupport.translate("actions.info.sameFileSeries") +
@@ -102,9 +99,7 @@ public class SeriesInfoAction extends AbstractAction {
             for (Series s : Series.getInstances()) {
                 if (!s.equals(series)) {
                     if (s.getOrigin().equals(series.getOrigin())) {
-                        seriesStringBlack += ("<li><em>" + s.getName() + "</em> - [" +
-                                s.getSeriesMinValue() + " --> " + s.getSeriesMaxValue() +
-                                "] " + s.getType().getUnit() + "</li>");
+                        seriesStringBlack += ("<li>" + s.toString(true) + "</li>");
                     }
                 }
             }
