@@ -228,9 +228,9 @@ public class ValueAxisEditor extends FormDialog {
             translateSlider.addChangeListener(new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                    int maxValue = translateSlider.getValue();
+                    int maxValue = -translateSlider.getValue();
                     maxModifier.setText(String.valueOf(maxValue));
-                    int lowValue = translateSlider.getValue();
+                    int lowValue = -translateSlider.getValue();
                     minModifier.setText(String.valueOf(lowValue));
                 }
             });
@@ -240,9 +240,9 @@ public class ValueAxisEditor extends FormDialog {
             homotSlider.addChangeListener(new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                    int maxValue = homotSlider.getValue();
+                    int maxValue = -homotSlider.getValue();
                     maxModifier.setText(String.valueOf(maxValue));
-                    int lowValue = -homotSlider.getValue();
+                    int lowValue = homotSlider.getValue();
                     minModifier.setText(String.valueOf(lowValue));
                 }
             });
