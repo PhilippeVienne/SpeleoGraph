@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Create the submenu allowing the user to set the type of a Serie
+ * Create the submenu allowing the user to set the type of a Series
  * Created by Gabriel Augendre
  * Distributed on GPL v3
  */
@@ -26,7 +26,7 @@ public class SetTypeMenu extends JMenu {
 
         for (int i = 0; i < Type.getInstances().size(); i++) {
             // Adding a separator to separate default types from user types
-            if (i == Type.DEFAULT_SIZE)
+            if (Type.getInstances().size() > Type.DEFAULT_SIZE && i == Type.DEFAULT_SIZE)
                 this.addSeparator();
 
             final Type t = Type.getInstances().get(i);
