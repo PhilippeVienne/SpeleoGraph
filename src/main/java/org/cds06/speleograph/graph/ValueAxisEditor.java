@@ -222,9 +222,10 @@ public class ValueAxisEditor extends FormDialog {
 
         buttonBuilder.build();
         buttonPanel.setVisible(true);
-        builder.add(buttonBuilder.getPanel(), cc.xyw(1,10,8));
+        builder.add(buttonBuilder.getPanel(), cc.xyw(1,10,10));
 
         {
+            translateSlider.setToolTipText("Translation des axes");
             translateSlider.addChangeListener(new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e) {
@@ -237,6 +238,7 @@ public class ValueAxisEditor extends FormDialog {
             builder.add(translateSlider, cc.xywh(9, 1, 1, 8));
         }
         {
+            homotSlider.setToolTipText("Homothétie sur les axes");
             homotSlider.addChangeListener(new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e) {
@@ -252,8 +254,6 @@ public class ValueAxisEditor extends FormDialog {
         builder.build();
 
         getPanel().setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-//        Dimension dim = getPanel().getPreferredSize();
-//        getPanel().setPreferredSize(new Dimension(dim.width + 100, dim.height));
 
         addListenerOnSuccess(new ActionListener() {
             @Override
