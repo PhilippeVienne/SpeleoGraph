@@ -1,11 +1,10 @@
-package org.cds06.speleograph.actions.data;
+package org.cds06.speleograph.graph;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.cds06.speleograph.I18nSupport;
 import org.cds06.speleograph.data.Series;
 import org.cds06.speleograph.data.Type;
-import org.cds06.speleograph.graph.SetTypePanel;
 import org.cds06.speleograph.utils.FormDialog;
 
 import javax.swing.*;
