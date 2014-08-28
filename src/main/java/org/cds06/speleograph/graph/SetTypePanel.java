@@ -46,7 +46,11 @@ public class SetTypePanel extends JPanel implements ItemListener {
         typeBox.addItemListener(this);
         builder.nextLine();
 
-        final String name = ((String) typeBox.getSelectedItem()).split(" ")[0];
+        String name = "";
+        String[] sTab = ((String) typeBox.getSelectedItem()).split(" ");
+        for (int i = 0; i < sTab.length - 1; i++) {
+            name += sTab[i];
+        }
         builder.addLabel(I18nSupport.translate("actions.setType.name") + " :");
         builder.nextColumn();
         builder.add(typeNameField);
@@ -91,13 +95,15 @@ public class SetTypePanel extends JPanel implements ItemListener {
 
         final String[] type =((String) typeBox.getSelectedItem()).split(" ");
         String name = "";
-        if (!type[0].equals(OTHER))
-            name = type[0];
+        if (!type[0].equals(OTHER)) {
+            for (int i = 0; i < type.length - 1; i++) {
+                name += type[i] + " ";
+            }
+            name = name.substring(0, name.length()-1);
+        }
         String unit = "";
         if (type.length > 1)
-            unit = type[1].substring(1,type[1].length()-1);
-        if (type.length > 2)
-            unit = type[2].substring(1,type[2].length()-1);
+            unit = type[type.length -1].substring(1,type[type.length -1].length()-1);
         typeNameField.setText(name);
         typeUnitField.setText(unit);
     }
