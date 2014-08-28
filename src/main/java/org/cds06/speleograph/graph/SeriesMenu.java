@@ -162,6 +162,23 @@ public class SeriesMenu implements DatasetChangeListener {
 
         menu.add(new SetTypeMenu(series));
 
+
+        if (series.isWater()) {
+            menu.addSeparator();
+            menu.add(new SumOnPeriodAction(series));
+            menu.add(new CreateCumulAction(series));
+        }
+        if (series.isWaterCumul()) {
+            menu.addSeparator();
+            menu.add(new SamplingAction(series));
+        }
+
+        if (series.isPressure()) {
+            menu.addSeparator();
+            menu.add(new CorrelateAction(series));
+            menu.add(new WaterHeightAction(series));
+        }
+
         menu.addSeparator();
 
         menu.add(new AbstractAction() {
@@ -218,20 +235,6 @@ public class SeriesMenu implements DatasetChangeListener {
                 series.reset();
             }
         });
-
-
-        if (series.isWater()) {
-            menu.add(new SumOnPeriodAction(series));
-            menu.add(new CreateCumulAction(series));
-        }
-        if (series.isWaterCumul()) {
-            menu.add(new SamplingAction(series));
-        }
-
-        if (series.isPressure()) {
-            menu.add(new CorrelateAction(series));
-            menu.add(new WaterHeightAction(series));
-        }
 
         menu.add(new LimitDateRangeAction(series));
 
