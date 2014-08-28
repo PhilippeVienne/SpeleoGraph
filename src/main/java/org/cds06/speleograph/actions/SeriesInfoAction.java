@@ -64,10 +64,10 @@ public class SeriesInfoAction extends AbstractAction {
 
             builder.nextLine();
 
-            final String absoluteFile = "<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.filename") + "</h3>" +
-                    series.getOrigin().getAbsolutePath() + "</HTML>";
-            final String file = "<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.filename") + "</h3>" +
-                    series.getOrigin().getName() + "</HTML>";
+            final String absoluteFile = "<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.filename") + "</h3><ul style=\"margin-top:0;\"><li>" +
+                    series.getOrigin().getAbsolutePath() + "</li></ul></HTML>";
+            final String file = "<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.filename") + "</h3><ul style=\"margin-top:0;\"><li>" +
+                    series.getOrigin().getName() + "</li></ul></HTML>";
 
             final JLabel fileLabel = new JLabel(file);
             fileLabel.addMouseListener(new MouseAdapter() {
@@ -88,8 +88,8 @@ public class SeriesInfoAction extends AbstractAction {
             builder.add(fileLabel);
 
             builder.nextLine();
-            builder.addLabel("<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.dateRange") + "</h3>" +
-                    series.getRange().toString() + "</HTML>");
+            builder.addLabel("<HTML><h3 style=\"margin-bottom:0;\">" + I18nSupport.translate("actions.info.dateRange") + "</h3><ul style=\"margin-top:0;\"><li>" +
+                    series.getRange().toString() + "</li></ul></HTML>");
 
             builder.nextLine();
             String seriesStringBlack = "<HTML><h3 style=\"margin-bottom:0;\">" +
@@ -112,20 +112,14 @@ public class SeriesInfoAction extends AbstractAction {
                 public void mouseClicked(MouseEvent e) {
                     super.mouseClicked(e);
                     clickCount++;
-                    switch (clickCount) {
-                        case 10:
-                            seriesLabel.setText("<HTML><h3>Bon, ça ira maintenant ? C'est bon ?</h3></HTML>");
-                            break;
-                        case 15:
+                    if (clickCount == 10)
+                        seriesLabel.setText("<HTML><h3>Bon, ça ira maintenant ? C'est bon ?</h3></HTML>");
+                    else if (clickCount == 15)
                             seriesLabel.setText("<HTML><h3>Ah ça suffit hein !</h3></HTML>");
-                            break;
-                        case 20:
-                            seriesLabel.setText("<HTML><h3>J'irai me plaindre aux développeurs...</h3></HTML>");
-                            break;
-                        default:
-                            seriesLabel.setText(black);
-                            break;
-                    }
+                    else if (clickCount >= 20)
+                        seriesLabel.setText("<HTML><h3>J'irai me plaindre aux développeurs...</h3></HTML>");
+                    else
+                        seriesLabel.setText(black);
                     pack();
                     centerOnScreen();
                 }
