@@ -118,7 +118,7 @@ public class WaterHeightAction extends AbstractAction {
                     newSerie = new Series(series.getOrigin(), org.cds06.speleograph.data.Type.getType(I18nSupport.translate("actions.setType.waterHeight"), seriesUnit));
                     break;
             }
-            newSerie.setName(series.getOrigin().getName() + " - " + I18nSupport.translate("actions.waterHeight.setName"));
+            newSerie.setName(series.getName() + " - " + I18nSupport.translate("actions.waterHeight.setName"));
 
 
             double multiplier = 1.02;

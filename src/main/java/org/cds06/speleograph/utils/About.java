@@ -47,7 +47,7 @@ public class About extends JPanel {
      * @param icon       - application icon (can be null)
      */
     public About(String app, String version, String author, String email,
-                 String site, String disclaimer, ImageIcon icon) {
+                 String site, String disclaimer, ImageIcon icon, ImageIcon icon2) {
         super(new FlowLayout(FlowLayout.LEFT));
 
         JPanel a = new JPanel(new GridLayout(7, 1));
@@ -69,5 +69,6 @@ public class About extends JPanel {
 
         this.add(new JLabel(icon));
         this.add(a);
+        this.add(new JLabel(icon2));
     }
 }

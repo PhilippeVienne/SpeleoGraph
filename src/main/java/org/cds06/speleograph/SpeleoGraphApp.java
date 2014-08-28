@@ -49,9 +49,9 @@ import java.util.prefs.Preferences;
  * @author Philippe VIENNE
  */
 public class SpeleoGraphApp extends JFrame {
-    public static final String APP_VERSION = "1.6";
+    public static final String APP_VERSION = "2.0";
     public static final String AUTHORS = "Philippe Vienne, Gabriel Augendre";
-    public static final String CONTACT = "Philippe@Vienne.me";
+    public static final String CONTACT = "speleograph@free.fr";
     public static final String APP_NAME = "SpeleoGraph"; // NON-NLS
 
     /**
@@ -209,7 +209,8 @@ public class SpeleoGraphApp extends JFrame {
                     JOptionPane.showMessageDialog(SpeleoGraphApp.this,
                             new About(APP_NAME, APP_VERSION, AUTHORS, CONTACT, "http://speleograph.free.fr",
                                     I18nSupport.translate("menus.help.about.disclaimer"),
-                                    new ImageIcon(SpeleoGraphApp.class.getResource("SpeleoGraph_icon.png"))),
+                                    new ImageIcon(SpeleoGraphApp.class.getResource("SpeleoGraph_icon.png")),
+                                    new ImageIcon(SpeleoGraphApp.class.getResource("CDS06_icon.png"))),
                             I18nSupport.translate("menus.help.about"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon());
                 }
             });
