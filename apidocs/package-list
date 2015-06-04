@@ -1,5 +1,8 @@
 org.cds06.speleograph
 org.cds06.speleograph.actions
+org.cds06.speleograph.actions.data
+org.cds06.speleograph.actions.modif
 org.cds06.speleograph.data
+org.cds06.speleograph.data.fileio
 org.cds06.speleograph.graph
 org.cds06.speleograph.utils
